@@ -14,3 +14,23 @@ conn=mysql.connector.connect(
 	database="GoHigh")
 
 cursor=conn.cursor()
+
+Vehicle_Name = {
+	    [
+			'Honda Shine',
+			'TVS Ntorq',
+			'Maruti Alto',
+			'Hyundai i20',
+			'Honda City',
+			'Hyundai Creta',
+			'Toyota Innova',
+			'Tata Nexon EV',
+			'Royal Enfield Classic',
+			'Mahindra Thar'
+		]
+}
+vehcile_type={
+	[
+		'Bike','Scooter','Hatchback','Hatchback','Sedan','SUV','MUV','Electric SUV','Bike','Off-road SUV'
+	]
+}
