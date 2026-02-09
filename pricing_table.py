@@ -27,7 +27,6 @@ fare_map = {}
 for row in cursor.fetchall():
     fare_map[row[0]] = row[1]
 
-# --- get bookings ---
 cursor.execute("SELECT booking_id, vehicle_id FROM booking")
 bookings = cursor.fetchall()
 
