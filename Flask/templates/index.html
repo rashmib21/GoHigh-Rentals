@@ -6,7 +6,7 @@
 	<title>GoHigh Rentals</title>
 	<link rel="icon" type="image/png" 
           href="{{ url_for('static', filename='images/logo.png') }}">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+	<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 	<header style="display:flex; align-items:center; gap:10px;">
@@ -14,15 +14,15 @@
     <!-- Logo -->
     <img src="{{ url_for('static', filename='images/logo.png') }}" 
          alt="GoHigh Rentals Logo" 
-         width="60">
+         width="190">
 
     <!-- Text container -->
     <div>
-        <h2 style="color:#1f3d2b; font-family:Arial; margin:0;">
+        <h2 style="color:#1f3d2b; font-family:Arial; margin:0; font-size: 75px;">
             GOHIGH RENTALS
         </h2>
 
-        <p style="color:#1f3d2b; font-family: Arial; margin:0;">
+        <p style="color:#1f3d2b; font-family: Arial; margin:0; font-size: 45px;">
             Where miles meet momentum
         </p>
     </div>
