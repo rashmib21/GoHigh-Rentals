@@ -1,5 +1,5 @@
 import os
-from flask import Flask
+from flask import Flask, render_template
 from dotenv import load_dotenv
 import mysql.connector
 
@@ -37,7 +37,7 @@ def create_app(test_config=None):
 
     @app.route('/')
     def welcome():
-        return "Welcome to GoHigh Rentals"
+        return render_template("welcome.html")
 
     return app
 
