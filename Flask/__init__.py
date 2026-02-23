@@ -3,48 +3,66 @@ from flask import Flask, render_template
 from dotenv import load_dotenv
 import mysql.connector
 
-def create_app(test_config=None):
-    load_dotenv()
-    
-    app = Flask(__name__)
 
-    #  Set secret key (from .env file)
+def create_app():
+    load_dotenv()
+
+    app = Flask(__name__)
     app.secret_key = os.getenv("SECRET_KEY")
 
-    # Get values from .env
-    host = os.getenv("DB_HOST")
-    user = os.getenv("DB_USER")
-    password = os.getenv("DB_PASSWORD")
-    database = os.getenv("DB_NAME")
-
-    # Connect to database
-    connection = mysql.connector.connect(
-        host=host,
-        user=user,
-        password=password,
-        database=database
-    )
-
-    app.db = connection
-
-    if test_config is None:
-        app.config.from_pyfile('config.py', silent=True)
-    else:
-        app.config.from_mapping(test_config)
-
-    os.makedirs(app.instance_path, exist_ok=True)
+    # Database connection function
+    def get_db_connection():
+        try:
+            connection = mysql.connector.connect(
+                host=os.getenv("DB_HOST"),
+                user=os.getenv("DB_USER"),
+                password=os.getenv("DB_PASSWORD"),
+                database=os.getenv("DB_NAME")
+            )
+            return connection
+        except Exception as e:
+            print("Database connection error:", e)
+            return None
 
     @app.route('/')
     def index():
         return render_template("index.html")
 
-    @app.route('/register', methods=['get', 'post'])
-    def register():
-        return render_template('register.html')    
+    @app.route('/users')
+    def show_users():
+        connection = get_db_connection()
+
+        if connection is None:
+            return "Database connection failed."
+
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM users")
+        users = cursor.fetchall()
+
+        cursor.close()
+        connection.close()
+
+        return str(users)
+
+    @app.route('/destination')    
+    def show_destination():
+        connection = get_db_connection()
+
+        if connection is None:
+            return "Database connection failed."
+
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM destination")
+        users = cursor.fetchall()
+
+        cursor.close()
+        connection.close()
+
+        return str(users)    
 
     return app
 
 
 if __name__ == "__main__":
     app = create_app()
-    app.run(debug=True, host='0.0.0.0', port=9000)   
+    app.run(debug=True, port=9000)
