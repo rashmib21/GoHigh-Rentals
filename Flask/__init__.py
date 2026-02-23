@@ -58,7 +58,17 @@ def create_app():
         cursor.close()
         connection.close()
 
-        return str(users)    
+        return str(users)  
+        
+    @app.route('/register', methods=['get', 'post'])
+    def register():
+        return render_template('register.html')    
+        return str(users)       
+    
+    @app.route('/login', methods=['get','post'])
+    def login():
+        return render_template('login.html')
+        return str(users)       
 
     return app
 
