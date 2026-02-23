@@ -14,7 +14,7 @@ conn=mysql.connector.connect(
 cursor=conn.cursor()
 
 #Define the number of records to generate
-total_records=90
+total_records=910
 
 #Loop to generate and insert data
 for i in range(total_records):

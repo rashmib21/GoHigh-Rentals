@@ -51,7 +51,7 @@ def vehicle_category():
     vehicle = random.choice(Vehicle_Hierarchy[category])
     return category, vehicle
 
-total_records = 180
+total_records = 910
 
 for i in range(total_records):
 

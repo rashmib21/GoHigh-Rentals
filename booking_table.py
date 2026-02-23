@@ -16,7 +16,7 @@ cursor = conn.cursor()
 
 statuses = ["Confirmed", "Completed", "Cancelled"]
 
-total_records = 180
+total_records = 910
 
 for i in range(total_records):
 

@@ -13,7 +13,7 @@ conn = mysql.connector.connect(
 
 cursor = conn.cursor()
 
-total_records = 10   
+total_records = 910   
 
 cursor.execute("SELECT vehicle_id, category_id FROM vehicle")
 vehicle_map = {}

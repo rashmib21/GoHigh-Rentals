@@ -54,7 +54,7 @@ def realistic_vehicle_no():
 
 # print(realistic_vehicle_no())
 
-total_records=180
+total_records=910
 for i in range(total_records):
     name, vtype, fuel, seat=random.choice(vehicles)
     vehicle_number=realistic_vehicle_no()
