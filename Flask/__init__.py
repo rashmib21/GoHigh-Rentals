@@ -9,7 +9,7 @@ def create_app():
 
     app = Flask(__name__)
     app.secret_key = os.getenv("SECRET_KEY")
-    print("Secret Key:", app.secret_key)
+    # print("Secret Key:", app.secret_key)
 
     # Database connection function
     def get_db_connection():
@@ -39,7 +39,7 @@ def create_app():
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM users")
         users = cursor.fetchall()
-        print("User Data:", users)
+        # print("User Data:", users)
 
         cursor.close()
         connection.close()
@@ -65,10 +65,12 @@ def create_app():
     @app.route('/register', methods=['GET', 'POST'])
     def register():
         if request.method == 'POST':
-            name = request.form['name']   # HTML field name="username"
+            name = request.form['name']   
             email = request.form['email']
+            phone_no = request.form['phone_no']
+            print("Phone Number:", phone_no)
             password = request.form['password']
-            phone_no = request.form.get('phone_no')  # if you add phone field later
+              
 
             conn = get_db_connection()
             cursor = conn.cursor()
