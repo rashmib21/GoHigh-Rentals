@@ -18,6 +18,23 @@ header {
     font-family: Arial;
 }
 
+.home-button
+{
+    height: 25px;
+    width: 150px;
+    /*background-image: linear-gradient(45deg, #8D5F8C, #DDC3C3);*/
+    background-color: #1f3d2b;
+    border: none;
+    opacity: 0.8;
+    border-radius: 10px;
+}
+
+.home-button a 
+{
+    color: whitesmoke;
+    /*opacity: 1;*/
+}
+
 /* LOGIN & REGISTER COMMON STYLE */
 .login,
 .register {
