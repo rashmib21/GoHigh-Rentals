@@ -121,13 +121,17 @@ def create_app():
         return render_template('login.html')   
 
 
-    @app.route('/dashboard')
-    def dashboard():
-        print("Session In Dashboard:", session)
-        if 'user_id' in session:
-            return f"Welcome {session['user_name']}!"
-        else:
-            return redirect('/login')  
+    # @app.route('/dashboard')
+    # def dashboard():
+    #     print("Session In Dashboard:", session)
+    #     if 'user_id' in session:
+    #         return f"Welcome {session['user_name']}!"
+    #     else:
+    #         return redirect('/login')  
+    @app.route('/dashboard/<name>')
+    def dashboard(name):
+        return render_template("dashboard.html", user=name)
+
 
     return app
 

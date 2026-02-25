@@ -1,11 +1,62 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title></title>
+    <title>GoHigh Rentals - Himalayan Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+
+<header>
+    <h2>🏔️ GoHigh Rentals</h2>
+</header>
+
+<section class="welcome-section">
+    <h1>Welcome, {{ user }} </h1>
+</section>
+
+<section class="destinations">
+    <h2>Explore Himalayan Regions</h2>
+
+    <div class="destination-container">
+
+        <div class="destination-card">
+            <img src="{{ url_for('static', filename='images/manali.jpg') }}">
+            <div class="overlay">
+                <h3>Manali</h3>
+                <p>Starting ₹2499/day</p>
+                <button>Book Now</button>
+            </div>
+        </div>
+
+        <div class="destination-card">
+            <img src="{{ url_for('static', filename='images/leh.jpg') }}">
+            <div class="overlay">
+                <h3>Leh Ladakh</h3>
+                <p>Starting ₹3499/day</p>
+                <button>Book Now</button>
+            </div>
+        </div>
+
+        <div class="destination-card">
+            <img src="{{ url_for('static', filename='images/shimla.jpg') }}">
+            <div class="overlay">
+                <h3>Shimla</h3>
+                <p>Starting ₹1999/day</p>
+                <button>Book Now</button>
+            </div>
+        </div>
+
+        <div class="destination-card">
+            <img src="{{ url_for('static', filename='images/auli.jpg') }}">
+            <div class="overlay">
+                <h3>Auli</h3>
+                <p>Starting ₹2799/day</p>
+                <button>Book Now</button>
+            </div>
+        </div>
+
+    </div>
+</section>
 
 </body>
 </html>
