@@ -130,4 +130,42 @@ header {
 }
 
 /* Dashboard Styling */
+.dashboard-header
+{
+    display: flex;
+    width: 100%;
+    margin: 0;
+    /*margin: 20px 15px 15px 0;*/
+    text-align: center;
+    color: white;
+    font-size: 70px;
+    /*text-shadow: 0px 0px 15px green;*/
+    background-image: url("images/dashboard_head_bg.jpg");
+    background-size: cover; /* or contain, to scale the image */
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 250px;            /* Fixed height */
+    justify-content: center;
+    align-items: center;
+    min-height: 150px; /* Give it height to show the image */
+    justify-content: center; /* Center content horizontally */
+    align-items: center; /* Center content vertically */
+
+}
+.dashboard-header {
+    position: relative;
+}
+
+.dashboard-header::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    /*background: rgba(0, 0, 0, 0.4); /* Dark overlay */*/
+}
+
+.dashboard-header h1 {
+    position: relative;
+    z-index: 1;
+}
+
 
