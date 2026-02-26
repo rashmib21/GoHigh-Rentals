@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Register</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Register</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body class="register">
 
@@ -12,15 +12,41 @@
     <h2>Create Account</h2>
 
     <form method="POST">
-        <input type="text" name="name" placeholder="Enter your full name" required>
 
-        <input type="email" name="email" placeholder="Enter your email address" required>
+        <input type="text"
+               name="name"
+               placeholder="Enter your full name"
+               pattern="^[A-Za-z]{2,}(?:\s[A-Za-z]{2,})+$"
+               maxlength="30"
+               title="Enter your name: )"
+               autocomplete="name"
+               required>
 
-        <input type="text" name="phone_no" placeholder="Enter your phone number" required>
+        <input type="email"
+               name="email"
+               placeholder="Enter your email address"
+               autocomplete="email"
+               required>
 
-        <input type="password" name="password" placeholder="Enter your password" required>
+        <input type="tel"
+               name="phone_no"
+               pattern="^[6-9][0-9]{9}$"
+               maxlength="10"
+               placeholder="Enter your 10-digit mobile number"
+               title="Mobile number must start with 6, 7, 8 or 9"
+               autocomplete="tel"
+               required>
+
+        <input type="password"
+               name="password"
+               pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
+               placeholder="Enter your password"
+               title="Minimum 8 characters with uppercase, lowercase, number and special character"
+               autocomplete="new-password"
+               required>
 
         <button type="submit">Register</button>
+
     </form>
 
     <p class="form-link">

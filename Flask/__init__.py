@@ -1,7 +1,11 @@
 import os
-from flask import Flask, render_template, request, redirect, session
+from flask import Flask, render_template, request, redirect, session, url_for
 from dotenv import load_dotenv
 import mysql.connector
+import re
+from werkzeug.security import check_password_hash
+from werkzeug.security import generate_password_hash
+
 
 
 def create_app():
@@ -65,35 +69,73 @@ def create_app():
     @app.route('/register', methods=['GET', 'POST'])
     def register():
         if request.method == 'POST':
-            name = request.form['name']   
+
+            
+            name = request.form['name']
             email = request.form['email']
             phone_no = request.form['phone_no']
-            print("Phone Number:", phone_no)
             password = request.form['password']
-              
+
+        
+            if not name or not email or not phone_no or not password:
+                return "All fields are required!"
+
+           
+            name_pattern = r'^[A-Za-z]{2,}(?:\s[A-Za-z]{2,})+$'
+            email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,}$'
+            phone_pattern = r'^[6-9][0-9]{9}$'
+            password_pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&-]).{8,}$'
+
+            if not re.match(name_pattern, name):
+                return "Invalid name format"
+
+            if not re.match(email_pattern, email):
+                return "Invalid email format"
+
+            if not re.match(phone_pattern, phone_no):
+                return "Invalid phone number"
+
+            if not re.match(password_pattern, password):
+                return "Password must contain uppercase, lowercase, number and special character"
 
             conn = get_db_connection()
-            cursor = conn.cursor()
+            cursor = conn.cursor(dictionary=True) #error: tuple indices must be integers or slices, not str
 
+            cursor.execute("SELECT email, phone_no FROM users WHERE email=%s OR phone_no=%s",(email, phone_no))
+            existing_user = cursor.fetchone()
+
+            if existing_user:
+                if existing_user['email'] == email:
+                    cursor.close()
+                    conn.close()
+                    return "Email already registered!"
+
+                if existing_user['phone_no'] == phone_no:
+                    cursor.close()
+                    conn.close()
+                    return "Phone number already registered!"
+
+           
+            hashed_password = generate_password_hash(password)
+
+            # 7️⃣ Insert user
             query = """
             INSERT INTO users (name, email, phone_no, password)
             VALUES (%s, %s, %s, %s)
             """
+            cursor.execute(query, (name, email, phone_no, hashed_password))
+            conn.commit()
 
-            try:
-                cursor.execute(query, (name, email, phone_no, password))
-                conn.commit()
-                message = "Registered Successfully"
-            except mysql.connector.Error as err:
-                message = f"Database Error: {err}"
-            finally:
-                cursor.close()
-                conn.close()
+            session['user_id'] = cursor.lastrowid
+            session['user_name'] = name
 
-            return message
+            cursor.close()
+            conn.close()
 
-        return render_template('register.html')      
-    
+            return redirect(url_for('dashboard'))
+
+        return render_template('register.html')    
+        
     @app.route('/login', methods=['GET','POST'])
     def login():
         if request.method == 'POST':
