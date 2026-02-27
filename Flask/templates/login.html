@@ -1,30 +1,40 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Login</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login - GoHigh Rentals</title>
     <link rel="icon" type="image/png" 
           href="{{ url_for('static', filename='images/logo.png') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body class="login">
+<body class="login-page">
 
 <div class="form-box">
-    <h2>Login into your account</h2>
+    <i class="fas fa-mountain"></i>
+    <h2>Welcome Back</h2>
 
     <form method="POST">
+        <div class="input-wrapper">
+            <i class="fas fa-envelope"></i>
+            <input type="email" name="email" placeholder="Enter your email address" required>
+        </div>
 
-        <input type="email" name="email" placeholder="Enter your email address" required>
+        <div class="input-wrapper">
+            <i class="fas fa-lock"></i>
+            <input type="password" name="password" placeholder="Enter your password" required>
+        </div>
 
-        <input type="password" name="password" placeholder="Enter your password" required>
-
-        <button type="submit">Login</button>
+        <button type="submit">
+            <i class="fas fa-sign-in-alt"></i> Login
+        </button>
     </form>
 
     <p class="form-link">
-        Don't have any account?
-        <a href="/register">Register</a>
+        New to the mountains?
+        <a href="{{ url_for('register') }}">Create Account →</a>
     </p>
 </div>
 

@@ -5,60 +5,395 @@
     <link rel="icon" type="image/png" 
           href="{{ url_for('static', filename='images/logo.png') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body>
+<body class="dashboard-page">
 
 <header>
-    <h2 class="dashboard-header"> GoHigh Rentals</h2>
+    <div class="logo-container">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" 
+             alt="GoHigh Rentals Logo">
+        <div class="brand-text">
+            <h2>GOHIGH</h2>
+            <p>Himalayan Expeditions</p>
+        </div>
+    </div>
+    <nav class="nav-menu">
+        <a href="#destinations"><i class="fas fa-map-marked-alt"></i> Destinations</a>
+        <a href="#bookings"><i class="fas fa-calendar-check"></i> My Bookings</a>
+        <a href="#profile"><i class="fas fa-user"></i> Profile</a>
+        <a href="{{ url_for('dashboard') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </nav>
 </header>
 
-<section class="welcome-section">
-    <h1>Welcome {{ user }}✨ </h1>
+<section class="dashboard-header">
+    <h1>HIMALAYAN ADVENTURE</h1>
 </section>
 
-<section class="destinations">
-    <h2>Explore Himalayan Regions</h2>
+<section class="welcome-section">
+    <h1>Welcome back, <span>{{ user }}</span>!</h1>
+    <p>Your next adventure awaits in the mountains 🏔️</p>
+</section>
+
+<!-- Stats Section -->
+<div class="stats-section">
+    <div class="stat-card">
+        <i class="fas fa-route"></i>
+        <h3>25+</h3>
+        <p>Destinations</p>
+    </div>
+    <div class="stat-card">
+        <i class="fas fa-users"></i>
+        <h3>10k+</h3>
+        <p>Happy Travelers</p>
+    </div>
+    <div class="stat-card">
+        <i class="fas fa-car"></i>
+        <h3>500+</h3>
+        <p>Vehicles</p>
+    </div>
+    <div class="stat-card">
+        <i class="fas fa-star"></i>
+        <h3>4.8</h3>
+        <p>Rating</p>
+    </div>
+</div>
+
+<!-- Destinations Section -->
+<section class="destinations" id="destinations">
+    <h2>Popular Himalayan Destinations</h2>
 
     <div class="destination-container">
 
+        <!-- Manali -->
         <div class="destination-card">
-            <img src="{{ url_for('static', filename='images/manali.jpg') }}">
-            <div class="overlay">
+            <div class="rating">
+                <i class="fas fa-star"></i> 4.8
+            </div>
+            <div class="destination-badge">Popular</div>
+            <img src="{{ url_for('static', filename='images/manali.jpg') }}" alt="Manali Himalayas">
+            <div class="card-content">
                 <h3>Manali</h3>
-                <p>Starting ₹2499/day</p>
-                <button>Book Now</button>
+                <p class="location"><i class="fas fa-map-pin"></i> Himachal Pradesh</p>
+                <div class="price">
+                    <i class="fas fa-tag"></i>
+                    <span>₹2,499 <small>/day</small></span>
+                </div>
+                <div class="features">
+                    <span><i class="fas fa-mountain"></i> Rohtang Pass</span>
+                    <span><i class="fas fa-campground"></i> Solang Valley</span>
+                    <span><i class="fas fa-utensils"></i> Local Food</span>
+                </div>
+                <button class="book-btn" data-destination="Manali">
+                    <i class="fas fa-calendar-check"></i> Book Now
+                </button>
             </div>
         </div>
 
+        <!-- Leh Ladakh -->
         <div class="destination-card">
-            <img src="{{ url_for('static', filename='images/leh.jpg') }}">
-            <div class="overlay">
+            <div class="rating">
+                <i class="fas fa-star"></i> 4.9
+            </div>
+            <div class="destination-badge">Adventure</div>
+            <img src="{{ url_for('static', filename='images/leh.jpg') }}" alt="Leh Ladakh Mountains">
+            <div class="card-content">
                 <h3>Leh Ladakh</h3>
-                <p>Starting ₹3499/day</p>
-                <button>Book Now</button>
+                <p class="location"><i class="fas fa-map-pin"></i> Ladakh</p>
+                <div class="price">
+                    <i class="fas fa-tag"></i>
+                    <span>₹3,499 <small>/day</small></span>
+                </div>
+                <div class="features">
+                    <span><i class="fas fa-mountain"></i> Khardung La</span>
+                    <span><i class="fas fa-campground"></i> Nubra Valley</span>
+                    <span><i class="fas fa-map"></i> Pangong Lake</span>
+                </div>
+                <button class="book-btn" data-destination="Leh">
+                    <i class="fas fa-calendar-check"></i> Book Now
+                </button>
             </div>
         </div>
 
+        <!-- Shimla -->
         <div class="destination-card">
-            <img src="{{ url_for('static', filename='images/shimla.jpg') }}">
-            <div class="overlay">
+            <div class="rating">
+                <i class="fas fa-star"></i> 4.7
+            </div>
+            <div class="destination-badge">Family</div>
+            <img src="{{ url_for('static', filename='images/shimla.jpg') }}" alt="Shimla Hills">
+            <div class="card-content">
                 <h3>Shimla</h3>
-                <p>Starting ₹1999/day</p>
-                <button>Book Now</button>
+                <p class="location"><i class="fas fa-map-pin"></i> Himachal Pradesh</p>
+                <div class="price">
+                    <i class="fas fa-tag"></i>
+                    <span>₹1,999 <small>/day</small></span>
+                </div>
+                <div class="features">
+                    <span><i class="fas fa-car"></i> Mall Road</span>
+                    <span><i class="fas fa-hotel"></i> The Ridge</span>
+                    <span><i class="fas fa-utensils"></i> Kufri</span>
+                </div>
+                <button class="book-btn" data-destination="Shimla">
+                    <i class="fas fa-calendar-check"></i> Book Now
+                </button>
             </div>
         </div>
 
+        <!-- Auli -->
         <div class="destination-card">
-            <img src="{{ url_for('static', filename='images/auli.jpg') }}">
-            <div class="overlay">
+            <div class="rating">
+                <i class="fas fa-star"></i> 4.8
+            </div>
+            <div class="destination-badge">Skiing</div>
+            <img src="{{ url_for('static', filename='images/auli.jpg') }}" alt="Auli Ski Slopes">
+            <div class="card-content">
                 <h3>Auli</h3>
-                <p>Starting ₹2799/day</p>
-                <button>Book Now</button>
+                <p class="location"><i class="fas fa-map-pin"></i> Uttarakhand</p>
+                <div class="price">
+                    <i class="fas fa-tag"></i>
+                    <span>₹2,799 <small>/day</small></span>
+                </div>
+                <div class="features">
+                    <span><i class="fas fa-ski"></i> Skiing</span>
+                    <span><i class="fas fa-campground"></i> Camping</span>
+                    <span><i class="fas fa-cable-car"></i> Cable Car</span>
+                </div>
+                <button class="book-btn" data-destination="Auli">
+                    <i class="fas fa-calendar-check"></i> Book Now
+                </button>
+            </div>
+        </div>
+
+        <!-- Spiti Valley -->
+        <div class="destination-card">
+            <div class="rating">
+                <i class="fas fa-star"></i> 4.9
+            </div>
+            <div class="destination-badge">Offbeat</div>
+            <img src="{{ url_for('static', filename='images/spiti.jpg') }}" alt="Spiti Valley">
+            <div class="card-content">
+                <h3>Spiti Valley</h3>
+                <p class="location"><i class="fas fa-map-pin"></i> Himachal Pradesh</p>
+                <div class="price">
+                    <i class="fas fa-tag"></i>
+                    <span>₹3,999 <small>/day</small></span>
+                </div>
+                <div class="features">
+                    <span><i class="fas fa-mountain"></i> Key Monastery</span>
+                    <span><i class="fas fa-campground"></i> Chandratal</span>
+                    <span><i class="fas fa-map"></i> Pin Valley</span>
+                </div>
+                <button class="book-btn" data-destination="Spiti">
+                    <i class="fas fa-calendar-check"></i> Book Now
+                </button>
+            </div>
+        </div>
+
+        <!-- Kashmir Valley -->
+        <div class="destination-card">
+            <div class="rating">
+                <i class="fas fa-star"></i> 4.9
+            </div>
+            <div class="destination-badge">Paradise on Earth</div>
+            <img src="{{ url_for('static', filename='images/kashmir.jpg') }}" alt="Kashmir Valley">
+            <div class="card-content">
+                <h3>Kashmir Valley</h3>
+                <p class="location"><i class="fas fa-map-pin"></i> Jammu & Kashmir</p>
+                <div class="price">
+                    <i class="fas fa-tag"></i>
+                    <span>₹3,299 <small>/day</small></span>
+                </div>
+                <div class="features">
+                    <span><i class="fas fa-car"></i> SUV</span>
+                    <span><i class="fas fa-ship"></i> Houseboat</span>
+                    <span><i class="fas fa-utensils"></i> Wazwan</span>
+                </div>
+                <button class="book-btn" data-destination="Kashmir">
+                    <i class="fas fa-calendar-check"></i> Book Now
+                </button>
+            </div>
+        </div>
+
+        <!-- Dharamshala -->
+        <div class="destination-card">
+            <div class="rating">
+                <i class="fas fa-star"></i> 4.7
+            </div>
+            <div class="destination-badge">Spiritual</div>
+            <img src="{{ url_for('static', filename='images/dharamshala.jpg') }}" alt="Dharamshala">
+            <div class="card-content">
+                <h3>Dharamshala</h3>
+                <p class="location"><i class="fas fa-map-pin"></i> Himachal Pradesh</p>
+                <div class="price">
+                    <i class="fas fa-tag"></i>
+                    <span>₹2,199 <small>/day</small></span>
+                </div>
+                <div class="features">
+                    <span><i class="fas fa-pray"></i> Dalai Lama</span>
+                    <span><i class="fas fa-mountain"></i> Triund</span>
+                    <span><i class="fas fa-utensils"></i> Tibetan Food</span>
+                </div>
+                <button class="book-btn" data-destination="Dharamshala">
+                    <i class="fas fa-calendar-check"></i> Book Now
+                </button>
+            </div>
+        </div>
+
+        <!-- Dalhousie -->
+        <div class="destination-card">
+            <div class="rating">
+                <i class="fas fa-star"></i> 4.6
+            </div>
+            <div class="destination-badge">Mini Switzerland</div>
+            <img src="{{ url_for('static', filename='images/dalhousie.jpg') }}" alt="Dalhousie">
+            <div class="card-content">
+                <h3>Dalhousie</h3>
+                <p class="location"><i class="fas fa-map-pin"></i> Himachal Pradesh</p>
+                <div class="price">
+                    <i class="fas fa-tag"></i>
+                    <span>₹2,099 <small>/day</small></span>
+                </div>
+                <div class="features">
+                    <span><i class="fas fa-church"></i> St. John's</span>
+                    <span><i class="fas fa-mountain"></i> Khajjiar</span>
+                    <span><i class="fas fa-utensils"></i> Local Food</span>
+                </div>
+                <button class="book-btn" data-destination="Dalhousie">
+                    <i class="fas fa-calendar-check"></i> Book Now
+                </button>
             </div>
         </div>
 
     </div>
 </section>
+
+<!-- Regional Categories -->
+<section class="regional-section">
+    <h2>Explore by Region</h2>
+    <div class="region-tabs">
+        <button class="region-tab active" data-region="all">All Himalayas</button>
+        <button class="region-tab" data-region="himachal">Himachal Pradesh</button>
+        <button class="region-tab" data-region="uttarakhand">Uttarakhand</button>
+        <button class="region-tab" data-region="ladakh">Ladakh</button>
+        <button class="region-tab" data-region="kashmir">Kashmir</button>
+    </div>
+</section>
+
+<!-- Quick Booking -->
+<section class="quick-booking">
+    <h2>📅 Quick Booking</h2>
+    <div class="booking-form">
+        <select id="destination-select">
+            <option value="">Select Destination</option>
+            <option value="manali">Manali - Himachal Pradesh</option>
+            <option value="leh">Leh Ladakh - Ladakh</option>
+            <option value="shimla">Shimla - Himachal Pradesh</option>
+            <option value="auli">Auli - Uttarakhand</option>
+            <option value="spiti">Spiti Valley - Himachal Pradesh</option>
+            <option value="kashmir">Kashmir Valley - J&K</option>
+            <option value="dharamshala">Dharamshala - Himachal Pradesh</option>
+            <option value="dalhousie">Dalhousie - Himachal Pradesh</option>
+        </select>
+        <input type="date" id="check-in" placeholder="Check-in">
+        <input type="date" id="check-out" placeholder="Check-out">
+        <button onclick="checkAvailability()">Check Availability</button>
+    </div>
+</section>
+
+<!-- Scroll to Top Button -->
+<div class="scroll-top" id="scrollTop">
+    <i class="fas fa-arrow-up"></i>
+</div>
+
+<script>
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+
+    // Book button animation
+    document.querySelectorAll('.book-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const destination = this.getAttribute('data-destination');
+            const originalText = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Booking...';
+            this.disabled = true;
+            
+            setTimeout(() => {
+                alert(`✨ Booking initiated for ${destination}! ✨\nOur team will contact you shortly.`);
+                this.innerHTML = originalText;
+                this.disabled = false;
+            }, 1500);
+        });
+    });
+
+    // Region filter functionality
+    document.querySelectorAll('.region-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            document.querySelectorAll('.region-tab').forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            
+            const region = this.getAttribute('data-region');
+            // Add your filtering logic here
+        });
+    });
+
+    // Scroll to top
+    const scrollTop = document.getElementById('scrollTop');
+    
+    window.addEventListener('scroll', () => {
+        if (window.pageYOffset > 300) {
+            scrollTop.classList.add('show');
+        } else {
+            scrollTop.classList.remove('show');
+        }
+    });
+    
+    scrollTop.addEventListener('click', () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+
+    // Check availability function
+    function checkAvailability() {
+        const destination = document.getElementById('destination-select').value;
+        const checkIn = document.getElementById('check-in').value;
+        const checkOut = document.getElementById('check-out').value;
+        
+        if (!destination || !checkIn || !checkOut) {
+            alert('Please fill all fields');
+            return;
+        }
+        
+        alert(`Checking availability for ${destination} from ${checkIn} to ${checkOut}...`);
+    }
+
+    // Image load handling
+    document.querySelectorAll('.destination-card img').forEach(img => {
+        img.addEventListener('load', function() {
+            this.classList.add('loaded');
+        });
+        
+        // Error handling if image doesn't load
+        img.onerror = function() {
+            this.src = "https://via.placeholder.com/600x400?text=Himalayan+Destination";
+            this.alt = "Image not available";
+        };
+    });
+</script>
 
 </body>
 </html>

@@ -3,59 +3,106 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Register</title>
+    <title>Register - GoHigh Rentals</title>
     <link rel="icon" type="image/png" 
           href="{{ url_for('static', filename='images/logo.png') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body class="register">
+<body class="register-page">
 
 <div class="form-box">
-    <h2>Create Account</h2>
+    <i class="fas fa-mountain"></i>
+    <h2>Start Your Journey</h2>
 
     <form method="POST">
+        <div class="input-wrapper">
+            <i class="fas fa-user"></i>
+            <input type="text"
+                   name="name"
+                   placeholder="Enter your full name"
+                   pattern="^[A-Za-z]{2,}(?:\s[A-Za-z]{2,})+$"
+                   maxlength="30"
+                   title="Enter your full name (first and last name)"
+                   autocomplete="name"
+                   required>
+        </div>
 
-        <input type="text"
-               name="name"
-               placeholder="Enter your full name"
-               pattern="^[A-Za-z]{2,}(?:\s[A-Za-z]{2,})+$"
-               maxlength="30"
-               title="Enter your name: )"
-               autocomplete="name"
-               required>
+        <div class="input-wrapper">
+            <i class="fas fa-envelope"></i>
+            <input type="email"
+                   name="email"
+                   placeholder="Enter your email address"
+                   autocomplete="email"
+                   required>
+        </div>
 
-        <input type="email"
-               name="email"
-               placeholder="Enter your email address"
-               autocomplete="email"
-               required>
+        <div class="input-wrapper">
+            <i class="fas fa-phone"></i>
+            <input type="tel"
+                   name="phone_no"
+                   pattern="^[6-9][0-9]{9}$"
+                   maxlength="10"
+                   placeholder="Enter your 10-digit mobile number"
+                   title="Mobile number must start with 6, 7, 8 or 9"
+                   autocomplete="tel"
+                   required>
+        </div>
 
-        <input type="tel"
-               name="phone_no"
-               pattern="^[6-9][0-9]{9}$"
-               maxlength="10"
-               placeholder="Enter your 10-digit mobile number"
-               title="Mobile number must start with 6, 7, 8 or 9"
-               autocomplete="tel"
-               required>
+        <div class="input-wrapper">
+            <i class="fas fa-lock"></i>
+            <input type="password"
+                   name="password"
+                   pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
+                   placeholder="Create a strong password"
+                   title="Minimum 8 characters with uppercase, lowercase, number and special character"
+                   autocomplete="new-password"
+                   required id="password-input">
+        </div>
+        
+        <!-- Password strength indicator -->
+        <div class="password-strength">
+            <div class="password-strength-bar" id="password-strength-bar"></div>
+        </div>
 
-        <input type="password"
-               name="password"
-               pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
-               placeholder="Enter your password"
-               title="Minimum 8 characters with uppercase, lowercase, number and special character"
-               autocomplete="new-password"
-               required>
-
-        <button type="submit">Register</button>
-
+        <button type="submit">
+            <i class="fas fa-user-plus"></i> Register
+        </button>
     </form>
 
     <p class="form-link">
         Already have an account?
-        <a href="/login">Login</a>
+        <a href="{{ url_for('login') }}">Login →</a>
     </p>
 </div>
+
+<script>
+    // Password strength indicator
+    const passwordInput = document.getElementById('password-input');
+    const strengthBar = document.getElementById('password-strength-bar');
+    
+    passwordInput.addEventListener('input', function() {
+        const password = this.value;
+        let strength = 0;
+        
+        if (password.length >= 8) strength++;
+        if (password.match(/[a-z]+/)) strength++;
+        if (password.match(/[A-Z]+/)) strength++;
+        if (password.match(/[0-9]+/)) strength++;
+        if (password.match(/[@$!%*?&]+/)) strength++;
+        
+        strengthBar.className = 'password-strength-bar';
+        
+        if (strength <= 2) {
+            strengthBar.classList.add('weak');
+        } else if (strength <= 4) {
+            strengthBar.classList.add('medium');
+        } else {
+            strengthBar.classList.add('strong');
+        }
+    });
+</script>
 
 </body>
 </html>

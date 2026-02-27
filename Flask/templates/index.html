@@ -1,36 +1,64 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>GoHigh Rentals</title>
-	<link rel="icon" type="image/png" 
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>GoHigh Rentals - Himalayan Adventures</title>
+    <link rel="icon" type="image/png" 
           href="{{ url_for('static', filename='images/logo.png') }}">
-	<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body class="login">
-	<header style="display:flex; align-items:center; gap:10px;">
+<body class="home-page">
 
-    <!-- Logo -->
-    <img src="{{ url_for('static', filename='images/logo.png') }}" 
-         alt="GoHigh Rentals Logo" 
-         width="190">
-
-    <!-- Text container -->
-    <div>
-        <h2 style="color:#1f3d2b; font-family:Arial; margin:0; font-size: 75px;">
-            GOHIGH RENTALS
-        </h2>
-
-        <p style="color:#1f3d2b; font-family: Arial; margin:0; font-size: 45px;">
-            Where miles meet momentum
-            <br>
-    <div>
-        <button class="home-button"><a href="{{url_for('register') }}">New/Existing User</a></button>
-    </div>   
-        </p>
+<header>
+    <div class="logo-container">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" 
+             alt="GoHigh Rentals Logo">
+        <div class="brand-text">
+            <h2>GOHIGH</h2>
+            <p>Himalayan Expeditions</p>
+        </div>
     </div>
-
+    <nav class="nav-menu">
+        <a href="#home">Home</a>
+        <a href="#features">Features</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+    </nav>
 </header>
+
+<section class="hero-section" id="home">
+    <div class="hero-content">
+        <h1>Conquer the Himalayas</h1>
+        <p>Where every mile tells a story ✨</p>
+        <a href="{{ url_for('register') }}" class="hero-button">Start Your Journey →</a>
+    </div>
+</section>
+
+<section class="features" id="features">
+    <div class="feature-card">
+        <i class="fas fa-mountain"></i>
+        <h3>Peak Experiences</h3>
+        <p>Access to highest motorable roads in the world</p>
+    </div>
+    <div class="feature-card">
+        <i class="fas fa-road"></i>
+        <h3>Premium Fleet</h3>
+        <p>Well-maintained 4x4 vehicles for mountain terrain</p>
+    </div>
+    <div class="feature-card">
+        <i class="fas fa-campground"></i>
+        <h3>Camping Gear</h3>
+        <p>High-altitude camping equipment included</p>
+    </div>
+    <div class="feature-card">
+        <i class="fas fa-map-marked-alt"></i>
+        <h3>Expert Guides</h3>
+        <p>Local experienced guides who know the mountains</p>
+    </div>
+</section>
+
 </body>
 </html>
