@@ -140,7 +140,9 @@ def create_app():
     def login():
         if request.method == 'POST':
             email = request.form['email']
+            print("Username: ",email)
             password = request.form['password']
+            print("Password",password)
 
             conn = get_db_connection()
             cursor = conn.cursor(dictionary=True)
@@ -149,6 +151,7 @@ def create_app():
             cursor.execute(query, (email, password))
 
             user = cursor.fetchone()
+            # print(user)
 
             cursor.close()
             conn.close()
