@@ -15,7 +15,7 @@
         <img src="{{ url_for('static', filename='images/logo.png') }}" 
              alt="GoHigh Rentals Logo">
         <div class="brand-text">
-            <h2>GOHIGH</h2>
+            <h2>GOHIGH RENTALS</h2>
             <p>Himalayan Expeditions</p>
         </div>
     </div>
@@ -33,7 +33,7 @@
 
 <section class="welcome-section">
     <h1>Welcome back, <span>{{ user }}</span>!</h1>
-    <p>Your next adventure awaits in the mountains 🏔️</p>
+    <p>Ready for your next Himalayan adventure?🏔️</p>
 </section>
 
 <!-- Stats Section -->
@@ -191,26 +191,35 @@
             </div>
         </div>
 
-        <!-- Kashmir Valley -->
+        <!-- Rishikesh -->
         <div class="destination-card">
             <div class="rating">
-                <i class="fas fa-star"></i> 4.9
+                <i class="fas fa-star"></i> 4.8
             </div>
-            <div class="destination-badge">Paradise on Earth</div>
-            <img src="{{ url_for('static', filename='images/kashmir.jpg') }}" alt="Kashmir Valley">
+
+            <div class="destination-badge">Yoga Capital of the World</div>
+
+            <img src="{{ url_for('static', filename='images/rishikesh.jpg') }}" alt="Rishikesh">
+
             <div class="card-content">
-                <h3>Kashmir Valley</h3>
-                <p class="location"><i class="fas fa-map-pin"></i> Jammu & Kashmir</p>
+                <h3>Rishikesh</h3>
+
+                <p class="location">
+                    <i class="fas fa-map-pin"></i> Uttarakhand
+                </p>
+
                 <div class="price">
                     <i class="fas fa-tag"></i>
                     <span>₹3,299 <small>/day</small></span>
                 </div>
+
                 <div class="features">
-                    <span><i class="fas fa-car"></i> SUV</span>
-                    <span><i class="fas fa-ship"></i> Houseboat</span>
-                    <span><i class="fas fa-utensils"></i> Wazwan</span>
+                    <span><i class="fas fa-water"></i> River Rafting</span>
+                    <span><i class="fas fa-campground"></i> Riverside Camp</span>
+                    <span><i class="fas fa-om"></i> Yoga Retreat</span>
                 </div>
-                <button class="book-btn" data-destination="Kashmir">
+
+                <button class="book-btn" data-destination="Rishikesh">
                     <i class="fas fa-calendar-check"></i> Book Now
                 </button>
             </div>

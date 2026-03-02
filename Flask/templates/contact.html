@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Contact Us - GoHigh Rentals</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<section class="contact-section">
+    <h2>Contact Us</h2>
+
+    <div class="contact-container">
+        <form method="POST" action="{{ url_for('contact') }}" class="contact-form">
+
+            <input type="text" name="name" placeholder="Your Name" required>
+
+            <input type="email" name="email" placeholder="Your Email" required>
+
+            <textarea name="message" placeholder="Your Message" rows="5" required></textarea>
+
+            <button type="submit">Send Message</button>
+
+        </form>
+
+        <div class="contact-info">
+            <h3>Get In Touch</h3>
+            <p>📍 Shimla, Himachal Pradesh</p>
+            <p>📞 +91 9876543210</p>
+            <p>✉ support@gohigh.com</p>
+        </div>
+    </div>
+</section>
+
+</body>
+</html>

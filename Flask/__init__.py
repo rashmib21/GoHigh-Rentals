@@ -180,6 +180,31 @@ def create_app():
         else:
             return redirect('/login')
 
+    @app.route('/contact', methods=['GET', 'POST'])
+    def contact():
+        if request.method == 'POST':
+            name = request.form['name']
+            email = request.form['email']
+            message = request.form['message']
+
+            connection = get_db_connection()
+            cursor = connection.cursor()
+
+            cursor.execute(
+                "INSERT INTO contact (name, email, message) VALUES (%s, %s, %s)",
+                (name, email, message)
+            )
+
+            connection.commit()
+            cursor.close()
+            connection.close()
+
+            return "Message Sent Successfully!"
+
+        return render_template("contact.html")  
+
+    @app.route('/logout', methods=['GET','POST'])          
+
     return app
 
 
