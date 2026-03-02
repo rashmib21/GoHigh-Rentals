@@ -203,7 +203,11 @@ def create_app():
 
         return render_template("contact.html")  
 
-    @app.route('/logout', methods=['GET','POST'])          
+    @app.route('/logout', methods=['GET','POST'])
+    def logout():
+        session.pop('user',None) #Remove user from session
+        return redirect(url_for('index'))
+
 
     return app
 
