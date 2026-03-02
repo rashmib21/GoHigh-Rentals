@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, request, redirect, session, url_for
+from flask import Flask, render_template, request, redirect, session, url_for, flash
 from dotenv import load_dotenv
 import mysql.connector
 import re
@@ -163,7 +163,43 @@ def create_app():
             else:
                 return "Invalid email or password"
 
-        return render_template('login.html')   
+        return render_template('login.html') 
+
+    @app.route('/profile', methods=['GET', 'POST'])
+    def profile():
+        if 'user_id' not in session:
+            return redirect(url_for('login'))
+
+        connection = get_db_connection()
+        cursor = connection.cursor(dictionary=True)
+
+        if request.method == 'POST':
+            name = request.form['name']
+            phone = request.form['phone']
+            password = request.form['password']
+
+            if password:
+                cursor.execute("""
+                    UPDATE user 
+                    SET name=%s, phone=%s, password=%s 
+                    WHERE user_id=%s
+                """, (name, phone, password, session['user_id']))
+            else:
+                cursor.execute("""
+                    UPDATE user 
+                    SET name=%s, phone=%s 
+                    WHERE user_id=%s
+                """, (name, phone, session['user_id']))
+
+            connection.commit()
+
+        cursor.execute("SELECT * FROM users WHERE user_id=%s", (session['user_id'],))
+        user = cursor.fetchone()
+
+        cursor.close()
+        connection.close()
+
+        return render_template('profile.html', user=user)      
 
 
     # @app.route('/dashboard')
@@ -199,9 +235,9 @@ def create_app():
             cursor.close()
             connection.close()
 
-            return "Message Sent Successfully!"
+            flash("Message Sent Successfully!")  
 
-        return render_template("contact.html")  
+        return render_template("index.html")  
 
     @app.route('/logout', methods=['GET','POST'])
     def logout():

@@ -719,3 +719,12 @@ footer {
 .welcome-section span {
     color: #1e3c72;
 }
+
+
+.success-message {
+    background: #d4edda;
+    color: #155724;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+}

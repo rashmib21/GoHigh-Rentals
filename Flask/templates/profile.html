@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>My Profile - GoHigh Rentals</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="profile-container">
+
+    <h2>My Profile</h2>
+
+    <div class="profile-card">
+
+        <form method="POST" action="{{ url_for('profile') }}">
+
+            <label>Full Name</label>
+            <input type="text" name="name" value="{{ user.name }}" required>
+
+            <label>Email</label>
+            <input type="email" value="{{ user.email }}" disabled>
+
+            <label>Phone</label>
+            <input type="text" name="phone" value="{{ user.phone }}" required>
+
+            <label>Change Password</label>
+            <input type="password" name="password" placeholder="Enter new password">
+
+            <button type="submit">Update Profile</button>
+
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html>
