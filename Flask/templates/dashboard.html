@@ -11,7 +11,7 @@
 </head>
 <body class="dashboard-page">
 
-<header>
+<!-- <header>
     <div class="logo-container">
         <img src="{{ url_for('static', filename='images/logo.png') }}" 
              alt="GoHigh Rentals Logo">
@@ -26,40 +26,135 @@
         <a href="/profile"><i class="fas fa-user"></i> Profile</a>
         <a href="{{ url_for('logout') }}" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>    
     </nav>
+</header> -->
+
+<header class="navbar">
+
+<div class="logo">
+
+<img src="{{ url_for('static', filename='images/logo.png') }}">
+
+<span class="brand">
+GoHigh <b>Rentals</b>
+</span>
+
+</div>
+
+<nav>
+
+<a href="/dashboard">Dashboard</a>
+<a href="#">My Bookings</a>
+<a href="#destinations">Destinations</a>
+<a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+
+</nav>
+
 </header>
 
-<section class="dashboard-header">
-    <h1>HIMALAYAN ADVENTURE</h1>
+
+<section class="dashboard-hero">
+
+    <div class="hero-inner">
+
+        <div class="hero-text">
+            <h1>Welcome back, {{ user_name }}!</h1>
+            <p>Ready for your next Himalayan adventure? 🏔️</p>
+        </div>
+
+        <a href="#" class="new-booking-btn">
+            <i class="fas fa-plus"></i> New Booking
+        </a>
+
+    </div>
+
 </section>
 
-<section class="welcome-section">
-    <h1>Welcome back, <span>{{ user }}</span>!</h1>
-    <p>Ready for your next Himalayan adventure?🏔️</p>
-</section>
+
 
 <!-- Stats Section -->
-<div class="stats-section">
+<div class="stats-wrapper">
+
     <div class="stat-card">
-        <i class="fas fa-route"></i>
-        <h3>25+</h3>
-        <p>Destinations</p>
+        <div class="stat-icon blue"><i class="fas fa-briefcase"></i></div>
+        <div>
+            <p>Total Trips</p>
+            <h3>{{ total_trips }}</h3>
+        </div>
     </div>
+
     <div class="stat-card">
-        <i class="fas fa-users"></i>
-        <h3>10k+</h3>
-        <p>Happy Travelers</p>
+        <div class="stat-icon green"><i class="fas fa-check"></i></div>
+        <div>
+            <p>Confirmed</p>
+            <h3>{{ confirmed }}</h3>
+        </div>
     </div>
+
     <div class="stat-card">
-        <i class="fas fa-car"></i>
-        <h3>500+</h3>
-        <p>Vehicles</p>
+        <div class="stat-icon red"><i class="fas fa-times"></i></div>
+        <div>
+            <p>Cancelled</p>
+            <h3>{{ cancelled }}</h3>
+        </div>
     </div>
+
     <div class="stat-card">
-        <i class="fas fa-star"></i>
-        <h3>4.8</h3>
-        <p>Rating</p>
+        <div class="stat-icon orange"><i class="fas fa-rupee-sign"></i></div>
+        <div>
+            <p>Total Spent</p>
+            <h3>₹{{ total_spent }}</h3>
+        </div>
     </div>
+
 </div>
+
+<!-- My Bookings Section -->
+<section class="my-bookings" id="bookings">
+
+<h2>📋 My Recent Bookings</h2>
+
+<div class="booking-table">
+
+<table>
+
+    <thead>
+        <tr>
+            <th>Destination</th>
+            <th>Vehicle</th>
+            <th>Travel Date</th>
+            <th>Status</th>
+            <th>Amount</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        {% for booking in bookings %}
+
+            <tr>
+                <td>{{ booking.destination_name }}</td>
+                <td>{{ booking.vehicle_name }}</td>
+                <td>{{ booking.travel_date }}</td>
+
+                <td>
+                <span class="status {{ booking.booking_status|lower }}">
+                {{ booking.booking_status }}
+                </span>
+                </td>
+
+        <td>₹{{ "{:,.0f}".format(booking.total_amount) if booking.total_amount else "0" }}</td>
+
+            </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+</div>
+
+</section>
 
 <!-- Destinations Section -->
 <section class="destinations" id="destinations">
@@ -86,8 +181,13 @@
                     <span><i class="fas fa-campground"></i> Solang Valley</span>
                     <span><i class="fas fa-utensils"></i> Local Food</span>
                 </div>
-                <button class="book-btn" data-destination="Manali">
-                    <i class="fas fa-calendar-check"></i> Book Now
+                <form action="{{ url_for('booking.create_booking') }}" method="POST">
+
+                    <button type="submit" class="book-btn">
+                    Book Now
+                    </button>
+
+                </form>
                 </button>
             </div>
         </div>

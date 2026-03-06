@@ -5,6 +5,8 @@ import mysql.connector
 import re
 from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
+from booking import booking_bp
+
 
 
 
@@ -14,6 +16,9 @@ def create_app():
     app = Flask(__name__)
     app.secret_key = os.getenv("SECRET_KEY")
     # print("Secret Key:", app.secret_key)
+
+    # Register blueprint
+    app.register_blueprint(booking_bp)
 
     # Database connection function
     def get_db_connection():
@@ -202,13 +207,7 @@ def create_app():
         return render_template('profile.html', user=user)      
 
 
-    # @app.route('/dashboard')
-    # def dashboard():
-    #     print("Session In Dashboard:", session)
-    #     if 'user_id' in session:
-    #         return f"Welcome {session['user_name']}!"
-    #     else:
-    #         return redirect('/login')  
+ 
     @app.route('/dashboard')
     def dashboard():
         if 'user_id' in session:
@@ -241,8 +240,11 @@ def create_app():
 
     @app.route('/logout', methods=['GET','POST'])
     def logout():
-        session.pop('user',None) #Remove user from session
+        session.pop('user',None)
+        session.pop('user_name', None) #Remove user from session
         return redirect(url_for('index'))
+
+
 
 
     return app

@@ -1,34 +1,110 @@
-@app.route('/dashboard')
+from flask import Blueprint, render_template, request, redirect, session
+from db import get_db_connection
+from datetime import date
+
+booking_bp = Blueprint("booking", __name__)
+
+# Dashboard Route
+@booking_bp.route("/dashboard")
 def dashboard():
-	conn=get_db_connection()
-	cursor=conn.cursor()
 
-	#number of trips 
-	cursor.execute("SELECT COUNT(*) FROM bookings")
-	total_trips=cursor.fetchone()[0]
+	if 'user_id' not in session:
+		return redirect('/login')
 
-	#Confirmed 
-	cursor.execute("SELECT COUNT(*) FROM bookings WHERE status='Confirmed'")
-	confirmed=cursor.fetchone()[0]
+	user_name = session.get('user_name')
 
-	#Cancelled 
-	cursor.execute("SELECT COUNT(*) FROM bookings WHERE status='Cancelled'")
-	cancelled=cursor.fetchone()[0]
 
-	#Total Spent Money
-	cursor.execute("SELECT SUM(amount)FROM bookings WHERE status='Confirmed'")
-	total_spent=cursor.fetchone()[0]
+	conn = get_db_connection()
+	cursor = conn.cursor(dictionary=True)
 
-	#Recent bookings
-	cursor.execute("SELECT destination, vehicle, travel_date, status, amount from bookings ORDER By travel_date DESC LIMIT 5")
-	bookings=cursor.fetchall()
+	# Total trips
+	cursor.execute("""
+	SELECT COUNT(*) AS total_trips
+	FROM booking
+	""")
+	result = cursor.fetchone()
+	total_trips = result['total_trips']
+
+	# Confirmed bookings
+	cursor.execute("""
+	SELECT COUNT(*) AS confirmed
+	FROM booking
+	WHERE booking_status='Confirmed'
+	""")
+	confirmed = cursor.fetchone()['confirmed']
+
+	# Cancelled bookings
+	cursor.execute("""
+	SELECT COUNT(*) AS cancelled
+	FROM booking
+	WHERE booking_status='Cancelled'
+	""")
+	cancelled = cursor.fetchone()['cancelled']
+
+	# Total spent
+	cursor.execute("""
+	SELECT COALESCE(SUM(p.total_amount),0) AS total_spent
+	FROM booking b
+	LEFT JOIN pricing p ON b.booking_id = p.booking_id
+	WHERE b.booking_status='Confirmed'
+	""")
+	total_spent = cursor.fetchone()['total_spent']
+
+	# Recent bookings
+	cursor.execute("""
+	SELECT 
+	d.destination_name,
+	v.vehicle_name,
+	b.travel_date,
+	b.booking_status,
+	p.total_amount
+	FROM booking b
+	JOIN destination d ON b.destination_id = d.destination_id
+	JOIN vehicle v ON b.vehicle_id = v.vehicle_id
+	LEFT JOIN pricing p ON b.booking_id = p.booking_id
+	ORDER BY b.travel_date DESC
+	LIMIT 5
+	""")
+
+	bookings = cursor.fetchall()
 
 	conn.close()
 
-	return render_template('dashboard.html', 
-		total_trips=total_trips,
-		confirmed=confirmed,
-		cancelled=cancelled,
-		total_spent=total_spent,
-		bookings=bookings
-		)
+	return render_template(
+	    "dashboard.html",
+	    user_name=user_name,
+	    total_trips=total_trips,
+	    confirmed=confirmed,
+	    cancelled=cancelled,
+	    total_spent=total_spent,
+	    bookings=bookings
+	)
+
+
+# Create Booking Route
+@booking_bp.route("/create_booking", methods=["POST"])
+def create_booking():
+
+	if 'user_id' not in session:
+	    return redirect('/login')
+
+	destination_id = request.form['destination_id']
+	vehicle_id = request.form['vehicle_id']
+	travel_date = request.form['travel_date']
+
+	booking_date = date.today()
+	user_id = session['user_id']
+
+	conn = get_db_connection()
+	cursor = conn.cursor()
+
+	cursor.execute("""
+	    INSERT INTO booking
+	    (booking_date, travel_date, booking_status, user_id, vehicle_id, destination_id)
+	    VALUES (%s,%s,%s,%s,%s,%s)
+	""",(booking_date, travel_date, 'Pending', user_id, vehicle_id, destination_id))
+
+	conn.commit()
+	conn.close()
+
+	return redirect('/dashboard')
