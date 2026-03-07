@@ -108,3 +108,23 @@ def create_booking():
 	conn.close()
 
 	return redirect('/dashboard')
+
+
+#=============================================================
+@booking_bp.route('/new_booking')
+def create_booking_page():
+	conn=get_db_connection()
+	cursor=conn.cursor(dictionary=True)
+
+	cursor.execute("SELECT * FROM destination")
+	destinations=cursor.fetchall()
+
+	cursor.execute("SELECT * FROM vehicle")
+	vehicles=cursor.fetchall()
+
+	conn.close()
+
+	return render_template('new_booking.html', 
+		destinations=destinations,
+		vehicles=vehicles)
+
