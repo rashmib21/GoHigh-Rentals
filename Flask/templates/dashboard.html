@@ -61,7 +61,7 @@ GoHigh <b>Rentals</b>
             <p>Ready for your next Himalayan adventure? 🏔️</p>
         </div>
 
-        <a href="#" class="new-booking-btn">
+        <a href="{{ url_for('booking.create_booking_page') }}" class="new-booking-btn">
             <i class="fas fa-plus"></i> New Booking
         </a>
 
@@ -181,12 +181,9 @@ GoHigh <b>Rentals</b>
                     <span><i class="fas fa-campground"></i> Solang Valley</span>
                     <span><i class="fas fa-utensils"></i> Local Food</span>
                 </div>
-                <form action="{{ url_for('booking.create_booking') }}" method="POST">
-
-                    <button type="submit" class="book-btn">
-                    Book Now
-                    </button>
-
+                <form action="{{ url_for('booking.create_booking_page') }}" method="GET">
+                    <input type="hidden" name="destination_id" value="2">
+                    <button class="book-btn">Book Now</button>
                 </form>
                 </button>
             </div>
@@ -211,9 +208,10 @@ GoHigh <b>Rentals</b>
                     <span><i class="fas fa-campground"></i> Nubra Valley</span>
                     <span><i class="fas fa-map"></i> Pangong Lake</span>
                 </div>
-                <button class="book-btn" data-destination="Leh">
-                    <i class="fas fa-calendar-check"></i> Book Now
-                </button>
+               <form action="{{ url_for('booking.create_booking_page') }}" method="GET">
+                    <input type="hidden" name="destination_id" value="15">
+                    <button class="book-btn">Book Now</button>
+                </form>
             </div>
         </div>
 
@@ -236,9 +234,10 @@ GoHigh <b>Rentals</b>
                     <span><i class="fas fa-hotel"></i> The Ridge</span>
                     <span><i class="fas fa-utensils"></i> Kufri</span>
                 </div>
-                <button class="book-btn" data-destination="Shimla">
-                    <i class="fas fa-calendar-check"></i> Book Now
-                </button>
+                <form action="{{ url_for('booking.create_booking_page') }}" method="GET">
+                    <input type="hidden" name="destination_id" value="1">
+                    <button class="book-btn">Book Now</button>
+                </form>
             </div>
         </div>
 
@@ -261,9 +260,10 @@ GoHigh <b>Rentals</b>
                     <span><i class="fas fa-campground"></i> Camping</span>
                     <span><i class="fa-solid fa-cable-car"></i>Cable Car</span>
                 </div>
-                <button class="book-btn" data-destination="Auli">
-                    <i class="fas fa-calendar-check"></i> Book Now
-                </button>
+                <form action="{{ url_for('booking.create_booking_page') }}" method="GET">
+                    <input type="hidden" name="destination_id" value="14">
+                    <button class="book-btn">Book Now</button>
+                </form>
             </div>
         </div>
 
@@ -286,9 +286,10 @@ GoHigh <b>Rentals</b>
                     <span><i class="fas fa-campground"></i> Chandratal</span>
                     <span><i class="fas fa-map"></i> Pin Valley</span>
                 </div>
-                <button class="book-btn" data-destination="Spiti">
-                    <i class="fas fa-calendar-check"></i> Book Now
-                </button>
+                <form action="{{ url_for('booking.create_booking_page') }}" method="GET">
+                    <input type="hidden" name="destination_id" value="13">
+                    <button class="book-btn">Book Now</button>
+                </form>
             </div>
         </div>
 
@@ -320,9 +321,10 @@ GoHigh <b>Rentals</b>
                     <span><i class="fas fa-om"></i> Yoga Retreat</span>
                 </div>
 
-                <button class="book-btn" data-destination="Rishikesh">
-                    <i class="fas fa-calendar-check"></i> Book Now
-                </button>
+                <form action="{{ url_for('booking.create_booking_page') }}" method="GET">
+                    <input type="hidden" name="destination_id" value="12">
+                    <button class="book-btn">Book Now</button>
+                </form>
             </div>
         </div>
 
@@ -345,9 +347,10 @@ GoHigh <b>Rentals</b>
                     <span><i class="fas fa-mountain"></i> Triund</span>
                     <span><i class="fas fa-utensils"></i> Tibetan Food</span>
                 </div>
-                <button class="book-btn" data-destination="Dharamshala">
-                    <i class="fas fa-calendar-check"></i> Book Now
-                </button>
+                <form action="{{ url_for('booking.create_booking_page') }}" method="GET">
+                    <input type="hidden" name="destination_id" value="3">
+                    <button class="book-btn">Book Now</button>
+                </form>
             </div>
         </div>
 
@@ -370,9 +373,10 @@ GoHigh <b>Rentals</b>
                     <span><i class="fas fa-mountain"></i> Khajjiar</span>
                     <span><i class="fas fa-utensils"></i> Local Food</span>
                 </div>
-                <button class="book-btn" data-destination="Dalhousie">
-                    <i class="fas fa-calendar-check"></i> Book Now
-                </button>
+                <form action="{{ url_for('booking.create_booking_page') }}" method="GET">
+                    <input type="hidden" name="destination_id" value="11">
+                    <button class="book-btn">Book Now</button>
+                </form>
             </div>
         </div>
 
@@ -433,20 +437,20 @@ GoHigh <b>Rentals</b>
     });
 
     // Book button animation
-    document.querySelectorAll('.book-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const destination = this.getAttribute('data-destination');
-            const originalText = this.innerHTML;
-            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Booking...';
-            this.disabled = true;
+    // document.querySelectorAll('.book-btn').forEach(button => {
+    //     button.addEventListener('click', function() {
+    //         const destination = this.getAttribute('data-destination');
+    //         const originalText = this.innerHTML;
+    //         this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Booking...';
+    //         this.disabled = true;
             
-            setTimeout(() => {
-                alert(`✨ Booking initiated for ${destination}! ✨\nOur team will contact you shortly.`);
-                this.innerHTML = originalText;
-                this.disabled = false;
-            }, 1500);
-        });
-    });
+    //         setTimeout(() => {
+    //             alert(`✨ Booking initiated for ${destination}! ✨\nOur team will contact you shortly.`);
+    //             this.innerHTML = originalText;
+    //             this.disabled = false;
+    //         }, 1500);
+    //     });
+    // });
 
     // Region filter functionality
     document.querySelectorAll('.region-tab').forEach(tab => {

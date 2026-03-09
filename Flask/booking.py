@@ -85,46 +85,47 @@ def dashboard():
 @booking_bp.route("/create_booking", methods=["POST"])
 def create_booking():
 
-	if 'user_id' not in session:
-	    return redirect('/login')
+    destination_id = request.form["destination_id"]
+    vehicle_id = request.form["vehicle_id"]
+    travel_date = request.form["travel_date"]
 
-	destination_id = request.form['destination_id']
-	vehicle_id = request.form['vehicle_id']
-	travel_date = request.form['travel_date']
+    user_id = session["user_id"]
 
-	booking_date = date.today()
-	user_id = session['user_id']
+    conn = get_db_connection()
+    cursor = conn.cursor()
 
-	conn = get_db_connection()
-	cursor = conn.cursor()
+    cursor.execute("""
+        INSERT INTO bookings
+        (destination_id, vehicle_id, travel_date, booking_status, user_id)
+        VALUES (%s,%s,%s,'Pending',%s)
+    """,(destination_id, vehicle_id, travel_date, user_id))
 
-	cursor.execute("""
-	    INSERT INTO booking
-	    (booking_date, travel_date, booking_status, user_id, vehicle_id, destination_id)
-	    VALUES (%s,%s,%s,%s,%s,%s)
-	""",(booking_date, travel_date, 'Pending', user_id, vehicle_id, destination_id))
+    conn.commit()
+    conn.close()
 
-	conn.commit()
-	conn.close()
-
-	return redirect('/dashboard')
+    return redirect("/dashboard")
 
 
-#=============================================================
-@booking_bp.route('/new_booking')
+#========================Create New booking of book now buttons=====================================
+@booking_bp.route("/new_booking")
 def create_booking_page():
-	conn=get_db_connection()
-	cursor=conn.cursor(dictionary=True)
 
-	cursor.execute("SELECT * FROM destination")
-	destinations=cursor.fetchall()
+    selected_destination_id = request.args.get("destination_id")
 
-	cursor.execute("SELECT * FROM vehicle")
-	vehicles=cursor.fetchall()
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
 
-	conn.close()
+    cursor.execute("SELECT * FROM destination")
+    destinations = cursor.fetchall()
 
-	return render_template('new_booking.html', 
-		destinations=destinations,
-		vehicles=vehicles)
+    cursor.execute("SELECT * FROM vehicle")
+    vehicles = cursor.fetchall()
 
+    conn.close()
+
+    return render_template(
+        "new_booking.html",
+        destinations=destinations,
+        vehicles=vehicles,
+        selected_destination_id=selected_destination_id
+    )

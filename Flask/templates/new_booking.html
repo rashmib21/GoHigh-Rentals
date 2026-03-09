@@ -1,1 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>New Booking</title>
+
+<style>
+
+body{
+font-family:'Montserrat',sans-serif;
+background:linear-gradient(135deg,#667eea,#764ba2);
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+}
+
+.booking-container{
+width:420px;
+background:white;
+padding:40px;
+border-radius:15px;
+box-shadow:0 15px 50px rgba(0,0,0,0.2);
+}
+
+.booking-container h2{
+text-align:center;
+margin-bottom:25px;
+}
+
+label{
+font-weight:600;
+display:block;
+margin-top:15px;
+}
+
+select,input{
+width:100%;
+padding:12px;
+margin-top:6px;
+border-radius:8px;
+border:1px solid #ddd;
+font-size:14px;
+}
+
+.book-btn{
+width:100%;
+margin-top:25px;
+padding:14px;
+border:none;
+border-radius:8px;
+background:#f05454;
+color:white;
+font-weight:600;
+cursor:pointer;
+}
+
+.book-btn:hover{
+background:#d84545;
+}
+
+.back-link{
+display:block;
+text-align:center;
+margin-top:15px;
+text-decoration:none;
+color:#666;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="booking-container">
+
 <h2>Create Booking</h2>
+
+<form action="{{ url_for('booking.create_booking') }}" method="POST">
+
+<label>Destination</label>
+
+<select name="destination_id">
+
+{% for d in destinations %}
+
+<option value="{{ d.destination_id }}"
+{% if d.destination_id|string == selected_destination_id %} selected {% endif %}>
+
+{{ d.destination_name }}
+
+</option>
+
+{% endfor %}
+
+</select>
+
+
+<label>Vehicle</label>
+
+<select name="vehicle_id" required>
+
+<option value="">Select Vehicle</option>
+
+{% for v in vehicles %}
+<option value="{{ v.vehicle_id }}">
+{{ v.vehicle_name }}
+</option>
+{% endfor %}
+
+</select>
+
+
+<label>Travel Date</label>
+
+<input type="date" name="travel_date" min="{{ today }}" required>
+
+
+<button class="book-btn" type="submit">
+Book Now
+</button>
+
+</form>
+
+<a href="/dashboard" class="back-link">← Back to Dashboard</a>
+
+</div>
+
+</body>
+</html>
