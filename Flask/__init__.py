@@ -77,9 +77,13 @@ def create_app():
 
             
             name = request.form['name']
+            print("Name: ", name)
             email = request.form['email']
+            print("Email: ", email)
             phone_no = request.form['phone_no']
+            print("Phone Number: ", phone_no)
             password = request.form['password']
+            print("Password: ", password)
 
         
             if not name or not email or not phone_no or not password:

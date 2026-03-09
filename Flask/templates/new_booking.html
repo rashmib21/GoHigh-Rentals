@@ -12,6 +12,7 @@ height:100vh;
 display:flex;
 justify-content:center;
 align-items:center;
+margin:0;
 }
 
 .booking-container{
@@ -82,10 +83,15 @@ color:#666;
 
 <select name="destination_id">
 
+<option value="">Select Destination</option>
+
 {% for d in destinations %}
 
 <option value="{{ d.destination_id }}"
-{% if d.destination_id|string == selected_destination_id %} selected {% endif %}>
+{% if selected_destination_id and d.destination_id|string == selected_destination_id|string %}
+selected
+{% endif %}
+>
 
 {{ d.destination_name }}
 
@@ -103,9 +109,13 @@ color:#666;
 <option value="">Select Vehicle</option>
 
 {% for v in vehicles %}
+
 <option value="{{ v.vehicle_id }}">
+
 {{ v.vehicle_name }}
+
 </option>
+
 {% endfor %}
 
 </select>
@@ -114,7 +124,6 @@ color:#666;
 <label>Travel Date</label>
 
 <input type="date" name="travel_date" min="{{ today }}" required>
-
 
 <button class="book-btn" type="submit">
 Book Now

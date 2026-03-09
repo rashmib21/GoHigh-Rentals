@@ -82,35 +82,59 @@ def dashboard():
 
 
 # Create Booking Route
+from flask import url_for
+
 @booking_bp.route("/create_booking", methods=["POST"])
 def create_booking():
 
-    destination_id = request.form["destination_id"]
-    vehicle_id = request.form["vehicle_id"]
-    travel_date = request.form["travel_date"]
+    if "user_id" not in session:
+        return redirect("/login")
+
+    destination_id = request.form.get("destination_id")
+    vehicle_id = request.form.get("vehicle_id")
+    travel_date = request.form.get("travel_date")
 
     user_id = session["user_id"]
 
     conn = get_db_connection()
     cursor = conn.cursor()
 
+    # Insert booking
     cursor.execute("""
-        INSERT INTO bookings
-        (destination_id, vehicle_id, travel_date, booking_status, user_id)
-        VALUES (%s,%s,%s,'Pending',%s)
-    """,(destination_id, vehicle_id, travel_date, user_id))
+    INSERT INTO booking
+    (destination_id, vehicle_id, travel_date, booking_status, user_id, booking_date)
+    VALUES (%s,%s,%s,'Confirmed',%s,%s)
+    """,(destination_id, vehicle_id, travel_date, user_id, date.today()))
+
+    conn.commit()
+
+    booking_id = cursor.lastrowid   # get inserted booking id
+
+    # Example pricing calculation
+    base_amount = 300
+    tax_amount = base_amount * 0.10
+    discount = 0
+    total_amount = base_amount + tax_amount - discount
+
+    # Insert pricing
+    cursor.execute("""
+    INSERT INTO pricing
+    (base_amount, tax_amount, discount, total_amount, pricing_type, booking_id)
+    VALUES (%s,%s,%s,%s,'Distance',%s)
+    """,(base_amount, tax_amount, discount, total_amount, booking_id))
 
     conn.commit()
     conn.close()
 
-    return redirect("/dashboard")
+    # Redirect to bill page
+    return redirect(url_for("booking.show_bill", booking_id=booking_id))
 
 
 #========================Create New booking of book now buttons=====================================
 @booking_bp.route("/new_booking")
 def create_booking_page():
 
-    selected_destination_id = request.args.get("destination_id")
+    destination_id = request.args.get('destination_id', type=int)
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
@@ -127,5 +151,29 @@ def create_booking_page():
         "new_booking.html",
         destinations=destinations,
         vehicles=vehicles,
-        selected_destination_id=selected_destination_id
+        selected_destination_id=str(destination_id) if destination_id else None
     )
+
+
+#==========Generate bill all calculations are displayed here========
+
+@booking_bp.route("/bill/<int:booking_id>")
+def show_bill(booking_id):
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT p.*, b.travel_date, d.destination_name, v.vehicle_name
+        FROM pricing p
+        JOIN booking b ON p.booking_id = b.booking_id
+        JOIN destination d ON b.destination_id = d.destination_id
+        JOIN vehicle v ON b.vehicle_id = v.vehicle_id
+        WHERE p.booking_id=%s
+    """, (booking_id,))
+
+    bill = cursor.fetchone()
+
+    conn.close()
+
+    return render_template("bill.html", bill=bill) 

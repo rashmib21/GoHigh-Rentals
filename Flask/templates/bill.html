@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Booking Invoice</title>
+
+<style>
+
+body{
+    font-family: Arial, sans-serif;
+    background:#f4f6f9;
+    margin:0;
+    padding:0;
+}
+
+/* Invoice container */
+.invoice-container{
+    width:650px;
+    margin:50px auto;
+    background:white;
+    padding:30px;
+    border-radius:10px;
+    box-shadow:0px 5px 15px rgba(0,0,0,0.1);
+}
+
+/* Company name */
+.company{
+    text-align:center;
+    font-size:24px;
+    font-weight:bold;
+    color:#2c3e50;
+}
+
+/* Invoice title */
+.title{
+    text-align:center;
+    margin-top:10px;
+    margin-bottom:25px;
+    font-size:20px;
+    color:#555;
+}
+
+/* Booking details */
+.details{
+    margin-bottom:20px;
+}
+
+.details p{
+    margin:5px 0;
+    font-size:15px;
+}
+
+/* Table */
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:10px;
+}
+
+table th{
+    background:#3498db;
+    color:white;
+    padding:10px;
+    text-align:left;
+}
+
+table td{
+    padding:10px;
+    border-bottom:1px solid #ddd;
+}
+
+/* Total row */
+.total-row{
+    font-weight:bold;
+    background:#f9f9f9;
+}
+
+/* Total amount highlight */
+.total-amount{
+    font-size:20px;
+    color:#27ae60;
+    font-weight:bold;
+    text-align:right;
+    margin-top:10px;
+}
+
+/* Buttons */
+.buttons{
+    text-align:center;
+    margin-top:20px;
+}
+
+.print-btn{
+    padding:10px 20px;
+    background:#3498db;
+    color:white;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+}
+
+.print-btn:hover{
+    background:#2980b9;
+}
+
+/* Print styling */
+@media print{
+    .print-btn{
+        display:none;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="invoice-container">
+
+<div class="company">GoHigh Rental</div>
+<div class="title">Booking Invoice</div>
+
+<div class="details">
+<p><b>Destination:</b> {{ bill.destination_name }}</p>
+<p><b>Vehicle:</b> {{ bill.vehicle_type }}</p>
+<p><b>Travel Date:</b> {{ bill.travel_date }}</p>
+</div>
+
+<table>
+
+<tr>
+<th>Description</th>
+<th>Amount</th>
+</tr>
+
+<tr>
+<td>Base Amount</td>
+<td>₹{{ bill.base_amount }}</td>
+</tr>
+
+<tr>
+<td>Tax</td>
+<td>₹{{ bill.tax_amount }}</td>
+</tr>
+
+<tr>
+<td>Discount</td>
+<td>- ₹{{ bill.discount }}</td>
+</tr>
+
+<tr class="total-row">
+<td>Total Amount</td>
+<td>₹{{ bill.total_amount }}</td>
+</tr>
+
+</table>
+
+<div class="total-amount">
+Amount to Pay: ₹{{ bill.total_amount }}
+</div>
+
+<div class="buttons">
+<button class="print-btn" onclick="window.print()">Print Invoice</button>
+</div>
+
+</div>
+
+</body>
+</html>
