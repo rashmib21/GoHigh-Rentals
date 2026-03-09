@@ -5,7 +5,7 @@ import mysql.connector
 import re
 from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
-from booking import booking_bp
+from .booking import booking_bp
 
 
 
