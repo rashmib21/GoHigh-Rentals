@@ -184,7 +184,7 @@ def show_bill(booking_id):
 
     conn.close()
 
-    return render_template("bill.html", bill=bill) 
+    return render_template("bill.html", bill=bill)
 
 
 #===========Cancel the booking by user==============
