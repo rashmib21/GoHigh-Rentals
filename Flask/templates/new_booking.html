@@ -123,7 +123,15 @@ selected
 
 <label>Travel Date</label>
 
-<input type="date" name="travel_date" min="{{ today }}" required>
+<input type="date" name="travel_date" id="travel_date" required>
+<script>
+    // Set minimum date to tomorrow (today is almost over)
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const minDate = tomorrow.toISOString().split('T')[0];
+    document.getElementById('travel_date').min = minDate;
+</script>
+
 
 <button class="book-btn" type="submit">
 Book Now

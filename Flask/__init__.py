@@ -127,6 +127,7 @@ def create_app():
 
            
             hashed_password = generate_password_hash(password)
+            session.clear()  
 
             # 7️⃣ Insert user
             query = """
@@ -135,6 +136,7 @@ def create_app():
             """
             cursor.execute(query, (name, email, phone_no, hashed_password))
             conn.commit()
+            session.clear()  
 
             session['user_id'] = cursor.lastrowid
             session['user_name'] = name
@@ -178,6 +180,7 @@ def create_app():
                     password_valid = stored_password == password
 
                 if password_valid:
+                    session.clear()
                     session['user_id'] = user['user_id']
                     session['user_name'] = user['name']
                     return redirect('/dashboard')
@@ -187,7 +190,7 @@ def create_app():
 
         return render_template("login.html")
 
-    
+
     @app.route('/profile', methods=['GET', 'POST'])
     def profile():
         if 'user_id' not in session:
@@ -225,13 +228,60 @@ def create_app():
         return render_template('profile.html', user=user)      
 
 
- 
     @app.route('/dashboard')
     def dashboard():
-        if 'user_id' in session:
-            return render_template("dashboard.html", user=session['user_name'])
-        else:
+
+        if 'user_id' not in session:
             return redirect('/login')
+
+        print("LOGGED IN USER ID:", session['user_id'])      
+
+        connection = get_db_connection()
+        cursor = connection.cursor(dictionary=True)
+
+        query = """
+        SELECT 
+            b.booking_id,
+            b.travel_date,
+            b.booking_status,
+            d.destination_name,
+            v.vehicle_name,
+            p.total_amount
+        FROM booking b
+        JOIN destination d ON b.destination_id = d.destination_id
+        JOIN vehicle v ON b.vehicle_id = v.vehicle_id
+        JOIN pricing p ON b.booking_id = p.booking_id
+        WHERE b.user_id = %s
+        """
+
+        cursor.execute(query, (session['user_id'],))
+        bookings = cursor.fetchall()
+
+        # stats based only on that user's bookings
+        total_trips = len(bookings)
+        confirmed = len([b for b in bookings if b['booking_status'] == "Confirmed"])
+        cancelled = len([b for b in bookings if b['booking_status'] == "Cancelled"])
+        total_spent = sum(b['total_amount'] for b in bookings)
+
+        cursor.close()
+        connection.close()
+
+        return render_template(
+            "dashboard.html",
+            user_name=session['user_name'],
+            bookings=bookings,
+            total_trips=total_trips,
+            confirmed=confirmed,
+            cancelled=cancelled,
+            total_spent=total_spent
+        )
+
+    @app.route('/logout', methods=['GET','POST'])
+    def logout():
+        session.pop('user_id',None)
+        session.pop('user_name', None) 
+        return redirect(url_for('index'))
+
 
     @app.route('/contact', methods=['GET', 'POST'])
     def contact():
@@ -244,7 +294,7 @@ def create_app():
             cursor = connection.cursor()
 
             cursor.execute(
-                "INSERT INTO contact (name, email, message) VALUES (%s, %s, %s)",
+                "INSERT INTO contact (name, email, message) VALUES (%s,%s,%s)",
                 (name, email, message)
             )
 
@@ -252,17 +302,11 @@ def create_app():
             cursor.close()
             connection.close()
 
-            flash("Message Sent Successfully!")  
+            flash("Message Sent Successfully!")
 
-        return render_template("index.html")  
+            return redirect(url_for('index'))
 
-    @app.route('/logout', methods=['GET','POST'])
-    def logout():
-        session.pop('user',None)
-        session.pop('user_name', None) #Remove user from session
-        return redirect(url_for('index'))
-
-
+        return redirect(url_for('index'))   
 
 
     return app

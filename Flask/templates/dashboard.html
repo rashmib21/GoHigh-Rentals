@@ -124,32 +124,58 @@ GoHigh <b>Rentals</b>
             <th>Travel Date</th>
             <th>Status</th>
             <th>Amount</th>
+            <th>Action</th>
         </tr>
     </thead>
 
     <tbody>
 
+    {% if bookings %}
+
         {% for booking in bookings %}
+        <tr>
+            <td>{{ booking.destination_name }}</td>
+            <td>{{ booking.vehicle_name }}</td>
+            <td>{{ booking.travel_date }}</td>
 
-            <tr>
-                <td>{{ booking.destination_name }}</td>
-                <td>{{ booking.vehicle_name }}</td>
-                <td>{{ booking.travel_date }}</td>
-
-                <td>
+            <td>
                 <span class="status {{ booking.booking_status|lower }}">
-                {{ booking.booking_status }}
+                    {{ booking.booking_status }}
                 </span>
-                </td>
+            </td>
 
-        <td>₹{{ "{:,.0f}".format(booking.total_amount) if booking.total_amount else "0" }}</td>
+            <td>₹{{ booking.total_amount }}</td>
 
-            </tr>
+            <td>
+                {% if booking.booking_status == 'Confirmed' %}
+                <form action="/cancel_booking/{{ booking.booking_id }}" method="POST">
+                    <button type="submit" class="cancel-btn" 
+                            onclick="return confirm('Are you sure you want to cancel this booking?')">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                </form>
+                {% else %}
+                    —
+                {% endif %}
+            </td>
 
+        </tr>
         {% endfor %}
 
-    </tbody>
+    {% else %}
 
+    <tr>
+        <td colspan="6" style="text-align:center; padding:20px;">
+            🚫 No trips booked yet.<br><br>
+            <a href="{{ url_for('booking.create_booking_page') }}" class="new-booking-btn">
+                Book Your First Trip
+            </a>
+        </td>
+    </tr>
+
+    {% endif %}
+
+    </tbody>
 </table>
 
 </div>
