@@ -117,7 +117,8 @@ def create_app():
                 if existing_user['email'] == email:
                     cursor.close()
                     conn.close()
-                    return "Email already registered!"
+                    flash("Email already registered!", "error")
+                    return render_template('register.html')
 
                 if existing_user['phone_no'] == phone_no:
                     cursor.close()
@@ -144,36 +145,49 @@ def create_app():
             return redirect(url_for('dashboard'))
 
         return render_template('register.html')    
-        
+            
     @app.route('/login', methods=['GET','POST'])
     def login():
         if request.method == 'POST':
             email = request.form['email']
-            print("Username: ",email)
+            print("Username: ", email)
+
             password = request.form['password']
-            print("Password",password)
+            print("Password", password)
 
             conn = get_db_connection()
             cursor = conn.cursor(dictionary=True)
 
-            query = "SELECT * FROM users WHERE email=%s AND password=%s"
-            cursor.execute(query, (email, password))
+            query = "SELECT * FROM users WHERE email=%s"
+            cursor.execute(query, (email,))
 
             user = cursor.fetchone()
-            # print(user)
 
             cursor.close()
             conn.close()
 
             if user:
-                session['user_id'] = user['user_id']   
-                session['user_name'] = user['name']
-                return redirect('/dashboard')
-            else:
-                return "Invalid email or password"
+                stored_password = user['password']
 
-        return render_template('login.html') 
+                # If password is hashed
+                if stored_password.startswith('pbkdf2:') or stored_password.startswith('scrypt:'):
+                    password_valid = check_password_hash(stored_password, password)
 
+                # If password is plain text
+                else:
+                    password_valid = stored_password == password
+
+                if password_valid:
+                    session['user_id'] = user['user_id']
+                    session['user_name'] = user['name']
+                    return redirect('/dashboard')
+
+            flash("Invalid email or password", "error")
+            return render_template("login.html")
+
+        return render_template("login.html")
+
+    
     @app.route('/profile', methods=['GET', 'POST'])
     def profile():
         if 'user_id' not in session:

@@ -16,6 +16,16 @@
     <i class="fas fa-mountain" style="font-size: 3rem; color: #c31432; margin-bottom: 10px;"></i>
     <h2>Start Your Journey</h2>
 
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash-message {{ category }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
     <form method="POST">
         <div style="position: relative;">
             <i class="fas fa-user" style="position: absolute; left: 15px; top: 27px; color: #999;"></i>
