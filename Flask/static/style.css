@@ -1049,3 +1049,356 @@ footer::before {
 
 .stat-icon.teal { background: #d1ecf1; color: #0c5460; }
 .status.completed { background: #d1ecf1; color: #0c5460; }
+
+
+/* ================================================================
+   📱 GOHIGH RENTALS — RESPONSIVE OVERHAUL
+   Replace your existing @media blocks at the bottom of style.css
+   with this entire block
+   ================================================================ */
+
+/* ================================================================
+   TABLET — 992px and below
+   ================================================================ */
+@media (max-width: 992px) {
+
+  /* Stats: 3 columns then wraps */
+  .stats-wrapper, .stats-section {
+    grid-template-columns: repeat(3, 1fr);
+    width: 95%;
+    gap: 16px;
+  }
+
+  /* About & Contact side-by-side → stack */
+  .about-container,
+  .contact-container {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+
+  /* Features: 2 columns */
+  .features {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 50px 5%;
+    gap: 20px;
+  }
+
+  /* Destination grid: 2 columns */
+  .destination-container {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 0 3%;
+    gap: 20px;
+  }
+
+  /* Hero text smaller */
+  .hero-content h1 { font-size: 3.5rem; }
+  .hero-text h1    { font-size: 2.2rem; }
+}
+
+/* ================================================================
+   SMALL TABLET / LARGE MOBILE — 768px and below
+   ================================================================ */
+@media (max-width: 768px) {
+
+  body { padding-top: 60px; }
+
+  /* ── Navbar ── */
+  header, header.navbar {
+    height: auto;
+    flex-direction: column;
+    padding: 12px 5%;
+    gap: 10px;
+  }
+
+  .nav-menu, header.navbar nav {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  header.navbar nav a { font-size: .82rem; }
+
+  /* ── Dashboard Hero ── */
+  .hero-inner {
+    flex-direction: column;
+    text-align: center;
+    padding: 30px 0;
+    gap: 18px;
+  }
+
+  .hero-text h1 { font-size: 1.8rem; }
+  .hero-text p  { font-size: .95rem; }
+
+  .new-booking-btn {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+
+  /* ── Stats: 2 columns ── */
+  .stats-wrapper, .stats-section {
+    grid-template-columns: repeat(2, 1fr);
+    width: 95%;
+    gap: 14px;
+    margin: 28px auto;
+  }
+
+  /* Total Spent spans full width on 2-col grid */
+  .stats-wrapper .stat-card:last-child {
+    grid-column: 1 / -1;
+  }
+
+  /* ── Bookings Table: horizontal scroll ── */
+  .my-bookings { width: 95%; margin: 30px auto; }
+  .my-bookings h2 { font-size: 1.5rem; }
+
+  .booking-table {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 14px;
+  }
+
+  .booking-table table { min-width: 560px; }
+
+  .booking-table th,
+  .booking-table td {
+    padding: 12px 14px;
+    font-size: .82rem;
+  }
+
+  /* ── Destinations: 1 column ── */
+  .destination-container {
+    grid-template-columns: 1fr;
+    padding: 0 2%;
+  }
+
+  /* ── Features: 1 column ── */
+  .features {
+    grid-template-columns: 1fr;
+    padding: 40px 5%;
+  }
+
+  /* ── Footer ── */
+  .footer-container {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 28px;
+  }
+
+  /* ── Region tabs ── */
+  .region-tabs { gap: 8px; }
+  .region-tab  { padding: 8px 16px; font-size: .8rem; }
+
+  /* ── Quick booking form ── */
+  .booking-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .booking-form select,
+  .booking-form input[type="date"] {
+    width: 100%;
+    min-width: unset;
+  }
+
+  /* ── Hero content ── */
+  .hero-content h1 { font-size: 2.4rem; }
+  .hero-content p  { font-size: 1.1rem; }
+}
+
+/* ================================================================
+   MOBILE — 600px and below
+   ================================================================ */
+@media (max-width: 600px) {
+
+  /* ── Stats: still 2 columns (looks better than 1) ── */
+  .stats-wrapper, .stats-section {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .stat-card { padding: 18px 14px; gap: 12px; }
+  .stat-card h3 { font-size: 1.6rem; }
+  .stat-card p  { font-size: .68rem; }
+
+  .stat-icon {
+    width: 44px; height: 44px;
+    font-size: 1.1rem; border-radius: 12px;
+  }
+
+  /* ── Auth form ── */
+  .form-box { width: 95%; padding: 32px 22px; }
+  .form-box h2 { font-size: 1.7rem; }
+
+  /* ── Dashboard hero ── */
+  .dashboard-hero { min-height: 240px; }
+  .hero-text h1   { font-size: 1.5rem; }
+
+  /* ── Destinations ── */
+  .destinations h2      { font-size: 1.7rem; }
+  .destination-card img { height: 180px; }
+
+  /* ── Bookings table ── */
+  .booking-table th,
+  .booking-table td {
+    padding: 10px 10px;
+    font-size: .78rem;
+  }
+
+  /* ── Cancel button smaller ── */
+  .cancel-btn {
+    padding: 6px 12px;
+    font-size: .72rem;
+  }
+
+  /* ── Flash message full width on mobile ── */
+  .flash-message {
+    left: 10px;
+    right: 10px;
+    top: 10px;
+    text-align: center;
+    font-size: .85rem;
+  }
+}
+
+/* ================================================================
+   SMALL MOBILE — 480px and below
+   ================================================================ */
+@media (max-width: 480px) {
+
+  /* ── Stats: 2 columns still, no last-child span ── */
+  .stats-wrapper .stat-card:last-child {
+    grid-column: auto;
+  }
+
+  /* ── Navbar compact ── */
+  header.navbar { padding: 10px 4%; }
+  header.navbar nav { gap: 6px; }
+  header.navbar nav a { font-size: .75rem; }
+  .logout-btn { padding: 6px 14px !important; font-size: .75rem !important; }
+
+  .brand { font-size: 1rem; }
+  .logo img { height: 32px; width: 32px; }
+
+  /* ── Section headings ── */
+  .destinations h2  { font-size: 1.5rem; }
+  .my-bookings h2   { font-size: 1.3rem; }
+  .quick-booking h2 { font-size: 1.5rem; }
+  .regional-section h2 { font-size: 1.5rem; }
+
+  /* ── Hero ── */
+  .hero-content h1  { font-size: 1.8rem; }
+  .hero-content p   { font-size: .95rem; margin: 14px 0 28px; }
+  .hero-button      { padding: 14px 36px; font-size: .95rem; }
+
+  /* ── Feature cards ── */
+  .feature-card { padding: 30px 18px; }
+  .feature-card i { font-size: 2.2rem; }
+  .feature-card h3 { font-size: 1.05rem; }
+
+  /* ── Footer ── */
+  footer { padding: 40px 5% 20px; }
+  .footer-bottom { font-size: .75rem; }
+
+  /* ── Scroll to top ── */
+  .scroll-top { bottom: 20px; right: 20px; width: 40px; height: 40px; }
+}
+
+/* ================================================================
+   MOBILE HERO FIX
+   ================================================================ */
+@media (max-width: 600px) {
+
+  /* Fix hero overflow clipping the button */
+  .hero-section {
+    overflow: visible;
+    padding: 80px 20px 120px;  /* extra bottom padding for mountain SVG */
+  }
+
+  /* Fix button being cut off */
+  .hero-content {
+    padding: 0 10px;
+    width: 100%;
+  }
+
+  .hero-button {
+    padding: 14px 30px;
+    font-size: .9rem;
+    width: auto;
+    display: inline-block;
+  }
+
+  /* Fix mountain silhouette ::after clipping content */
+  .hero-section::after {
+    position: absolute;
+    bottom: 0;
+    z-index: 2;
+    pointer-events: none;
+    /* Don't let it overlap the button */
+    height: 120px;
+  }
+
+  /* Ensure content sits above mountain */
+  .hero-content {
+    position: relative;
+    z-index: 3;
+    padding-bottom: 40px;
+  }
+
+  /* Hero heading size */
+  .hero-content h1 { font-size: 2rem; }
+  .hero-content p  { font-size: 1rem; margin: 16px 0 32px; }
+}
+
+@media (max-width: 600px) {
+  .hero-section {
+    padding-top: 100px;  /* push content below fixed navbar */
+  }
+
+  .hero-content h1 {
+    font-size: 1.9rem;
+    line-height: 1.2;
+  }
+}
+
+@media (max-width: 600px) {
+
+  .register-page,
+  .login-page {
+    padding: 20px;
+    align-items: flex-start;
+    padding-top: 80px;
+  }
+
+  .form-box {
+    width: 100%;
+    padding: 32px 20px;
+    border-radius: 20px;
+  }
+
+  /* Fix black background showing */
+  body.register-page,
+  body.login-page {
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+}
+
+
+@media (max-width: 600px) {
+
+  .register-page,
+  .login-page {
+    min-height: 100vh;
+    height: auto;           
+    overflow-y: auto;       
+    overflow-x: hidden;
+    padding: 80px 20px 40px;
+    align-items: flex-start; 
+  }
+
+  .form-box {
+    width: 100%;
+    margin: 0 auto;
+    padding: 32px 20px;
+  }
+}
