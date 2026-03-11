@@ -105,6 +105,23 @@ GoHigh <b>Rentals</b>
     </div>
 
     <div class="stat-card">
+        <div class="stat-icon teal"><i class="fas fa-check-double"></i></div>
+            <div>
+                <p>Completed</p>
+                <h3>{{ completed }}</h3>
+            </div>
+    </div>
+
+
+    <div class="stat-card">
+    <div class="stat-icon teal"><i class="fas fa-check-double"></i></div>
+    <div>
+        <p>Completed</p>
+        <h3>{{ completed }}</h3>
+    </div>
+</div>
+
+    <div class="stat-card">
         <div class="stat-icon red"><i class="fas fa-times"></i></div>
         <div>
             <p>Cancelled</p>
@@ -162,12 +179,14 @@ GoHigh <b>Rentals</b>
 
             <td>
                 {% if booking.booking_status == 'Confirmed' %}
-                <form action="/cancel_booking/{{ booking.booking_id }}" method="POST">
-                    <button type="submit" class="cancel-btn" 
-                            onclick="return confirm('Are you sure you want to cancel this booking?')">
-                        <i class="fas fa-times"></i> Cancel
-                    </button>
-                </form>
+                    <form action="/cancel_booking/{{ booking.booking_id }}" method="POST">
+                        <button type="submit" class="cancel-btn"
+                                onclick="return confirm('Are you sure you want to cancel this booking?')">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                    </form>
+                {% elif booking.booking_status == 'Completed' %}
+                    <span style="color: #0c5460;">✅ Done</span>
                 {% else %}
                     —
                 {% endif %}

@@ -136,7 +136,7 @@ def create_app():
             """
             cursor.execute(query, (name, email, phone_no, hashed_password))
             conn.commit()
-            
+
             session['user_id'] = cursor.lastrowid
             session['user_name'] = name
 
@@ -239,11 +239,21 @@ def create_app():
         if 'user_id' not in session:
             return redirect('/login')
 
-        print("LOGGED IN USER ID:", session['user_id'])      
-
         connection = get_db_connection()
         cursor = connection.cursor(dictionary=True)
 
+        # Update ALL users' past confirmed bookings globally
+        today = date.today()
+        
+        cursor.execute("""
+            UPDATE booking 
+            SET booking_status = 'Completed' 
+            WHERE booking_status = 'Confirmed' 
+            AND travel_date <= %s
+        """, (today,))
+        connection.commit()
+
+        # Now fetch this user's bookings (already updated)
         query = """
         SELECT 
             b.booking_id,
@@ -258,33 +268,14 @@ def create_app():
         JOIN pricing p ON b.booking_id = p.booking_id
         WHERE b.user_id = %s
         """
-
         cursor.execute(query, (session['user_id'],))
         bookings = cursor.fetchall()
 
-        # Auto-update completed bookings
-        today = date.today()
-        for booking in bookings:
-            travel_date = booking['travel_date']
-
-            # Convert datetime to date if needed
-            if hasattr(travel_date, 'date'):
-                travel_date = travel_date.date()
-
-            if travel_date < today and booking['booking_status'] == 'Confirmed':
-                cursor.execute("""
-                    UPDATE booking SET booking_status = 'Completed' 
-                    WHERE booking_id = %s
-                """, (booking['booking_id'],))
-                booking['booking_status'] = 'Completed'  # update in memory too
-
-        connection.commit()
-
-        # Stats AFTER updating statuses
+        # Stats AFTER updating
         total_trips = len(bookings)
         confirmed  = len([b for b in bookings if b['booking_status'] == 'Confirmed'])
         cancelled  = len([b for b in bookings if b['booking_status'] == 'Cancelled'])
-        completed  = len([b for b in bookings if b['booking_status'] == 'Completed'])
+        completed   = len([b for b in bookings if b['booking_status'] == 'Completed'])  
         total_spent = sum(b['total_amount'] for b in bookings)
 
         cursor.close()
@@ -300,7 +291,6 @@ def create_app():
             completed=completed,
             total_spent=total_spent
         )
-
 
     @app.route('/logout', methods=['GET','POST'])
     def logout():
