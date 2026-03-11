@@ -40,6 +40,7 @@ GoHigh <b>Rentals</b>
 
 </div>
 
+
 <nav>
 
 <a href="/dashboard">Dashboard</a>
@@ -50,6 +51,17 @@ GoHigh <b>Rentals</b>
 </nav>
 
 </header>
+<!-- FLASH MESSAGE  -->
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="flash-message {{ category }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
 
 
 <section class="dashboard-hero">
@@ -68,6 +80,8 @@ GoHigh <b>Rentals</b>
     </div>
 
 </section>
+
+
 
 
 
@@ -448,6 +462,11 @@ GoHigh <b>Rentals</b>
 </div>
 
 <script>
+
+    // Auto-remove flash messages after 2 seconds
+document.querySelectorAll('.flash-message').forEach(msg => {
+    setTimeout(() => msg.remove(), 2000);
+});
     // Smooth scroll
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {

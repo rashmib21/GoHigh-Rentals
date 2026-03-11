@@ -136,13 +136,17 @@ def create_app():
             """
             cursor.execute(query, (name, email, phone_no, hashed_password))
             conn.commit()
-            session.clear()  
-
+            
             session['user_id'] = cursor.lastrowid
             session['user_name'] = name
 
             cursor.close()
             conn.close()
+
+            flash("Registration successful!", "success")
+
+            session['user_id'] = cursor.lastrowid
+            session['user_name'] = name
 
             return redirect(url_for('dashboard'))
 
@@ -183,11 +187,13 @@ def create_app():
                     session.clear()
                     session['user_id'] = user['user_id']
                     session['user_name'] = user['name']
-                    return redirect('/dashboard')
+
+                    flash("Login Successfully!", "success")
+                    return redirect('/dashboard')   
 
             flash("Invalid email or password", "error")
             return render_template("login.html")
-
+ 
         return render_template("login.html")
 
 
@@ -206,7 +212,7 @@ def create_app():
 
             if password:
                 cursor.execute("""
-                    UPDATE user 
+                    UPDATE users 
                     SET name=%s, phone=%s, password=%s 
                     WHERE user_id=%s
                 """, (name, phone, password, session['user_id']))
@@ -230,7 +236,6 @@ def create_app():
 
     @app.route('/dashboard')
     def dashboard():
-
         if 'user_id' not in session:
             return redirect('/login')
 
@@ -257,10 +262,29 @@ def create_app():
         cursor.execute(query, (session['user_id'],))
         bookings = cursor.fetchall()
 
-        # stats based only on that user's bookings
+        # Auto-update completed bookings
+        today = date.today()
+        for booking in bookings:
+            travel_date = booking['travel_date']
+
+            # Convert datetime to date if needed
+            if hasattr(travel_date, 'date'):
+                travel_date = travel_date.date()
+
+            if travel_date < today and booking['booking_status'] == 'Confirmed':
+                cursor.execute("""
+                    UPDATE booking SET booking_status = 'Completed' 
+                    WHERE booking_id = %s
+                """, (booking['booking_id'],))
+                booking['booking_status'] = 'Completed'  # update in memory too
+
+        connection.commit()
+
+        # Stats AFTER updating statuses
         total_trips = len(bookings)
-        confirmed = len([b for b in bookings if b['booking_status'] == "Confirmed"])
-        cancelled = len([b for b in bookings if b['booking_status'] == "Cancelled"])
+        confirmed  = len([b for b in bookings if b['booking_status'] == 'Confirmed'])
+        cancelled  = len([b for b in bookings if b['booking_status'] == 'Cancelled'])
+        completed  = len([b for b in bookings if b['booking_status'] == 'Completed'])
         total_spent = sum(b['total_amount'] for b in bookings)
 
         cursor.close()
@@ -273,8 +297,10 @@ def create_app():
             total_trips=total_trips,
             confirmed=confirmed,
             cancelled=cancelled,
+            completed=completed,
             total_spent=total_spent
         )
+
 
     @app.route('/logout', methods=['GET','POST'])
     def logout():
