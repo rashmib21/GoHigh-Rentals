@@ -17,59 +17,41 @@ def dashboard():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    # Total trips - filtered by user
+    # Auto-update past confirmed bookings to Completed
+    today = date.today()
     cursor.execute("""
-    SELECT COUNT(*) AS total_trips
-    FROM booking
-    WHERE user_id = %s
-    """, (user_id,))
-    total_trips = cursor.fetchone()['total_trips']
-
-    # Confirmed bookings - filtered by user
-    cursor.execute("""
-    SELECT COUNT(*) AS confirmed
-    FROM booking
-    WHERE booking_status='Confirmed' AND user_id = %s
-    """, (user_id,))
-    confirmed = cursor.fetchone()['confirmed']
-
-    # Cancelled bookings - filtered by user
-    cursor.execute("""
-    SELECT COUNT(*) AS cancelled
-    FROM booking
-    WHERE booking_status='Cancelled' AND user_id = %s
-    """, (user_id,))
-    cancelled = cursor.fetchone()['cancelled']
-
-    # Total spent - filtered by user
-    cursor.execute("""
-    SELECT COALESCE(SUM(p.total_amount), 0) AS total_spent
-    FROM booking b
-    LEFT JOIN pricing p ON b.booking_id = p.booking_id
-    WHERE b.booking_status='Confirmed' AND b.user_id = %s
-    """, (user_id,))
-    total_spent = cursor.fetchone()['total_spent']
+        UPDATE booking 
+        SET booking_status = 'Completed' 
+        WHERE booking_status = 'Confirmed' 
+        AND travel_date <= %s
+    """, (today,))
+    conn.commit()
 
     # Recent bookings - filtered by user
     cursor.execute("""
-		SELECT 
-		b.booking_id,        
-		b.travel_date,
-		b.booking_status,
-		d.destination_name,
-		v.vehicle_name,
-		p.total_amount
-		FROM booking b
-		JOIN destination d ON b.destination_id = d.destination_id
-		JOIN vehicle v ON b.vehicle_id = v.vehicle_id
-		LEFT JOIN pricing p ON b.booking_id = p.booking_id
-		WHERE b.user_id = %s
-		ORDER BY b.travel_date DESC
-		LIMIT 5
-		""", (user_id,))
-
-
+        SELECT 
+            b.booking_id,        
+            b.travel_date,
+            b.booking_status,
+            d.destination_name,
+            v.vehicle_name,
+            p.total_amount
+        FROM booking b
+        JOIN destination d ON b.destination_id = d.destination_id
+        JOIN vehicle v ON b.vehicle_id = v.vehicle_id
+        LEFT JOIN pricing p ON b.booking_id = p.booking_id
+        WHERE b.user_id = %s
+        ORDER BY b.travel_date DESC
+        LIMIT 5
+    """, (user_id,))
     bookings = cursor.fetchall()
+
+    #  Stats calculated from bookings list
+    total_trips = len(bookings)
+    confirmed   = len([b for b in bookings if b['booking_status'] == 'Confirmed'])
+    cancelled   = len([b for b in bookings if b['booking_status'] == 'Cancelled'])
+    completed   = len([b for b in bookings if b['booking_status'] == 'Completed'])
+    total_spent = sum(b['total_amount'] for b in bookings if b['total_amount'])
 
     conn.close()
 
@@ -79,6 +61,7 @@ def dashboard():
         total_trips=total_trips,
         confirmed=confirmed,
         cancelled=cancelled,
+        completed=completed,   
         total_spent=total_spent,
         bookings=bookings
     )

@@ -193,7 +193,9 @@ def create_app():
 
             flash("Invalid email or password", "error")
             return render_template("login.html")
- 
+
+
+    
         return render_template("login.html")
 
 
@@ -280,6 +282,7 @@ def create_app():
 
         cursor.close()
         connection.close()
+        print("STATS →", total_trips, confirmed, completed, cancelled, total_spent)
 
         return render_template(
             "dashboard.html",
