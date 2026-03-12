@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>My Bookings</title>
+	<link rel="icon" type="image/png" 
+          href="https://img.icons8.com/fluency/48/mountain.png">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+	<!-- Stats Section -->
+<div class="stats-wrapper">
+	
+    <div class="stat-card">
+        <div class="stat-icon blue"><i class="fas fa-briefcase"></i></div>
+        <div>
+            <p>Total Trips</p>
+            <h3>{{ total_trips }}</h3>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon green"><i class="fas fa-check"></i></div>
+        <div>
+            <p>Confirmed</p>
+            <h3>{{ confirmed }}</h3>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon teal"><i class="fas fa-check-double"></i></div>
+        <div>
+            <p>Completed</p>
+            <h3>{{ completed }}</h3>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon red"><i class="fas fa-times"></i></div>
+        <div>
+            <p>Cancelled</p>
+            <h3>{{ cancelled }}</h3>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon orange"><i class="fas fa-rupee-sign"></i></div>
+        <div>
+            <p>Total Spent</p>
+            <h3>₹{{ total_spent }}</h3>
+        </div>
+    </div>
+
+</div>
+
+<!-- My Bookings Section -->
+<section class="my-bookings" id="bookings">
+
+<h2>📋 My Recent Bookings</h2>
+
+<div class="booking-table">
+
+<table>
+
+    <thead>
+        <tr>
+            <th>Destination</th>
+            <th>Vehicle</th>
+            <th>Travel Date</th>
+            <th>Status</th>
+            <th>Amount</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+    {% if bookings %}
+
+        {% for booking in bookings %}
+        <tr>
+            <td>{{ booking.destination_name }}</td>
+            <td>{{ booking.vehicle_name }}</td>
+            <td>{{ booking.travel_date }}</td>
+
+            <td>
+                <span class="status {{ booking.booking_status|lower }}">
+                    {{ booking.booking_status }}
+                </span>
+            </td>
+
+            <td>₹{{ booking.total_amount }}</td>
+
+            <td>
+                {% if booking.booking_status == 'Confirmed' %}
+                    <form action="/cancel_booking/{{ booking.booking_id }}" method="POST">
+                        <button type="submit" class="cancel-btn"
+                                onclick="return confirm('Are you sure you want to cancel this booking?')">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                    </form>
+                {% elif booking.booking_status == 'Completed' %}
+                    <span style="color: #0c5460;">✅ Done</span>
+                {% else %}
+                    —
+                {% endif %}
+            </td>
+
+        </tr>
+        {% endfor %}
+
+    {% else %}
+
+    <tr>
+        <td colspan="6" style="text-align:center; padding:20px;">
+            🚫 No trips booked yet.<br><br>
+            <a href="{{ url_for('booking.create_booking_page') }}" class="new-booking-btn">
+                Book Your First Trip
+            </a>
+        </td>
+    </tr>
+
+    {% endif %}
+
+    </tbody>
+</table>
+
+</div>
+
+</section>
+
+</body>
+</html>
