@@ -601,6 +601,28 @@ setInterval(() => {
     slideReviews(1);
 }, 4000);
 
+let galleryIndex = 0;
+
+function slideGallery(){
+
+const gallery = document.getElementById("galleryContainer");
+const images = gallery.querySelectorAll("img");
+
+const imgWidth = images[0].offsetWidth + 20;
+
+galleryIndex++;
+
+if(galleryIndex >= images.length){
+galleryIndex = 0;
+}
+
+gallery.style.transform =
+`translateX(-${galleryIndex * imgWidth}px)`;
+
+}
+
+setInterval(slideGallery,3000);
+
 </script>
 
 </body>
