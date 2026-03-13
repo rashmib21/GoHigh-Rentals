@@ -483,13 +483,13 @@
 
             <div class="form-group">
               <label><i class="fas fa-phone"></i> Phone Number</label>
-              <input type="tel" name="phone" value="{{ user.phone if user.phone else '' }}" placeholder="+91 98765 43210">
+              <input type="tel" name="phone_no" value="{{ user.phone_no if user.phone_no else '' }}" placeholder="+91 98765 43210">
             </div>
 
             <div class="form-group full">
-              <label><i class="fas fa-envelope"></i> Email Address</label>
-              <input type="email" value="{{ user.email }}" readonly>
-              <p class="input-hint">Email cannot be changed. Contact support to update.</p>
+              <label><i class="fas fa-key"></i> Current Password</label>
+              <input type="password" name="current_password" placeholder="Enter your current password">
+              <p class="input-hint">Required only when changing password</p>
             </div>
 
           </div>
@@ -598,14 +598,20 @@
   }
 
   function validateForm() {
-    const p1 = document.getElementById('newPass').value;
-    const p2 = document.getElementById('confirmPass').value;
-    if (p1 && p1 !== p2) {
-      alert('Passwords do not match!');
-      return false;
-    }
-    return true;
+  const current = document.querySelector('input[name="current_password"]').value;
+  const p1 = document.getElementById('newPass').value;
+  const p2 = document.getElementById('confirmPass').value;
+
+  if (p1 && !current) {
+    alert('Please enter your current password to set a new one.');
+    return false;
   }
+  if (p1 && p1 !== p2) {
+    alert('New passwords do not match!');
+    return false;
+  }
+  return true;
+}
 
   // Auto-dismiss flash messages
   document.querySelectorAll('.flash-bar').forEach(el => {

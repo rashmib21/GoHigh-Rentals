@@ -78,7 +78,7 @@ GoHigh <b>Rentals</b>
   </div>
 </div>
 
-</nav></nav>
+</nav>
 
 </header>
 <!-- FLASH MESSAGE  -->
@@ -839,6 +839,7 @@ function resetBooking() {
   selectedVehicle = null;
 }
 
+function formatDate(str) {
   const d = new Date(str);
   return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
 }
@@ -855,7 +856,13 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('check-in').min  = today;
   document.getElementById('check-out').min = today;
   document.getElementById('check-in').addEventListener('change', function () {
-    document.getElementById('check-out').min = this.value;
+    const checkOut = document.getElementById('check-out');
+    // check-out must always be after check-in
+    checkOut.min = this.value;
+    // If existing check-out is on or before new check-in, reset it
+    if (checkOut.value && checkOut.value <= this.value) {
+      checkOut.value = '';
+    }
   });
 });
 
@@ -907,15 +914,16 @@ window.addEventListener('load', function () {
     dotsEl.innerHTML = '';
     origCards.forEach((_, i) => {
       const d = document.createElement('button');
-      d.className = 'review-dot' + (i === 0 ? ' active' : '');
+      d.className = 'review-dot' + (i === current ? ' active' : '');
       d.onclick = () => { if (!busy) { clearInterval(autoTimer); jump(i); startAuto(); } };
       dotsEl.appendChild(d);
     });
   }
 
   function syncDots() {
+    const idx = ((current % total) + total) % total;
     dotsEl.querySelectorAll('.review-dot').forEach((d, i) =>
-      d.classList.toggle('active', i === current % total));
+      d.classList.toggle('active', i === idx));
   }
 
   function jump(i) { current = i; go(true); syncDots(); }
@@ -968,7 +976,7 @@ document.querySelectorAll('.filter-tab').forEach(tab => {
 
     cards.forEach(card => {
       const match = filter === 'all' || card.dataset.dest === filter;
-      card.style.display = match ? 'flex' : 'none';
+      card.style.display = match ? '' : 'none';
       if (match) visible++;
     });
 
@@ -1016,13 +1024,17 @@ window.addEventListener('load', function () {
   let looping = false;
 
   function imgStep() {
+    // Use offsetWidth which works after load; fallback to 260
     const img = gallery.querySelector('img');
-    return img.getBoundingClientRect().width + 20; // 20 = gap
+    const w = img.offsetWidth || img.getBoundingClientRect().width || 260;
+    const gap = parseInt(getComputedStyle(gallery).gap) || 20;
+    return w + gap;
   }
 
   function slideGallery() {
     if (looping) return;
     const w         = imgStep();
+    if (w <= 20) return; // images not ready yet
     const loopPoint = total * w;
 
     offset += w;
@@ -1043,7 +1055,10 @@ window.addEventListener('load', function () {
     }
   }
 
-  setInterval(slideGallery, 3000);
+  // Wait a tick so images have rendered dimensions
+  setTimeout(() => {
+    setInterval(slideGallery, 3000);
+  }, 300);
 
 }); // end gallery load
 

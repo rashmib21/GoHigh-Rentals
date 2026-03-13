@@ -183,49 +183,80 @@ def create_app():
         if 'user_id' not in session:
             return redirect(url_for('login'))
 
-        connection = get_db_connection()
-        cursor     = connection.cursor(dictionary=True)
-
         if request.method == 'POST':
-            name     = request.form['name']
-            phone    = request.form['phone']
-            password = request.form['password']
+            name             = request.form.get('name', '').strip()
+            phone            = request.form.get('phone_no', '').strip()
+            new_password     = request.form.get('password', '').strip()
+            current_password = request.form.get('current_password', '').strip()
 
-            if password:
-                cursor.execute("""
-                    UPDATE users 
-                    SET name=%s, phone=%s, password=%s 
-                    WHERE user_id=%s
-                """, (name, phone, password, session['user_id']))
+            conn   = get_db_connection()
+            cursor = conn.cursor(dictionary=True)
+
+            if new_password:
+                cursor.execute("SELECT password FROM users WHERE user_id = %s", (session['user_id'],))
+                row = cursor.fetchone()
+
+                if not row or not check_password_hash(row['password'], current_password):
+                    cursor.close()
+                    conn.close()
+                    flash('Current password is incorrect.', 'error')
+                    return redirect(url_for('profile'))
+
+                if len(new_password) < 8:
+                    cursor.close()
+                    conn.close()
+                    flash('New password must be at least 8 characters.', 'error')
+                    return redirect(url_for('profile'))
+
+                hashed = generate_password_hash(new_password)
+                cursor.execute(
+                    "UPDATE users SET name = %s, phone_no = %s, password = %s WHERE user_id = %s",
+                    (name, phone, hashed, session['user_id'])
+                )
+                flash('Password changed successfully!', 'success')
+
             else:
-                cursor.execute("""
-                    UPDATE users 
-                    SET name=%s, phone=%s 
-                    WHERE user_id=%s
-                """, (name, phone, session['user_id']))
+                cursor.execute(
+                    "UPDATE users SET name = %s, phone_no = %s WHERE user_id = %s",
+                    (name, phone, session['user_id'])
+                )
+                flash('Profile updated successfully!', 'success')
 
-            connection.commit()
+            conn.commit()
             session['user_name'] = name
-            flash('Profile updated successfully!', 'success')
+            cursor.close()
+            conn.close()
+            return redirect(url_for('profile'))
 
-        cursor.execute("SELECT * FROM users WHERE user_id=%s", (session['user_id'],))
+        # ── GET ──
+        conn   = get_db_connection()
+        if conn is None:
+            flash('Database connection failed.', 'error')
+            return redirect(url_for('login'))
+
+        cursor = conn.cursor(dictionary=True)
+
+        cursor.execute("SELECT * FROM users WHERE user_id = %s", (session['user_id'],))
         user = cursor.fetchone()
 
-        # Booking stats for sidebar
-        cursor.execute("SELECT booking_status FROM booking WHERE user_id=%s", (session['user_id'],))
-        bookings = cursor.fetchall()
-        total_trips = len(bookings)
-        confirmed   = len([b for b in bookings if b['booking_status'] == 'Confirmed'])
-        completed   = len([b for b in bookings if b['booking_status'] == 'Completed'])
+        cursor.execute("SELECT COUNT(*) as total FROM booking WHERE user_id = %s", (session['user_id'],))
+        total_trips = cursor.fetchone()['total']
+
+        cursor.execute("SELECT COUNT(*) as done FROM booking WHERE user_id = %s AND booking_status = 'Completed'", (session['user_id'],))
+        completed = cursor.fetchone()['done']
+
+        cursor.execute("SELECT COUNT(*) as active FROM booking WHERE user_id = %s AND booking_status = 'Confirmed'", (session['user_id'],))
+        confirmed = cursor.fetchone()['active']
 
         cursor.close()
-        connection.close()
+        conn.close()
 
-        return render_template('profile.html', user=user,
+        return render_template('profile.html',
+                               user=user,
+                               user_name=user['name'],
                                total_trips=total_trips,
-                               confirmed=confirmed,
-                               completed=completed)
-
+                               completed=completed,
+                               confirmed=confirmed)
 
     @app.route('/dashboard')
     def dashboard():
