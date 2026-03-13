@@ -1459,77 +1459,6 @@ margin:5px 0;
    REVIEW SLIDER
 ========================= */
 
-.user-reviews{
-padding:70px 5%;
-text-align:center;
-background:#fff;
-overflow:hidden;
-}
-
-.review-slider{
-display:flex;
-align-items:center;
-justify-content:center;
-position:relative;
-margin-top:30px;
-}
-
-.review-wrapper{
-display:flex;
-gap:25px;
-transition:transform 0.5s ease;
-width:840px;       /* shows exactly 3 cards */
-overflow:hidden;
-}
-
-.review-card{
-flex:0 0 260px;
-background:#fff;
-padding:20px;
-border-radius:16px;
-box-shadow:0 10px 25px rgba(0,0,0,0.1);
-text-align:center;
-transition:0.3s;
-}
-
-.review-card:hover{
-transform:translateY(-6px);
-}
-
-.review-card img{
-width:80px;
-height:80px;
-border-radius:50%;
-object-fit:cover;
-margin-bottom:10px;
-}
-
-.review-text{
-font-size:14px;
-color:#555;
-}
-
-.review-btn{
-background:#2E4A5C;
-color:white;
-border:none;
-width:42px;
-height:42px;
-border-radius:50%;
-cursor:pointer;
-font-size:16px;
-display:flex;
-align-items:center;
-justify-content:center;
-transition:0.3s;
-margin:0 10px;
-}
-
-.review-btn:hover{
-background:#4A9B8E;
-transform:scale(1.1);
-}
-
 /* =========================
    GALLERY AUTO SLIDER
 ========================= */
@@ -1559,4 +1488,159 @@ flex-shrink:0;
 
 .gallery-container img:hover{
 transform:scale(1.05);
+}
+
+
+/* =========================
+   REVIEW SLIDER — FINAL
+========================= */
+
+.user-reviews {
+  padding: 70px 5%;
+  text-align: center;
+  background: #f8fbfd;
+}
+
+.user-reviews h2 {
+  margin-bottom: 40px;
+  font-size: 1.8rem;
+  color: #2f4858;
+}
+
+.review-slider {
+  position: relative;
+  max-width: 700px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.review-viewport {
+  overflow: hidden;
+  width: 100%;
+  border-radius: 20px;
+}
+
+.review-wrapper {
+  display: flex;
+  gap: 0;
+  transition: transform 0.5s ease;
+}
+
+.review-card {
+  min-width: 100%;
+  flex-shrink: 0;
+  background: white;
+  padding: 44px 48px;
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.09);
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.review-card img {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto 16px;
+  display: block;
+  border: 4px solid #e8f4f8;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+}
+
+.review-stars {
+  color: #f4b400;
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+  letter-spacing: 3px;
+}
+
+.review-card h4 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #2f4858;
+  margin: 0 0 5px;
+}
+
+.review-card .location {
+  font-size: 0.85rem;
+  color: #888;
+  margin-bottom: 16px;
+}
+
+.review-card .location i {
+  color: #E07B54;
+  margin-right: 4px;
+}
+
+.review-card .review-text {
+  font-size: 1rem;
+  color: #555;
+  line-height: 1.75;
+  font-style: italic;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+/* Dot indicators */
+.review-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 28px;
+}
+
+.review-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #c9dde8;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.3s;
+  border: none;
+  padding: 0;
+}
+
+.review-dot.active {
+  background: #2f4858;
+  transform: scale(1.35);
+}
+
+/* Nav buttons sit outside the viewport */
+.review-btn {
+  flex-shrink: 0;
+  background: #2f4858;
+  color: white;
+  border: none;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background 0.2s, transform 0.2s;
+  z-index: 2;
+}
+
+.review-btn:hover {
+  background: #1a2e3b;
+  transform: scale(1.1);
+}
+
+.review-btn.prev {
+  margin-right: 16px;
+}
+
+.review-btn.next {
+  margin-left: 16px;
+}
+
+@media (max-width: 640px) {
+  .review-card {
+    padding: 30px 20px;
+  }
+  .review-slider {
+    max-width: 100%;
+  }
 }

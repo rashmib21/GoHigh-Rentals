@@ -316,91 +316,92 @@ GoHigh <b>Rentals</b>
 
 <section class="user-reviews">
 
-<h2>⭐ Traveler Reviews</h2>
+  <h2>⭐ Traveler Reviews</h2>
 
-<div class="review-slider">
+  <div class="review-slider">
 
-<button class="review-btn prev" onclick="slideReviews(-1)">
-<i class="fas fa-chevron-left"></i>
-</button>
+    <button class="review-btn prev" onclick="slideReviews(-1)" aria-label="Previous">
+      <i class="fas fa-chevron-left"></i>
+    </button>
 
-<div class="review-wrapper" id="reviewWrapper">
+    <div class="review-viewport">
+      <div class="review-wrapper" id="reviewWrapper">
 
-<div class="review-card">
-<img src="{{ url_for('static', filename='images/review1.jpg') }}">
-<h4>Rahul Sharma</h4>
-<p class="location">Manali Trip</p>
-<p class="review-text">
-Amazing road trip to Manali. The vehicle was perfect for mountain roads.
-</p>
-</div>
+        <div class="review-card">
+          <img src="{{ url_for('static', filename='images/review1.jpg')}}" alt="Rahul Sharma">
+          <div class="review-stars">★★★★★</div>
+          <h4>Rahul Sharma</h4>
+          <p class="location"><i class="fas fa-map-pin"></i> Manali Trip</p>
+          <p class="review-text">"Amazing road trip to Manali. The vehicle was perfect for mountain roads and the booking was super smooth!"</p>
+        </div>
 
-<div class="review-card">
-<img src="{{ url_for('static', filename='images/review2.jpg') }}">
-<h4>Priya Mehta</h4>
-<p class="location">Shimla Trip</p>
-<p class="review-text">
-Beautiful journey through Shimla hills. Highly recommended!
-</p>
-</div>
+        <div class="review-card">
+          <img src="{{ url_for('static', filename='images/review2.jpg')}}" alt="Priya Mehta">
+          <div class="review-stars">★★★★★</div>
+          <h4>Priya Mehta</h4>
+          <p class="location"><i class="fas fa-map-pin"></i> Shimla Trip</p>
+          <p class="review-text">"Beautiful journey through Shimla hills. Highly recommended! The car was well-maintained and comfortable."</p>
+        </div>
 
-<div class="review-card">
-<img src="{{ url_for('static', filename='images/review3.jpg') }}">
-<h4>Shekhawat Singh</h4>
-<p class="location">Leh Ladakh Bike Ride</p>
-<p class="review-text">
-Royal Enfield trip to Ladakh was the best experience ever.
-</p>
-</div>
+        <div class="review-card">
+          <img src="{{ url_for('static', filename='images/review3.jpg')}}" alt="Shekhawat Singh">
+          <div class="review-stars">★★★★★</div>
+          <h4>Shekhawat Singh</h4>
+          <p class="location"><i class="fas fa-map-pin"></i> Leh Ladakh Bike Ride</p>
+          <p class="review-text">"Royal Enfield trip to Ladakh was the best experience ever. GoHigh made it truly unforgettable!"</p>
+        </div>
 
-<div class="review-card">
-<img src="{{ url_for('static', filename='images/review4.jpg') }}">
-<h4>Sneha Verma</h4>
-<p class="location">Rishikesh</p>
-<p class="review-text">
-Great experience! River rafting and mountain drives were amazing.
-</p>
-</div>
+        <div class="review-card">
+          <img src="{{ url_for('static', filename='images/review4.jpg')}}" alt="Anita Verma">
+          <div class="review-stars">★★★★☆</div>
+          <h4>Anita Verma</h4>
+          <p class="location"><i class="fas fa-map-pin"></i> Spiti Valley Trek</p>
+          <p class="review-text">"Spiti was breathtaking! Everything was smooth and well-organised. Will definitely book again."</p>
+        </div>
 
-<div class="review-card">
-<img src="{{ url_for('static', filename='images/review5.jpg') }}">
-<h4>Amit Patel</h4>
-<p class="location">Spiti Valley</p>
-<p class="review-text">
-The Spiti valley trip was breathtaking. Smooth booking process.
-</p>
-</div>
+        <div class="review-card">
+          <img src="{{ url_for('static', filename='images/review5.jpg')}}" alt="Arjun Kapoor">
+          <div class="review-stars">★★★★★</div>
+          <h4>Arjun Kapoor</h4>
+          <p class="location"><i class="fas fa-map-pin"></i> Leh Ladakh Road Trip</p>
+          <p class="review-text">"Perfect for adventure lovers. Our Ladakh road trip was smooth and the support team was excellent!"</p>
+        </div>
 
-<div class="review-card">
-<img src="{{ url_for('static', filename='images/review6.jpg') }}">
-<h4>Neha Kapoor</h4>
-<p class="location">Nainital</p>
-<p class="review-text">
-Perfect family trip. Comfortable vehicle and beautiful scenery.
-</p>
-</div>
+        <div class="review-card">
+          <img src="{{ url_for('static', filename='images/review6.jpg')}}" alt="Sneha Joshi">
+          <div class="review-stars">★★★★★</div>
+          <h4>Sneha Joshi</h4>
+          <p class="location"><i class="fas fa-map-pin"></i> Rishikesh Adventure</p>
+          <p class="review-text">"Customer support was great and the journey was amazing. Loved every bit of the Rishikesh experience!"</p>
+        </div>
 
-</div>
+        <div class="review-card">
+          <img src="{{ url_for('static', filename='images/review7.jpg')}}" alt="Vikram Rathore">
+          <div class="review-stars">★★★★★</div>
+          <h4>Vikram Rathore</h4>
+          <p class="location"><i class="fas fa-map-pin"></i> Dharamshala Retreat</p>
+          <p class="review-text">"Peaceful and spiritual journey to Dharamshala. The vehicle was clean and the driver was very helpful."</p>
+        </div>
 
-<button class="review-btn next" onclick="slideReviews(1)">
-<i class="fas fa-chevron-right"></i>
-</button>
+        <div class="review-card">
+          <img src="{{ url_for('static', filename='images/review8.jpg')}}" alt="Kavya Sharma">
+          <div class="review-stars">★★★★☆</div>
+          <h4>Kavya Sharma</h4>
+          <p class="location"><i class="fas fa-map-pin"></i> Auli Skiing Trip</p>
+          <p class="review-text">"Auli skiing trip was a dream come true! GoHigh's SUV handled the snow roads perfectly. 10/10 experience."</p>
+        </div>
 
-</div>
+      </div>
+    </div>
 
-</section>
+    <button class="review-btn next" onclick="slideReviews(1)" aria-label="Next">
+      <i class="fas fa-chevron-right"></i>
+    </button>
 
+  </div>
 
-<!-- Pagination -->
-<!-- <div class="review-pagination">
-
-<button onclick="prevReview()">Prev</button>
-
-<span id="reviewPage">1</span>
-
-<button onclick="nextReview()">Next</button>
-
-</div> -->
+  <!-- Dot pagination -->
+  <div class="review-dots" id="reviewDots"></div>
 
 </section>
 
@@ -569,59 +570,137 @@ document.querySelectorAll('.destination-card img').forEach(img => {
 
 
 // ===============================
-// ⭐ REVIEW SLIDER
+// ⭐ REVIEW SLIDER — Infinite Circular (1 card at a time)
 // ===============================
 
-let reviewIndex = 0;
+(function () {
+  const wrapper     = document.getElementById('reviewWrapper');
+  const dotsEl      = document.getElementById('reviewDots');
+  let currentIndex  = 0;
+  let autoTimer;
+  let transitioning = false;
 
-function slideReviews(direction){
+  // Grab originals, then clone for seamless infinite loop
+  const origCards = Array.from(wrapper.querySelectorAll('.review-card'));
+  origCards.forEach(c => wrapper.appendChild(c.cloneNode(true)));
 
-    const wrapper = document.getElementById("reviewWrapper");
-    const cards = document.querySelectorAll(".review-card");
+  function getCardWidth() {
+    // Each card is 100% of viewport width (no gap)
+    return wrapper.parentElement.offsetWidth;
+  }
 
-    const visibleCards = 3;
-    const cardWidth = cards[0].offsetWidth + 25;
+  function buildDots() {
+    dotsEl.innerHTML = '';
+    origCards.forEach((_, i) => {
+      const d = document.createElement('button');
+      d.className = 'review-dot' + (i === 0 ? ' active' : '');
+      d.setAttribute('aria-label', 'Review ' + (i + 1));
+      d.addEventListener('click', () => { if (!transitioning) { resetAuto(); jumpTo(i); } });
+      dotsEl.appendChild(d);
+    });
+  }
 
-    reviewIndex += direction;
+  function updateDots() {
+    dotsEl.querySelectorAll('.review-dot').forEach((d, i) =>
+      d.classList.toggle('active', i === currentIndex % origCards.length));
+  }
 
-    if(reviewIndex < 0){
-        reviewIndex = cards.length - visibleCards;
+  function setTransform(animated) {
+    wrapper.style.transition = animated ? 'transform 0.5s ease' : 'none';
+    wrapper.style.transform  = `translateX(-${currentIndex * getCardWidth()}px)`;
+  }
+
+  function jumpTo(i) {
+    currentIndex = i;
+    setTransform(true);
+    updateDots();
+  }
+
+  window.slideReviews = function (dir) {
+    if (transitioning) return;
+    resetAuto();
+    transitioning = true;
+    currentIndex += dir;
+    setTransform(true);
+    updateDots();
+
+    setTimeout(() => {
+      // Silently snap back if past clones
+      if (currentIndex >= origCards.length) {
+        currentIndex -= origCards.length;
+        setTransform(false);
+      } else if (currentIndex < 0) {
+        currentIndex += origCards.length;
+        setTransform(false);
+      }
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        wrapper.style.transition = 'transform 0.5s ease';
+        transitioning = false;
+        updateDots();
+      }));
+    }, 520);
+  };
+
+  function resetAuto() {
+    clearInterval(autoTimer);
+    autoTimer = setInterval(() => slideReviews(1), 3500);
+  }
+
+  buildDots();
+  resetAuto();
+  window.addEventListener('resize', () => {
+    buildDots();
+    currentIndex = 0;
+    setTransform(false);
+  });
+})();
+
+
+// ===============================
+// 📸 GALLERY — Infinite Circular
+// ===============================
+
+(function () {
+  const gallery   = document.getElementById('galleryContainer');
+  const origImgs  = Array.from(gallery.querySelectorAll('img'));
+
+  // Clone images and append for seamless infinite loop
+  origImgs.forEach(img => gallery.appendChild(img.cloneNode(true)));
+
+  const GAP = 20;
+  let offset      = 0;
+  let looping     = false;
+
+  function imgWidth() {
+    return gallery.querySelectorAll('img')[0].offsetWidth + GAP;
+  }
+
+  function slideGallery() {
+    if (looping) return;
+    const w         = imgWidth();
+    const loopPoint = origImgs.length * w;
+
+    offset += w;
+    gallery.style.transition = 'transform 0.6s ease';
+    gallery.style.transform  = `translateX(-${offset}px)`;
+
+    if (offset >= loopPoint) {
+      looping = true;
+      setTimeout(() => {
+        offset = 0;
+        gallery.style.transition = 'none';
+        gallery.style.transform  = 'translateX(0)';
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          gallery.style.transition = 'transform 0.6s ease';
+          looping = false;
+        }));
+      }, 650);
     }
+  }
 
-    if(reviewIndex > cards.length - visibleCards){
-        reviewIndex = 0;
-    }
+  setInterval(slideGallery, 3000);
+})();
 
-    wrapper.style.transform = `translateX(-${reviewIndex * cardWidth}px)`;
-}
-
-
-// Auto slide every 4 seconds
-setInterval(() => {
-    slideReviews(1);
-}, 4000);
-
-let galleryIndex = 0;
-
-function slideGallery(){
-
-const gallery = document.getElementById("galleryContainer");
-const images = gallery.querySelectorAll("img");
-
-const imgWidth = images[0].offsetWidth + 20;
-
-galleryIndex++;
-
-if(galleryIndex >= images.length){
-galleryIndex = 0;
-}
-
-gallery.style.transform =
-`translateX(-${galleryIndex * imgWidth}px)`;
-
-}
-
-setInterval(slideGallery,3000);
 
 </script>
 
