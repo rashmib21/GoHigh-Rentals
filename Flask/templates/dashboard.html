@@ -328,7 +328,7 @@ GoHigh <b>Rentals</b>
       <div class="review-wrapper" id="reviewWrapper">
 
         <div class="review-card">
-          <img src="{{ url_for('static', filename='images/review1.jpg')}}" alt="Rahul Sharma">
+          <img src="{{ url_for('static', filename='images/review1.jpg') }}" alt="Rahul Sharma">
           <div class="review-stars">★★★★★</div>
           <h4>Rahul Sharma</h4>
           <p class="location"><i class="fas fa-map-pin"></i> Manali Trip</p>
@@ -336,7 +336,7 @@ GoHigh <b>Rentals</b>
         </div>
 
         <div class="review-card">
-          <img src="{{ url_for('static', filename='images/review2.jpg')}}" alt="Priya Mehta">
+          <img src="{{ url_for('static', filename='images/review2.jpg') }}" alt="Priya Mehta">
           <div class="review-stars">★★★★★</div>
           <h4>Priya Mehta</h4>
           <p class="location"><i class="fas fa-map-pin"></i> Shimla Trip</p>
@@ -344,7 +344,7 @@ GoHigh <b>Rentals</b>
         </div>
 
         <div class="review-card">
-          <img src="{{ url_for('static', filename='images/review3.jpg')}}" alt="Shekhawat Singh">
+          <img src="{{ url_for('static', filename='images/review3.jpg') }}" alt="Shekhawat Singh">
           <div class="review-stars">★★★★★</div>
           <h4>Shekhawat Singh</h4>
           <p class="location"><i class="fas fa-map-pin"></i> Leh Ladakh Bike Ride</p>
@@ -352,7 +352,7 @@ GoHigh <b>Rentals</b>
         </div>
 
         <div class="review-card">
-          <img src="{{ url_for('static', filename='images/review4.jpg')}}" alt="Anita Verma">
+          <img src="{{ url_for('static', filename='images/review4.jpg') }}" alt="Anita Verma">
           <div class="review-stars">★★★★☆</div>
           <h4>Anita Verma</h4>
           <p class="location"><i class="fas fa-map-pin"></i> Spiti Valley Trek</p>
@@ -360,7 +360,7 @@ GoHigh <b>Rentals</b>
         </div>
 
         <div class="review-card">
-          <img src="{{ url_for('static', filename='images/review5.jpg')}}" alt="Arjun Kapoor">
+          <img src="{{ url_for('static', filename='images/review5.jpg') }}" alt="Arjun Kapoor">
           <div class="review-stars">★★★★★</div>
           <h4>Arjun Kapoor</h4>
           <p class="location"><i class="fas fa-map-pin"></i> Leh Ladakh Road Trip</p>
@@ -368,7 +368,7 @@ GoHigh <b>Rentals</b>
         </div>
 
         <div class="review-card">
-          <img src="{{ url_for('static', filename='images/review6.jpg')}}" alt="Sneha Joshi">
+          <img src="{{ url_for('static', filename='images/review6.jpg') }}" alt="Sneha Joshi">
           <div class="review-stars">★★★★★</div>
           <h4>Sneha Joshi</h4>
           <p class="location"><i class="fas fa-map-pin"></i> Rishikesh Adventure</p>
@@ -376,7 +376,7 @@ GoHigh <b>Rentals</b>
         </div>
 
         <div class="review-card">
-          <img src="{{ url_for('static', filename='images/review7.jpg')}}" alt="Vikram Rathore">
+          <img src="{{ url_for('static', filename='images/review7.jpg') }}" alt="Vikram Rathore">
           <div class="review-stars">★★★★★</div>
           <h4>Vikram Rathore</h4>
           <p class="location"><i class="fas fa-map-pin"></i> Dharamshala Retreat</p>
@@ -384,7 +384,7 @@ GoHigh <b>Rentals</b>
         </div>
 
         <div class="review-card">
-          <img src="{{ url_for('static', filename='images/review8.jpg')}}" alt="Kavya Sharma">
+          <img src="{{ url_for('static', filename='images/review8.jpg') }}" alt="Kavya Sharma">
           <div class="review-stars">★★★★☆</div>
           <h4>Kavya Sharma</h4>
           <p class="location"><i class="fas fa-map-pin"></i> Auli Skiing Trip</p>
@@ -570,25 +570,27 @@ document.querySelectorAll('.destination-card img').forEach(img => {
 
 
 // ===============================
-// ⭐ REVIEW SLIDER — Infinite Circular (1 card at a time)
+// ⭐ REVIEW SLIDER — 2 cards at a time, Infinite Circular
 // ===============================
 
 (function () {
   const wrapper     = document.getElementById('reviewWrapper');
   const dotsEl      = document.getElementById('reviewDots');
+  const GAP         = 24;
   let currentIndex  = 0;
   let autoTimer;
   let transitioning = false;
 
-  // Grab originals, then clone for seamless infinite loop
+  // Clone originals for seamless infinite loop
   const origCards = Array.from(wrapper.querySelectorAll('.review-card'));
   origCards.forEach(c => wrapper.appendChild(c.cloneNode(true)));
 
   function getCardWidth() {
-    // Each card is 100% of viewport width (no gap)
-    return wrapper.parentElement.offsetWidth;
+    const card = wrapper.querySelectorAll('.review-card')[0];
+    return card.offsetWidth + GAP;
   }
 
+  // One dot per original card
   function buildDots() {
     dotsEl.innerHTML = '';
     origCards.forEach((_, i) => {
@@ -625,7 +627,6 @@ document.querySelectorAll('.destination-card img').forEach(img => {
     updateDots();
 
     setTimeout(() => {
-      // Silently snap back if past clones
       if (currentIndex >= origCards.length) {
         currentIndex -= origCards.length;
         setTransform(false);
@@ -649,9 +650,7 @@ document.querySelectorAll('.destination-card img').forEach(img => {
   buildDots();
   resetAuto();
   window.addEventListener('resize', () => {
-    buildDots();
-    currentIndex = 0;
-    setTransform(false);
+    buildDots(); currentIndex = 0; setTransform(false);
   });
 })();
 

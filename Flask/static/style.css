@@ -1509,7 +1509,7 @@ transform:scale(1.05);
 
 .review-slider {
   position: relative;
-  max-width: 700px;
+  max-width: 1100px;
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -1524,15 +1524,17 @@ transform:scale(1.05);
 
 .review-wrapper {
   display: flex;
-  gap: 0;
+  gap: 24px;
   transition: transform 0.5s ease;
+  padding: 8px 4px;
+  box-sizing: border-box;
 }
 
 .review-card {
-  min-width: 100%;
+  min-width: calc(50% - 12px);
   flex-shrink: 0;
   background: white;
-  padding: 44px 48px;
+  padding: 38px 36px;
   border-radius: 20px;
   box-shadow: 0 8px 30px rgba(0,0,0,0.09);
   text-align: center;
@@ -1558,7 +1560,7 @@ transform:scale(1.05);
 }
 
 .review-card h4 {
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   font-weight: 700;
   color: #2f4858;
   margin: 0 0 5px;
@@ -1567,7 +1569,7 @@ transform:scale(1.05);
 .review-card .location {
   font-size: 0.85rem;
   color: #888;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .review-card .location i {
@@ -1576,12 +1578,10 @@ transform:scale(1.05);
 }
 
 .review-card .review-text {
-  font-size: 1rem;
+  font-size: 0.95rem;
   color: #555;
   line-height: 1.75;
   font-style: italic;
-  max-width: 520px;
-  margin: 0 auto;
 }
 
 /* Dot indicators */
@@ -1608,7 +1608,7 @@ transform:scale(1.05);
   transform: scale(1.35);
 }
 
-/* Nav buttons sit outside the viewport */
+/* Nav buttons */
 .review-btn {
   flex-shrink: 0;
   background: #2f4858;
@@ -1628,19 +1628,11 @@ transform:scale(1.05);
   transform: scale(1.1);
 }
 
-.review-btn.prev {
-  margin-right: 16px;
-}
+.review-btn.prev { margin-right: 16px; }
+.review-btn.next { margin-left: 16px; }
 
-.review-btn.next {
-  margin-left: 16px;
-}
-
-@media (max-width: 640px) {
+@media (max-width: 700px) {
   .review-card {
-    padding: 30px 20px;
-  }
-  .review-slider {
-    max-width: 100%;
+    min-width: 100%;
   }
 }
