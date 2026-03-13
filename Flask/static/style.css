@@ -652,26 +652,6 @@ header, header.navbar {
 .about-image img { width:100%; border-radius:22px; box-shadow:var(--shadow-lg); transition:transform .4s; }
 .about-image img:hover { transform:scale(1.03) rotate(.4deg); }
 
-/* ================================================================
-   REGIONAL TABS
-   ================================================================ */
-.regional-section { padding:50px 5%; background:#fff; text-align:center; }
-.regional-section h2 { font-family:'Playfair Display',serif; font-size:1.9rem; font-weight:800; color:var(--peak); margin-bottom:26px; }
-
-.region-tabs { display:flex; justify-content:center; flex-wrap:wrap; gap:12px; }
-.region-tab {
-  padding:10px 24px; border-radius:30px;
-  border:2px solid rgba(74,155,142,.3);
-  background:transparent; color:var(--ridge);
-  font-weight:700; font-size:.88rem;
-  font-family:'Nunito',sans-serif; cursor:pointer;
-  transition:all .25s ease;
-}
-.region-tab:hover, .region-tab.active {
-  background:var(--ridge); border-color:var(--ridge);
-  color:#fff; box-shadow:0 6px 18px rgba(46,74,92,.3);
-  transform:translateY(-2px);
-}
 
 /* ================================================================
    QUICK BOOKING — ANIMATED BACKGROUND
@@ -2134,4 +2114,22 @@ transform:scale(1.05);
 .confirm-booking-btn:hover {
   background: #E07B54;
   transform: translateY(-2px);
+}
+
+.reset-btn {
+  padding: 13px 24px;
+  border-radius: 12px;
+  border: 2px solid rgba(255,255,255,0.35);
+  background: transparent;
+  color: rgba(255,255,255,0.85);
+  font-weight: 700;
+  font-size: 0.92rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+.reset-btn:hover {
+  background: rgba(255,255,255,0.15);
+  border-color: rgba(255,255,255,0.6);
+  color: #fff;
 }
