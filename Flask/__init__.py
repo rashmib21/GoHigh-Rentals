@@ -196,7 +196,20 @@ def create_app():
                 cursor.execute("SELECT password FROM users WHERE user_id = %s", (session['user_id'],))
                 row = cursor.fetchone()
 
-                if not row or not check_password_hash(row['password'], current_password):
+                # ── Check current password (handles both plain text and hashed) ──
+                if not row:
+                    cursor.close()
+                    conn.close()
+                    flash('User not found.', 'error')
+                    return redirect(url_for('profile'))
+
+                stored = row['password']
+                if stored.startswith('pbkdf2:') or stored.startswith('scrypt:'):
+                    password_valid = check_password_hash(stored, current_password)
+                else:
+                    password_valid = (stored == current_password)  # plain text
+
+                if not password_valid:
                     cursor.close()
                     conn.close()
                     flash('Current password is incorrect.', 'error')
@@ -213,7 +226,7 @@ def create_app():
                     "UPDATE users SET name = %s, phone_no = %s, password = %s WHERE user_id = %s",
                     (name, phone, hashed, session['user_id'])
                 )
-                flash('Password changed successfully!', 'success')
+                flash('Password changed successfully! 🔐', 'success')
 
             else:
                 cursor.execute(
@@ -229,7 +242,7 @@ def create_app():
             return redirect(url_for('profile'))
 
         # ── GET ──
-        conn   = get_db_connection()
+        conn = get_db_connection()
         if conn is None:
             flash('Database connection failed.', 'error')
             return redirect(url_for('login'))
