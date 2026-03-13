@@ -431,32 +431,109 @@ GoHigh <b>Rentals</b>
 
 <section class="text-reviews">
 
-<h2>💬 What Travelers Say</h2>
+  <h2>💬 What Travelers Say</h2>
 
-<div class="text-review-container">
+  <!-- Destination Filter Tabs -->
+  <div class="review-filter-tabs">
+    <button class="filter-tab active" data-filter="all">All</button>
+    <button class="filter-tab" data-filter="shimla">Shimla</button>
+    <button class="filter-tab" data-filter="manali">Manali</button>
+    <button class="filter-tab" data-filter="ladakh">Leh Ladakh</button>
+    <button class="filter-tab" data-filter="spiti">Spiti Valley</button>
+    <button class="filter-tab" data-filter="rishikesh">Rishikesh</button>
+    <button class="filter-tab" data-filter="dharamshala">Dharamshala</button>
+  </div>
 
-<div class="text-review">
-<p>
-“Best Himalayan travel experience! Booking was simple and the vehicles were excellent.”
-</p>
-<h4>- Priya Mehta</h4>
-</div>
+  <div class="text-review-container" id="textReviewContainer">
 
-<div class="text-review">
-<p>
-“Perfect for adventure lovers. Our Ladakh road trip was smooth and memorable.”
-</p>
-<h4>- Arjun Kapoor</h4>
-</div>
+    <div class="text-review" data-dest="shimla">
+      <div class="quote-icon">&ldquo;</div>
+      <p class="review-short">Best Himalayan travel experience! Booking was simple and the vehicles were excellent.</p>
+      <p class="review-full hidden">Best Himalayan travel experience! Booking was simple and the vehicles were excellent. Will come back for sure! The roads to Shimla were scenic and our driver was very knowledgeable about all the local spots. 10/10 would recommend GoHigh to everyone!</p>
+      <button class="read-more-btn" onclick="toggleReview(this)">Read more <i class="fas fa-chevron-down"></i></button>
+      <div class="text-review-footer">
+        <img src="{{ url_for('static', filename='images/review2.jpg') }}" alt="Priya Mehta">
+        <div>
+          <h4>Priya Mehta</h4>
+          <span>Shimla Trip</span>
+        </div>
+      </div>
+    </div>
 
-<div class="text-review">
-<p>
-“Customer support was great and the journey was amazing.”
-</p>
-<h4>- Sneha Joshi</h4>
-</div>
+    <div class="text-review" data-dest="ladakh">
+      <div class="quote-icon">&ldquo;</div>
+      <p class="review-short">Perfect for adventure lovers. Our Ladakh road trip was smooth and memorable.</p>
+      <p class="review-full hidden">Perfect for adventure lovers. Our Ladakh road trip was smooth and memorable. GoHigh is the best! The vehicle handled every mountain pass with ease — from Rohtang to Khardung La. The team was always reachable and helped us plan our route perfectly. Truly an unforgettable journey!</p>
+      <button class="read-more-btn" onclick="toggleReview(this)">Read more <i class="fas fa-chevron-down"></i></button>
+      <div class="text-review-footer">
+        <img src="{{ url_for('static', filename='images/review5.jpg') }}" alt="Arjun Kapoor">
+        <div>
+          <h4>Arjun Kapoor</h4>
+          <span>Leh Ladakh Road Trip</span>
+        </div>
+      </div>
+    </div>
 
-</div>
+    <div class="text-review" data-dest="rishikesh">
+      <div class="quote-icon">&ldquo;</div>
+      <p class="review-short">Customer support was great and the journey was amazing.</p>
+      <p class="review-full hidden">Customer support was great and the journey was amazing. Loved every moment of the Rishikesh trip. We did river rafting, bungee jumping and a yoga retreat — all in one weekend! GoHigh made the logistics effortless. The car was spotless and pick-up was right on time.</p>
+      <button class="read-more-btn" onclick="toggleReview(this)">Read more <i class="fas fa-chevron-down"></i></button>
+      <div class="text-review-footer">
+        <img src="{{ url_for('static', filename='images/review6.jpg') }}" alt="Sneha Joshi">
+        <div>
+          <h4>Sneha Joshi</h4>
+          <span>Rishikesh Adventure</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-review" data-dest="manali">
+      <div class="quote-icon">&ldquo;</div>
+      <p class="review-short">Amazing road trip to Manali. The vehicle was perfect for mountain roads.</p>
+      <p class="review-full hidden">Amazing road trip to Manali. The vehicle was perfect for mountain roads and the booking was super smooth! We drove through Rohtang Pass and Solang Valley without any issues. The Innova was well-maintained and gave excellent mileage. GoHigh exceeded all our expectations!</p>
+      <button class="read-more-btn" onclick="toggleReview(this)">Read more <i class="fas fa-chevron-down"></i></button>
+      <div class="text-review-footer">
+        <img src="{{ url_for('static', filename='images/review1.jpg') }}" alt="Rahul Sharma">
+        <div>
+          <h4>Rahul Sharma</h4>
+          <span>Manali Trip</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-review" data-dest="spiti">
+      <div class="quote-icon">&ldquo;</div>
+      <p class="review-short">Spiti was breathtaking! Everything was smooth and well-organised.</p>
+      <p class="review-full hidden">Spiti was breathtaking! Everything was smooth and well-organised. Will definitely book again. The remote roads of Spiti can be challenging but our GoHigh vehicle was fully equipped for it. Key Monastery, Chandratal Lake — every stop was magical. The best trip of my life!</p>
+      <button class="read-more-btn" onclick="toggleReview(this)">Read more <i class="fas fa-chevron-down"></i></button>
+      <div class="text-review-footer">
+        <img src="{{ url_for('static', filename='images/review4.jpg') }}" alt="Anita Verma">
+        <div>
+          <h4>Anita Verma</h4>
+          <span>Spiti Valley Trek</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-review" data-dest="dharamshala">
+      <div class="quote-icon">&ldquo;</div>
+      <p class="review-short">Peaceful and spiritual journey to Dharamshala. Truly a soul-refreshing trip.</p>
+      <p class="review-full hidden">Peaceful and spiritual journey to Dharamshala. Truly a soul-refreshing trip. The vehicle was clean and the driver was very helpful, pointing out all the best local cafes and viewpoints. We visited Triund, the Dalai Lama temple and enjoyed amazing Tibetan food. GoHigh made it all seamless!</p>
+      <button class="read-more-btn" onclick="toggleReview(this)">Read more <i class="fas fa-chevron-down"></i></button>
+      <div class="text-review-footer">
+        <img src="{{ url_for('static', filename='images/review7.jpg') }}" alt="Vikram Rathore">
+        <div>
+          <h4>Vikram Rathore</h4>
+          <span>Dharamshala Retreat</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- No results message -->
+  <p class="no-reviews-msg hidden" id="noReviewsMsg">No reviews found for this destination yet. Be the first! 🏔️</p>
 
 </section>
 
@@ -474,23 +551,44 @@ GoHigh <b>Rentals</b>
 
 <!-- Quick Booking -->
 <section class="quick-booking">
-    <h2>📅 Quick Booking</h2>
-    <div class="booking-form">
-        <select id="destination-select">
-            <option value="">Select Destination</option>
-            <option value="manali">Manali - Himachal Pradesh</option>
-            <option value="leh">Leh Ladakh - Ladakh</option>
-            <option value="shimla">Shimla - Himachal Pradesh</option>
-            <option value="auli">Auli - Uttarakhand</option>
-            <option value="spiti">Spiti Valley - Himachal Pradesh</option>
-            <option value="kashmir">Kashmir Valley - J&K</option>
-            <option value="dharamshala">Dharamshala - Himachal Pradesh</option>
-            <option value="dalhousie">Dalhousie - Himachal Pradesh</option>
-        </select>
-        <input type="date" id="check-in" placeholder="Check-in">
-        <input type="date" id="check-out" placeholder="Check-out">
-        <button onclick="checkAvailability()">Check Availability</button>
+  <h2>📅 Quick Booking</h2>
+  <p class="booking-subtitle">Check real-time vehicle availability for your dream destination</p>
+
+  <div class="booking-form">
+    <select id="destination-select">
+      <option value="">🏔 Select Destination</option>
+      <option value="manali">Manali - Himachal Pradesh</option>
+      <option value="leh">Leh Ladakh - Ladakh</option>
+      <option value="shimla">Shimla - Himachal Pradesh</option>
+      <option value="auli">Auli - Uttarakhand</option>
+      <option value="spiti">Spiti Valley - Himachal Pradesh</option>
+      <option value="kashmir">Kashmir Valley - J&K</option>
+      <option value="dharamshala">Dharamshala - Himachal Pradesh</option>
+      <option value="dalhousie">Dalhousie - Himachal Pradesh</option>
+    </select>
+    <input type="date" id="check-in">
+    <input type="date" id="check-out">
+    <button onclick="checkAvailability()">
+      <i class="fas fa-search"></i> Check Availability
+    </button>
+  </div>
+
+  <!-- Result Panel -->
+  <div class="availability-result" id="availabilityResult" style="display:none;">
+
+    <div class="result-header" id="resultHeader"></div>
+
+    <div class="vehicle-grid" id="vehicleGrid"></div>
+
+    <div class="booking-summary" id="bookingSummary" style="display:none;">
+      <h4>📋 Booking Summary</h4>
+      <div class="summary-details" id="summaryDetails"></div>
+      <a href="{{ url_for('booking.create_booking_page') }}" class="confirm-booking-btn" id="confirmBtn">
+        <i class="fas fa-check-circle"></i> Proceed to Book
+      </a>
     </div>
+
+  </div>
 </section>
 
 <!-- Scroll to Top Button -->
@@ -540,19 +638,183 @@ scrollTop.addEventListener('click', () => {
 });
 
 
-// Check availability
+// ===============================
+// 📅 AVAILABILITY CHECKER
+// ===============================
+
+// Mock vehicle inventory per destination
+const vehicleInventory = {
+  manali:      [
+    { name: 'Mahindra Thar',    type: 'SUV',      seats: 4, price: 2499, fuel: 'Diesel', img: 'https://cdn-icons-png.flaticon.com/512/3774/3774278.png', available: true  },
+    { name: 'Toyota Innova',    type: 'MUV',      seats: 7, price: 3199, fuel: 'Diesel', img: 'https://cdn-icons-png.flaticon.com/512/3774/3774278.png', available: true  },
+    { name: 'Royal Enfield 350',type: 'Bike',     seats: 2, price: 1299, fuel: 'Petrol', img: 'https://cdn-icons-png.flaticon.com/512/3774/3774278.png', available: false },
+  ],
+  leh:         [
+    { name: 'Mahindra Scorpio', type: 'SUV',      seats: 7, price: 3499, fuel: 'Diesel', img: '', available: true  },
+    { name: 'Royal Enfield 500',type: 'Bike',     seats: 2, price: 1599, fuel: 'Petrol', img: '', available: true  },
+    { name: 'Toyota Fortuner',  type: 'SUV',      seats: 7, price: 4299, fuel: 'Diesel', img: '', available: false },
+  ],
+  shimla:      [
+    { name: 'Maruti Swift Dzire',type:'Sedan',    seats: 5, price: 1499, fuel: 'Petrol', img: '', available: true  },
+    { name: 'Toyota Innova',    type: 'MUV',      seats: 7, price: 2799, fuel: 'Diesel', img: '', available: true  },
+    { name: 'Hyundai Creta',    type: 'SUV',      seats: 5, price: 1999, fuel: 'Petrol', img: '', available: true  },
+  ],
+  auli:        [
+    { name: 'Mahindra Thar',    type: 'SUV',      seats: 4, price: 2799, fuel: 'Diesel', img: '', available: true  },
+    { name: 'Toyota Fortuner',  type: 'SUV',      seats: 7, price: 4499, fuel: 'Diesel', img: '', available: false },
+  ],
+  spiti:       [
+    { name: 'Mahindra Bolero',  type: 'SUV',      seats: 7, price: 2999, fuel: 'Diesel', img: '', available: true  },
+    { name: 'Royal Enfield 500',type: 'Bike',     seats: 2, price: 1499, fuel: 'Petrol', img: '', available: true  },
+  ],
+  kashmir:     [
+    { name: 'Toyota Innova',    type: 'MUV',      seats: 7, price: 3299, fuel: 'Diesel', img: '', available: true  },
+    { name: 'Mahindra Scorpio', type: 'SUV',      seats: 7, price: 3799, fuel: 'Diesel', img: '', available: false },
+  ],
+  dharamshala: [
+    { name: 'Hyundai Creta',    type: 'SUV',      seats: 5, price: 2199, fuel: 'Petrol', img: '', available: true  },
+    { name: 'Maruti Ertiga',    type: 'MUV',      seats: 6, price: 1899, fuel: 'Petrol', img: '', available: true  },
+  ],
+  dalhousie:   [
+    { name: 'Maruti Swift',     type: 'Hatchback',seats: 5, price: 1499, fuel: 'Petrol', img: '', available: true  },
+    { name: 'Hyundai Creta',    type: 'SUV',      seats: 5, price: 2099, fuel: 'Diesel', img: '', available: true  },
+  ],
+};
+
+const vehicleIcons = {
+  'SUV':       'fa-truck-monster',
+  'MUV':       'fa-van-shuttle',
+  'Bike':      'fa-motorcycle',
+  'Sedan':     'fa-car',
+  'Hatchback': 'fa-car-side',
+};
+
+let selectedVehicle = null;
+let bookingDest = '', bookingIn = '', bookingOut = '', bookingDays = 0;
+
 function checkAvailability() {
-    const destination = document.getElementById('destination-select').value;
-    const checkIn = document.getElementById('check-in').value;
-    const checkOut = document.getElementById('check-out').value;
+  const dest    = document.getElementById('destination-select').value;
+  const checkIn = document.getElementById('check-in').value;
+  const checkOut= document.getElementById('check-out').value;
 
-    if (!destination || !checkIn || !checkOut) {
-        alert('Please fill all fields');
-        return;
-    }
+  // Validation
+  if (!dest || !checkIn || !checkOut) {
+    shakeForm(); return;
+  }
+  const inDate  = new Date(checkIn);
+  const outDate = new Date(checkOut);
+  if (outDate <= inDate) {
+    alert('⚠️ Check-out date must be after check-in date.');
+    return;
+  }
 
-    alert(`Checking availability for ${destination} from ${checkIn} to ${checkOut}...`);
+  bookingDays = Math.ceil((outDate - inDate) / (1000 * 60 * 60 * 24));
+  bookingDest = dest;
+  bookingIn   = checkIn;
+  bookingOut  = checkOut;
+  selectedVehicle = null;
+
+  const resultPanel = document.getElementById('availabilityResult');
+  const header      = document.getElementById('resultHeader');
+  const grid        = document.getElementById('vehicleGrid');
+  const summary     = document.getElementById('bookingSummary');
+
+  summary.style.display = 'none';
+  resultPanel.style.display = 'block';
+  resultPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  const vehicles  = vehicleInventory[dest] || [];
+  const available = vehicles.filter(v => v.available);
+  const destLabel = document.querySelector(`#destination-select option[value="${dest}"]`).text;
+
+  // Header
+  header.innerHTML = `
+    <div class="result-info">
+      <span class="result-badge ${available.length > 0 ? 'badge-green' : 'badge-red'}">
+        ${available.length > 0 ? '✅ ' + available.length + ' Vehicles Available' : '❌ No Vehicles Available'}
+      </span>
+      <p>📍 <strong>${destLabel}</strong> &nbsp;|&nbsp; 📅 ${formatDate(checkIn)} → ${formatDate(checkOut)} &nbsp;|&nbsp; 🌙 ${bookingDays} night${bookingDays > 1 ? 's' : ''}</p>
+    </div>`;
+
+  // Vehicle cards
+  if (vehicles.length === 0) {
+    grid.innerHTML = '<p class="no-vehicle-msg">No vehicles listed for this destination yet.</p>';
+    return;
+  }
+
+  grid.innerHTML = vehicles.map((v, i) => `
+    <div class="vehicle-card ${!v.available ? 'unavailable' : ''}" 
+         onclick="${v.available ? 'selectVehicle(' + i + ', \'' + dest + '\')' : ''}">
+      <div class="vehicle-status-badge ${v.available ? 'status-available' : 'status-booked'}">
+        ${v.available ? 'Available' : 'Booked'}
+      </div>
+      <div class="vehicle-icon">
+        <i class="fas ${vehicleIcons[v.type] || 'fa-car'}"></i>
+      </div>
+      <h4>${v.name}</h4>
+      <div class="vehicle-meta">
+        <span><i class="fas fa-tag"></i> ${v.type}</span>
+        <span><i class="fas fa-users"></i> ${v.seats} seats</span>
+        <span><i class="fas fa-gas-pump"></i> ${v.fuel}</span>
+      </div>
+      <div class="vehicle-price">
+        ₹${v.price.toLocaleString()} <small>/day</small>
+        ${bookingDays > 0 ? '<div class="vehicle-total">Total: ₹' + (v.price * bookingDays).toLocaleString() + '</div>' : ''}
+      </div>
+      ${v.available ? '<button class="select-vehicle-btn">Select Vehicle</button>' : '<button class="select-vehicle-btn disabled" disabled>Not Available</button>'}
+    </div>`).join('');
 }
+
+function selectVehicle(index, dest) {
+  const vehicle = vehicleInventory[dest][index];
+  if (!vehicle.available) return;
+
+  selectedVehicle = vehicle;
+
+  // Highlight selected card
+  document.querySelectorAll('.vehicle-card').forEach((c, i) =>
+    c.classList.toggle('selected', i === index));
+
+  // Show summary
+  const total = vehicle.price * bookingDays;
+  const destLabel = document.querySelector(`#destination-select option[value="${dest}"]`).text;
+  const summary = document.getElementById('bookingSummary');
+  const details = document.getElementById('summaryDetails');
+
+  details.innerHTML = `
+    <div class="summary-row"><span>Destination</span><strong>${destLabel}</strong></div>
+    <div class="summary-row"><span>Vehicle</span><strong>${vehicle.name} (${vehicle.type})</strong></div>
+    <div class="summary-row"><span>Check-in</span><strong>${formatDate(bookingIn)}</strong></div>
+    <div class="summary-row"><span>Check-out</span><strong>${formatDate(bookingOut)}</strong></div>
+    <div class="summary-row"><span>Duration</span><strong>${bookingDays} night${bookingDays > 1 ? 's' : ''}</strong></div>
+    <div class="summary-row"><span>Rate</span><strong>₹${vehicle.price.toLocaleString()}/day</strong></div>
+    <div class="summary-row total-row"><span>Total Estimate</span><strong>₹${total.toLocaleString()}</strong></div>`;
+
+  summary.style.display = 'block';
+  summary.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function formatDate(str) {
+  const d = new Date(str);
+  return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function shakeForm() {
+  const form = document.querySelector('.booking-form');
+  form.classList.add('shake');
+  setTimeout(() => form.classList.remove('shake'), 600);
+}
+
+// Set min date to today
+window.addEventListener('DOMContentLoaded', () => {
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('check-in').min  = today;
+  document.getElementById('check-out').min = today;
+  document.getElementById('check-in').addEventListener('change', function () {
+    document.getElementById('check-out').min = this.value;
+  });
+});
+
 
 
 // Image load handling
@@ -656,8 +918,51 @@ document.querySelectorAll('.destination-card img').forEach(img => {
 
 
 // ===============================
-// 📸 GALLERY — Infinite Circular
+// 💬 REVIEW FILTER BY DESTINATION
 // ===============================
+
+document.querySelectorAll('.filter-tab').forEach(tab => {
+  tab.addEventListener('click', function () {
+    // Update active tab
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    this.classList.add('active');
+
+    const filter = this.dataset.filter;
+    const cards  = document.querySelectorAll('#textReviewContainer .text-review');
+    let visible  = 0;
+
+    cards.forEach(card => {
+      const match = filter === 'all' || card.dataset.dest === filter;
+      card.style.display = match ? 'flex' : 'none';
+      if (match) visible++;
+    });
+
+    // Show/hide no-results message
+    const msg = document.getElementById('noReviewsMsg');
+    msg.classList.toggle('hidden', visible > 0);
+  });
+});
+
+
+// ===============================
+// 💬 EXPAND / COLLAPSE REVIEW
+// ===============================
+
+function toggleReview(btn) {
+  const card  = btn.closest('.text-review');
+  const short = card.querySelector('.review-short');
+  const full  = card.querySelector('.review-full');
+  const icon  = btn.querySelector('i');
+  const expanded = full.classList.contains('hidden');
+
+  short.classList.toggle('hidden', expanded);
+  full.classList.toggle('hidden', !expanded);
+  btn.innerHTML = expanded
+    ? 'Read less <i class="fas fa-chevron-up"></i>'
+    : 'Read more <i class="fas fa-chevron-down"></i>';
+}
+
+
 
 (function () {
   const gallery   = document.getElementById('galleryContainer');
