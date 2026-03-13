@@ -1,38 +1,618 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>My Profile - GoHigh Rentals</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Profile — GoHigh Rentals</title>
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo.png') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #f0f5f8; font-family: 'Nunito', sans-serif; }
+
+    /* ── NAVBAR ── */
+    .navbar { position: fixed; top: 0; width: 100%; z-index: 1000;
+      background: rgba(28,43,58,.95); backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(74,155,142,.3);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 5%; height: 68px; }
+    .navbar .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+    .navbar .logo img { height: 38px; width: 38px; object-fit: contain; }
+    .navbar .brand { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; color: #fff; }
+    .navbar nav { display: flex; align-items: center; gap: 24px; }
+    .navbar nav a { color: rgba(255,255,255,.8); text-decoration: none; font-size: .88rem; font-weight: 600; transition: color .2s; }
+    .navbar nav a:hover, .navbar nav a.active { color: #4A9B8E; }
+
+    /* ── COVER HERO ── */
+    .profile-cover {
+      margin-top: 68px;
+      height: 220px;
+      background: linear-gradient(-45deg, #1C2B3A, #2E4A5C, #1a3a2a, #2E4A5C);
+      background-size: 400% 400%;
+      animation: gradientShift 14s ease infinite;
+      position: relative;
+      overflow: hidden;
+    }
+    @keyframes gradientShift {
+      0%,100% { background-position: 0% 50%; }
+      50%      { background-position: 100% 50%; }
+    }
+    .profile-cover::before {
+      content: "";
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse at 20% 80%, rgba(74,155,142,.25) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(212,168,67,.12) 0%, transparent 45%),
+        url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    /* Mountain silhouette */
+    .profile-cover::after {
+      content: "";
+      position: absolute; bottom: 0; left: 0; right: 0; height: 80px;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 80'%3E%3Cpath fill='%23f0f5f8' fill-opacity='1' d='M0,80 L0,50 L120,20 L240,45 L360,10 L480,35 L600,5 L720,30 L840,8 L960,32 L1080,12 L1200,38 L1320,15 L1440,40 L1440,80 Z'/%3E%3C/svg%3E") no-repeat bottom;
+      background-size: cover;
+    }
+
+    /* ── PROFILE LAYOUT ── */
+    .profile-layout {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px 60px;
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 28px;
+      position: relative;
+    }
+
+    /* ── LEFT SIDEBAR ── */
+    .profile-sidebar {
+      margin-top: -60px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Avatar Card */
+    .avatar-card {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 12px 40px rgba(28,43,58,.12);
+      padding: 32px 24px;
+      text-align: center;
+      position: relative;
+    }
+    .avatar-ring {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #E07B54, #D4A843);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.6rem;
+      font-weight: 900;
+      color: #fff;
+      margin: 0 auto 16px;
+      box-shadow: 0 8px 28px rgba(224,123,84,.4);
+      position: relative;
+    }
+    .avatar-ring .online-dot {
+      position: absolute;
+      bottom: 4px; right: 4px;
+      width: 18px; height: 18px;
+      background: #2ecc71;
+      border-radius: 50%;
+      border: 3px solid #fff;
+    }
+    .avatar-card h2 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #1C2B3A;
+      margin-bottom: 4px;
+    }
+    .avatar-card .role-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: linear-gradient(135deg, #E07B54, #c96940);
+      color: #fff;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: .75rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+    .avatar-card .member-since {
+      font-size: .78rem;
+      color: #999;
+      margin-top: 4px;
+    }
+
+    /* Quick Stats in sidebar */
+    .sidebar-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 4px;
+      border-top: 1px solid #f0f4f7;
+      padding-top: 18px;
+    }
+    .sstat {
+      text-align: center;
+      padding: 10px 6px;
+      border-radius: 12px;
+      background: #f8fbfd;
+    }
+    .sstat h4 { font-size: 1.3rem; font-weight: 900; color: #1C2B3A; margin-bottom: 2px; }
+    .sstat p  { font-size: .7rem; color: #999; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; }
+
+    /* Info strip card */
+    .info-strip {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 8px 28px rgba(28,43,58,.08);
+      overflow: hidden;
+    }
+    .info-strip-header {
+      background: linear-gradient(90deg, #1C2B3A, #2E4A5C);
+      color: #fff;
+      padding: 14px 20px;
+      font-size: .82rem;
+      font-weight: 700;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .info-strip-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 20px;
+      border-bottom: 1px solid #f4f7fa;
+      font-size: .88rem;
+    }
+    .info-strip-row:last-child { border-bottom: none; }
+    .info-strip-row i { width: 18px; color: #4A9B8E; font-size: .9rem; }
+    .info-strip-row span { color: #888; min-width: 60px; font-size: .78rem; font-weight: 700; }
+    .info-strip-row strong { color: #1C2B3A; }
+
+    /* ── MAIN RIGHT PANEL ── */
+    .profile-main {
+      margin-top: -20px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Flash */
+    .flash-bar {
+      padding: 14px 20px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: .9rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: slideIn .3s ease;
+    }
+    @keyframes slideIn { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:none; } }
+    .flash-bar.success { background: #d5eee3; color: #1b5e35; border-left: 4px solid #4CAF50; }
+    .flash-bar.error   { background: #fae3da; color: #b34a28; border-left: 4px solid #e74c3c; }
+
+    /* Panel card */
+    .panel {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(28,43,58,.09);
+      overflow: hidden;
+    }
+    .panel-header {
+      padding: 22px 28px;
+      border-bottom: 1px solid #f0f5f8;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .panel-header-left { display: flex; align-items: center; gap: 14px; }
+    .panel-icon {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+    }
+    .panel-icon.teal  { background: #d1f0ed; color: #2D6A4F; }
+    .panel-icon.blue  { background: #ddeef8; color: #2E4A5C; }
+    .panel-icon.orange{ background: #fde8df; color: #E07B54; }
+    .panel-title { font-size: 1rem; font-weight: 800; color: #1C2B3A; margin-bottom: 2px; }
+    .panel-subtitle { font-size: .78rem; color: #999; }
+    .panel-body { padding: 28px; }
+
+    /* Form grid */
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .form-group { display: flex; flex-direction: column; gap: 7px; }
+    .form-group.full { grid-column: 1 / -1; }
+
+    label {
+      font-size: .78rem;
+      font-weight: 800;
+      color: #2E4A5C;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    label i { color: #4A9B8E; font-size: .8rem; }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="password"] {
+      width: 100%;
+      padding: 13px 16px;
+      border: 2px solid #e8f0f5;
+      border-radius: 12px;
+      font-size: .92rem;
+      font-family: 'Nunito', sans-serif;
+      color: #1C2B3A;
+      background: #fafcfd;
+      transition: border-color .2s, box-shadow .2s, background .2s;
+      outline: none;
+    }
+    input:focus {
+      border-color: #4A9B8E;
+      background: #fff;
+      box-shadow: 0 0 0 4px rgba(74,155,142,.1);
+    }
+    input[readonly] {
+      background: #f4f8fa;
+      color: #aaa;
+      cursor: not-allowed;
+      border-color: #e8f0f5;
+    }
+
+    .input-hint { font-size: .73rem; color: #bbb; margin-top: 2px; }
+
+    /* Password strength */
+    .strength-bar {
+      height: 4px;
+      border-radius: 4px;
+      background: #eee;
+      margin-top: 6px;
+      overflow: hidden;
+    }
+    .strength-fill {
+      height: 100%;
+      width: 0;
+      border-radius: 4px;
+      transition: width .3s, background .3s;
+    }
+    .strength-label { font-size: .72rem; color: #bbb; margin-top: 4px; }
+
+    /* Save button */
+    .save-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 36px;
+      background: linear-gradient(135deg, #1C2B3A, #2E4A5C);
+      color: #fff;
+      border: none;
+      border-radius: 14px;
+      font-size: .95rem;
+      font-weight: 800;
+      font-family: 'Nunito', sans-serif;
+      cursor: pointer;
+      transition: transform .2s, box-shadow .2s, background .2s;
+      box-shadow: 0 6px 20px rgba(28,43,58,.3);
+    }
+    .save-btn:hover {
+      background: linear-gradient(135deg, #E07B54, #c96940);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(224,123,84,.4);
+    }
+    .save-btn i { font-size: 1rem; }
+
+    /* Danger zone */
+    .danger-zone {
+      border: 2px solid #fde8e8;
+      border-radius: 16px;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .danger-zone-text h4 { font-size: .95rem; font-weight: 800; color: #c0392b; margin-bottom: 4px; }
+    .danger-zone-text p  { font-size: .8rem; color: #999; }
+    .danger-btn {
+      padding: 10px 22px;
+      background: transparent;
+      border: 2px solid #e74c3c;
+      color: #e74c3c;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: .85rem;
+      font-family: 'Nunito', sans-serif;
+      cursor: pointer;
+      transition: all .2s;
+      white-space: nowrap;
+    }
+    .danger-btn:hover { background: #e74c3c; color: #fff; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 860px) {
+      .profile-layout { grid-template-columns: 1fr; }
+      .profile-sidebar { margin-top: -40px; }
+      .profile-main { margin-top: 0; }
+      .form-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 500px) {
+      .profile-cover { height: 160px; }
+      .panel-body { padding: 18px; }
+    }
+  </style>
 </head>
 <body>
 
-<div class="profile-container">
+<!-- Navbar -->
+<header class="navbar">
+  <a href="/dashboard" class="logo">
+    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="GoHigh">
+    <span class="brand">GoHigh <b>Rentals</b></span>
+  </a>
+  <nav>
+    <a href="/dashboard">Dashboard</a>
+    <a href="{{ url_for('my_bookings') }}">My Bookings</a>
+    <a href="{{ url_for('profile') }}" class="active">Profile</a>
+    <a href="{{ url_for('logout') }}" style="color:#E07B54; font-weight:800;">
+      <i class="fas fa-sign-out-alt"></i> Logout
+    </a>
+  </nav>
+</header>
 
-    <h2>My Profile</h2>
+<!-- Cover -->
+<div class="profile-cover"></div>
 
-    <div class="profile-card">
+<div class="profile-layout">
 
-        <form method="POST" action="{{ url_for('profile') }}">
+  <!-- ── LEFT SIDEBAR ── -->
+  <aside class="profile-sidebar">
 
-            <label>Full Name</label>
-            <input type="text" name="name" value="{{ user.name }}" required>
+    <!-- Avatar Card -->
+    <div class="avatar-card">
+      <div class="avatar-ring">
+        {{ user.name[0].upper() }}
+        <span class="online-dot"></span>
+      </div>
+      <h2>{{ user.name }}</h2>
+      <div class="role-badge"><i class="fas fa-mountain"></i> Himalayan Traveler</div>
+      <p class="member-since"><i class="fas fa-calendar" style="color:#4A9B8E"></i> Member since 2024</p>
 
-            <label>Email</label>
-            <input type="email" value="{{ user.email }}" disabled>
-
-            <label>Phone</label>
-            <input type="text" name="phone" value="{{ user.phone }}" required>
-
-            <label>Change Password</label>
-            <input type="password" name="password" placeholder="Enter new password">
-
-            <button type="submit">Update Profile</button>
-
-        </form>
-
+      <div class="sidebar-stats">
+        <div class="sstat">
+          <h4>{{ total_trips if total_trips is defined else '—' }}</h4>
+          <p>Trips</p>
+        </div>
+        <div class="sstat">
+          <h4>{{ completed if completed is defined else '—' }}</h4>
+          <p>Done</p>
+        </div>
+        <div class="sstat">
+          <h4>{{ confirmed if confirmed is defined else '—' }}</h4>
+          <p>Active</p>
+        </div>
+        <div class="sstat">
+          <h4>5★</h4>
+          <p>Rating</p>
+        </div>
+      </div>
     </div>
 
+    <!-- Contact Info Strip -->
+    <div class="info-strip">
+      <div class="info-strip-header">
+        <i class="fas fa-address-card"></i> Contact Info
+      </div>
+      <div class="info-strip-row">
+        <i class="fas fa-user"></i>
+        <span>Name</span>
+        <strong>{{ user.name }}</strong>
+      </div>
+      <div class="info-strip-row">
+        <i class="fas fa-envelope"></i>
+        <span>Email</span>
+        <strong style="font-size:.82rem; word-break:break-all;">{{ user.email }}</strong>
+      </div>
+      <div class="info-strip-row">
+        <i class="fas fa-phone"></i>
+        <span>Phone</span>
+        <strong>{{ user.phone if user.phone else 'Not set' }}</strong>
+      </div>
+      <div class="info-strip-row">
+        <i class="fas fa-shield-alt"></i>
+        <span>Status</span>
+        <strong style="color:#2D6A4F;">✔ Verified</strong>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- ── RIGHT MAIN ── -->
+  <main class="profile-main">
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash-bar {{ category }}">
+            <i class="fas fa-{{ 'check-circle' if category == 'success' else 'exclamation-circle' }}"></i>
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <!-- Edit Profile Form -->
+    <form method="POST" action="{{ url_for('profile') }}" id="profileForm">
+
+      <!-- Personal Info -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-header-left">
+            <div class="panel-icon teal"><i class="fas fa-user"></i></div>
+            <div>
+              <div class="panel-title">Personal Information</div>
+              <div class="panel-subtitle">Update your name and contact details</div>
+            </div>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="form-grid">
+
+            <div class="form-group">
+              <label><i class="fas fa-user"></i> Full Name</label>
+              <input type="text" name="name" value="{{ user.name }}" placeholder="Your full name" required>
+            </div>
+
+            <div class="form-group">
+              <label><i class="fas fa-phone"></i> Phone Number</label>
+              <input type="tel" name="phone" value="{{ user.phone if user.phone else '' }}" placeholder="+91 98765 43210">
+            </div>
+
+            <div class="form-group full">
+              <label><i class="fas fa-envelope"></i> Email Address</label>
+              <input type="email" value="{{ user.email }}" readonly>
+              <p class="input-hint">Email cannot be changed. Contact support to update.</p>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-header-left">
+            <div class="panel-icon orange"><i class="fas fa-lock"></i></div>
+            <div>
+              <div class="panel-title">Change Password</div>
+              <div class="panel-subtitle">Leave blank to keep your current password</div>
+            </div>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="form-grid">
+
+            <div class="form-group">
+              <label><i class="fas fa-lock"></i> New Password</label>
+              <input type="password" name="password" id="newPass" placeholder="Enter new password" oninput="checkStrength(this.value)">
+              <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+              <p class="strength-label" id="strengthLabel">Enter a password</p>
+            </div>
+
+            <div class="form-group">
+              <label><i class="fas fa-lock"></i> Confirm Password</label>
+              <input type="password" id="confirmPass" placeholder="Confirm new password" oninput="checkMatch()">
+              <p class="input-hint" id="matchHint"></p>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Save -->
+      <div style="display:flex; justify-content:flex-end; margin-top:4px;">
+        <button type="submit" class="save-btn" onclick="return validateForm()">
+          <i class="fas fa-save"></i> Save Changes
+        </button>
+      </div>
+
+    </form>
+
+    <!-- Danger Zone -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-header-left">
+          <div class="panel-icon orange"><i class="fas fa-exclamation-triangle"></i></div>
+          <div>
+            <div class="panel-title" style="color:#c0392b;">Danger Zone</div>
+            <div class="panel-subtitle">Irreversible actions — proceed with caution</div>
+          </div>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="danger-zone">
+          <div class="danger-zone-text">
+            <h4>Delete Account</h4>
+            <p>Permanently delete your account and all booking history. This cannot be undone.</p>
+          </div>
+          <button class="danger-btn" onclick="return confirm('Are you sure you want to delete your account? This cannot be undone.')">
+            <i class="fas fa-trash-alt"></i> Delete Account
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </main>
 </div>
+
+<script>
+  // Password strength
+  function checkStrength(val) {
+    const fill  = document.getElementById('strengthFill');
+    const label = document.getElementById('strengthLabel');
+    let score = 0;
+    if (val.length >= 8) score++;
+    if (/[A-Z]/.test(val)) score++;
+    if (/[0-9]/.test(val)) score++;
+    if (/[^A-Za-z0-9]/.test(val)) score++;
+
+    const levels = [
+      { w: '0%',   color: '#eee',    text: 'Enter a password' },
+      { w: '30%',  color: '#e74c3c', text: 'Weak' },
+      { w: '55%',  color: '#f39c12', text: 'Fair' },
+      { w: '80%',  color: '#3498db', text: 'Good' },
+      { w: '100%', color: '#2ecc71', text: 'Strong 💪' },
+    ];
+    const l = val.length === 0 ? levels[0] : levels[Math.min(score, 4)];
+    fill.style.width      = l.w;
+    fill.style.background = l.color;
+    label.textContent     = l.text;
+    label.style.color     = l.color;
+  }
+
+  function checkMatch() {
+    const p1    = document.getElementById('newPass').value;
+    const p2    = document.getElementById('confirmPass').value;
+    const hint  = document.getElementById('matchHint');
+    if (!p2) { hint.textContent = ''; return; }
+    if (p1 === p2) { hint.textContent = '✔ Passwords match'; hint.style.color = '#2ecc71'; }
+    else           { hint.textContent = '✖ Passwords do not match'; hint.style.color = '#e74c3c'; }
+  }
+
+  function validateForm() {
+    const p1 = document.getElementById('newPass').value;
+    const p2 = document.getElementById('confirmPass').value;
+    if (p1 && p1 !== p2) {
+      alert('Passwords do not match!');
+      return false;
+    }
+    return true;
+  }
+
+  // Auto-dismiss flash messages
+  document.querySelectorAll('.flash-bar').forEach(el => {
+    setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity .4s'; }, 3500);
+    setTimeout(() => el.remove(), 3900);
+  });
+</script>
 
 </body>
 </html>

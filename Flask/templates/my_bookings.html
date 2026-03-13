@@ -1,137 +1,449 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>My Bookings</title>
-	<link rel="icon" type="image/png" 
-          href="https://img.icons8.com/fluency/48/mountain.png">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Bookings — GoHigh Rentals</title>
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo.png') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    /* ── Page-level overrides ── */
+    body { background: #f4f8fb; }
+
+    /* Hero header */
+    .bookings-hero {
+      background: linear-gradient(-45deg, #1a2e3b, #2f4858, #1a3a2a, #2f4858);
+      background-size: 400% 400%;
+      animation: gradientShift 14s ease infinite;
+      padding: 52px 5% 44px;
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+    .bookings-hero::before {
+      content: "";
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(circle at 15% 80%, rgba(74,155,142,.18) 0%, transparent 45%),
+        radial-gradient(circle at 85% 20%, rgba(212,168,67,.10) 0%, transparent 40%);
+      pointer-events: none;
+    }
+    .bookings-hero-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      position: relative;
+      z-index: 1;
+    }
+    .bookings-hero h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      margin: 0 0 4px;
+      letter-spacing: -.3px;
+    }
+    .bookings-hero p {
+      font-size: .92rem;
+      opacity: .75;
+      margin: 0;
+    }
+    .bookings-hero .new-booking-btn {
+      padding: 12px 26px;
+      background: #E07B54;
+      color: #fff;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: .9rem;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background .2s, transform .2s;
+      white-space: nowrap;
+    }
+    .bookings-hero .new-booking-btn:hover {
+      background: #c96940;
+      transform: translateY(-2px);
+    }
+
+    /* Flash messages */
+    .flash-message {
+      max-width: 1200px;
+      margin: 18px auto 0;
+      padding: 13px 20px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: .9rem;
+    }
+    .flash-message.success { background: #d5eee3; color: #1b5e35; border-left: 4px solid #4CAF50; }
+    .flash-message.error   { background: #fae3da; color: #b34a28; border-left: 4px solid #e74c3c; }
+
+    /* Stats wrapper spacing on this page */
+    .stats-wrapper {
+      margin-top: 36px;
+    }
+
+    /* Table empty state */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+    }
+    .empty-state i {
+      font-size: 3rem;
+      color: #c9dde8;
+      margin-bottom: 16px;
+      display: block;
+    }
+    .empty-state p {
+      color: #888;
+      font-size: 1rem;
+      margin-bottom: 24px;
+    }
+
+    /* Action column */
+    .booking-table .action-cell form { margin: 0; }
+    .done-label { color: #2e7d32; font-size: .85rem; font-weight: 700; }
+    .dash-label  { color: #aaa; font-size: 1rem; }
+
+    /* Responsive table scroll */
+    @media (max-width: 700px) {
+      .bookings-hero h1 { font-size: 1.4rem; }
+    }
+  </style>
 </head>
 <body>
 
-	<!-- Stats Section -->
+<!-- Navbar -->
+<header class="navbar">
+  <div class="logo">
+    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="GoHigh">
+    <span class="brand">GoHigh <b>Rentals</b></span>
+  </div>
+  <nav>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/my_bookings" class="active">My Bookings</a>
+    <a href="#" onclick="history.back()">Back</a>
+
+    <!-- User Profile Dropdown -->
+    <div class="user-dropdown">
+      <button class="user-avatar-btn" onclick="toggleDropdown()">
+        <div class="user-avatar-circle">
+          {{ session['user_name'][0].upper() }}
+        </div>
+        <span class="user-name-short">{{ session['user_name'].split()[0] }}</span>
+        <i class="fas fa-chevron-down user-chevron"></i>
+      </button>
+      <div class="user-dropdown-menu" id="userDropdownMenu">
+        <div class="dropdown-header">
+          <div class="dropdown-avatar">{{ session['user_name'][0].upper() }}</div>
+          <div>
+            <p class="dropdown-name">{{ session['user_name'] }}</p>
+            <p class="dropdown-role">Traveler</p>
+          </div>
+        </div>
+        <div class="dropdown-divider"></div>
+        <a href="{{ url_for('profile') }}" class="dropdown-item">
+          <i class="fas fa-user-edit"></i> Edit Profile
+        </a>
+        <a href="{{ url_for('my_bookings') }}" class="dropdown-item">
+          <i class="fas fa-calendar-check"></i> My Bookings
+        </a>
+        <div class="dropdown-divider"></div>
+        <a href="{{ url_for('logout') }}" class="dropdown-item logout-item">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+      </div>
+    </div>
+
+  </nav>
+</header>
+
+<!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="flash-message {{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<!-- Hero -->
+<div class="bookings-hero">
+  <div class="bookings-hero-inner">
+    <div>
+      <h1>📋 My Bookings</h1>
+      <p>Track and manage all your Himalayan adventures in one place</p>
+    </div>
+    <a href="{{ url_for('booking.create_booking_page') }}" class="new-booking-btn">
+      <i class="fas fa-plus"></i> New Booking
+    </a>
+  </div>
+</div>
+
+<!-- Stats -->
 <div class="stats-wrapper">
-	
-    <div class="stat-card">
-        <div class="stat-icon blue"><i class="fas fa-briefcase"></i></div>
-        <div>
-            <p>Total Trips</p>
-            <h3>{{ total_trips }}</h3>
-        </div>
-    </div>
 
-    <div class="stat-card">
-        <div class="stat-icon green"><i class="fas fa-check"></i></div>
-        <div>
-            <p>Confirmed</p>
-            <h3>{{ confirmed }}</h3>
-        </div>
+  <div class="stat-card">
+    <div class="stat-icon blue"><i class="fas fa-briefcase"></i></div>
+    <div>
+      <p>Total Trips</p>
+      <h3>{{ total_trips }}</h3>
     </div>
+  </div>
 
-    <div class="stat-card">
-        <div class="stat-icon teal"><i class="fas fa-check-double"></i></div>
-        <div>
-            <p>Completed</p>
-            <h3>{{ completed }}</h3>
-        </div>
+  <div class="stat-card">
+    <div class="stat-icon green"><i class="fas fa-check"></i></div>
+    <div>
+      <p>Confirmed</p>
+      <h3>{{ confirmed }}</h3>
     </div>
+  </div>
 
-    <div class="stat-card">
-        <div class="stat-icon red"><i class="fas fa-times"></i></div>
-        <div>
-            <p>Cancelled</p>
-            <h3>{{ cancelled }}</h3>
-        </div>
+  <div class="stat-card">
+    <div class="stat-icon teal"><i class="fas fa-check-double"></i></div>
+    <div>
+      <p>Completed</p>
+      <h3>{{ completed }}</h3>
     </div>
+  </div>
 
-    <div class="stat-card">
-        <div class="stat-icon orange"><i class="fas fa-rupee-sign"></i></div>
-        <div>
-            <p>Total Spent</p>
-            <h3>₹{{ total_spent }}</h3>
-        </div>
+  <div class="stat-card">
+    <div class="stat-icon red"><i class="fas fa-times"></i></div>
+    <div>
+      <p>Cancelled</p>
+      <h3>{{ cancelled }}</h3>
     </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon orange"><i class="fas fa-rupee-sign"></i></div>
+    <div>
+      <p>Total Spent</p>
+      <h3>₹{{ total_spent }}</h3>
+    </div>
+  </div>
 
 </div>
 
-<!-- My Bookings Section -->
+<!-- Bookings Table -->
 <section class="my-bookings" id="bookings">
 
-<h2>📋 My Recent Bookings</h2>
+  <h2>🗓️ All Trips</h2>
 
-<div class="booking-table">
-
-<table>
-
-    <thead>
+  <div class="booking-table">
+    <table>
+      <colgroup>
+        <col style="width:45px">
+        <col style="width:20%">
+        <col style="width:17%">
+        <col style="width:14%">
+        <col style="width:12%">
+        <col style="width:11%">
+        <col style="width:13%">
+        <col style="width:11%">
+      </colgroup>
+      <thead>
         <tr>
-            <th>Destination</th>
-            <th>Vehicle</th>
-            <th>Travel Date</th>
-            <th>Status</th>
-            <th>Amount</th>
-            <th>Action</th>
+          <th>#</th>
+          <th>Destination</th>
+          <th>Vehicle</th>
+          <th>Travel Date</th>
+          <th>Status</th>
+          <th>Amount</th>
+          <th>Action</th>
+          <th>Invoice</th>
         </tr>
-    </thead>
-
-    <tbody>
-
-    {% if bookings %}
-
-        {% for booking in bookings %}
-        <tr>
-            <td>{{ booking.destination_name }}</td>
+      </thead>
+    </table>
+    <div class="booking-table-scroll">
+    <table>
+      <colgroup>
+        <col style="width:45px">
+        <col style="width:20%">
+        <col style="width:17%">
+        <col style="width:14%">
+        <col style="width:12%">
+        <col style="width:11%">
+        <col style="width:13%">
+        <col style="width:11%">
+      </colgroup>
+      <tbody>
+        {% if bookings %}
+          {% for booking in bookings %}
+          <tr>
+            <td style="color:#aaa; font-size:.82rem;">{{ loop.index }}</td>
+            <td>
+              <strong>{{ booking.destination_name }}</strong>
+            </td>
             <td>{{ booking.vehicle_name }}</td>
-            <td>{{ booking.travel_date }}</td>
-
             <td>
-                <span class="status {{ booking.booking_status|lower }}">
-                    {{ booking.booking_status }}
-                </span>
+              <i class="fas fa-calendar-alt" style="color:#E07B54; margin-right:5px;"></i>
+              {{ booking.travel_date }}
             </td>
-
-            <td>₹{{ booking.total_amount }}</td>
-
             <td>
-                {% if booking.booking_status == 'Confirmed' %}
-                    <form action="/cancel_booking/{{ booking.booking_id }}" method="POST">
-                        <button type="submit" class="cancel-btn"
-                                onclick="return confirm('Are you sure you want to cancel this booking?')">
-                            <i class="fas fa-times"></i> Cancel
-                        </button>
-                    </form>
-                {% elif booking.booking_status == 'Completed' %}
-                    <span style="color: #0c5460;">✅ Done</span>
-                {% else %}
-                    —
-                {% endif %}
+              <span class="status {{ booking.booking_status | lower }}">
+                {{ booking.booking_status }}
+              </span>
             </td>
-
-        </tr>
-        {% endfor %}
-
-    {% else %}
-
-    <tr>
-        <td colspan="6" style="text-align:center; padding:20px;">
-            🚫 No trips booked yet.<br><br>
-            <a href="{{ url_for('booking.create_booking_page') }}" class="new-booking-btn">
-                Book Your First Trip
-            </a>
-        </td>
-    </tr>
-
-    {% endif %}
-
-    </tbody>
-</table>
-
-</div>
+            <td><strong>₹{{ booking.total_amount }}</strong></td>
+            <td class="action-cell">
+              {% if booking.booking_status == 'Confirmed' %}
+                <form action="/cancel_booking/{{ booking.booking_id }}" method="POST">
+                  <button type="submit" class="cancel-btn"
+                    onclick="return confirm('Cancel this booking?')">
+                    <i class="fas fa-times"></i> Cancel
+                  </button>
+                </form>
+              {% elif booking.booking_status == 'Completed' %}
+                <span class="done-label">✅ Done</span>
+              {% else %}
+                <span class="dash-label">—</span>
+              {% endif %}
+            </td>
+            <td>
+              <button class="invoice-btn" onclick="showInvoice({
+                id:     '{{ booking.booking_id }}',
+                dest:   '{{ booking.destination_name }}',
+                vehicle:'{{ booking.vehicle_name }}',
+                date:   '{{ booking.travel_date }}',
+                status: '{{ booking.booking_status }}',
+                amount: '{{ booking.total_amount }}'
+              })"><i class="fas fa-file-invoice"></i> View</button>
+            </td>
+          </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="8">
+              <div class="empty-state">
+                <i class="fas fa-mountain"></i>
+                <p>No trips booked yet. Start your Himalayan adventure!</p>
+                <a href="{{ url_for('booking.create_booking_page') }}" class="new-booking-btn"
+                   style="display:inline-flex; text-decoration:none; background:#2f4858; color:#fff;
+                          padding:12px 28px; border-radius:12px; font-weight:700; gap:8px; align-items:center;">
+                  <i class="fas fa-plus"></i> Book Your First Trip
+                </a>
+              </div>
+            </td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+    </div>
+  </div>
 
 </section>
+
+<!-- ── Invoice Modal ── -->
+<div class="invoice-overlay" id="invoiceOverlay" onclick="closeInvoice()"></div>
+
+<div class="invoice-modal" id="invoiceModal">
+  <div class="invoice-header">
+    <div class="invoice-logo">
+      <img src="{{ url_for('static', filename='images/logo.png') }}" alt="GoHigh">
+      <div>
+        <h2>GoHigh Rentals</h2>
+        <p>Himalayan Expeditions</p>
+      </div>
+    </div>
+    <div class="invoice-meta">
+      <h3>INVOICE</h3>
+      <p id="inv-id"></p>
+      <p id="inv-date-generated"></p>
+    </div>
+  </div>
+
+  <div class="invoice-divider"></div>
+
+  <div class="invoice-body">
+    <div class="invoice-row">
+      <span>Destination</span>
+      <strong id="inv-dest"></strong>
+    </div>
+    <div class="invoice-row">
+      <span>Vehicle</span>
+      <strong id="inv-vehicle"></strong>
+    </div>
+    <div class="invoice-row">
+      <span>Travel Date</span>
+      <strong id="inv-date"></strong>
+    </div>
+    <div class="invoice-row">
+      <span>Booking Status</span>
+      <strong id="inv-status"></strong>
+    </div>
+    <div class="invoice-row">
+      <span>GST (18%)</span>
+      <strong id="inv-gst"></strong>
+    </div>
+  </div>
+
+  <div class="invoice-total-row">
+    <span>Total Amount</span>
+    <strong id="inv-total"></strong>
+  </div>
+
+  <p class="invoice-note">Thank you for choosing GoHigh Rentals 🏔️<br>For queries: support@gohighrentals.com</p>
+
+  <div class="invoice-actions">
+    <button class="invoice-print-btn" onclick="printInvoice()">
+      <i class="fas fa-print"></i> Print Invoice
+    </button>
+    <button class="invoice-close-btn" onclick="closeInvoice()">
+      <i class="fas fa-times"></i> Close
+    </button>
+  </div>
+</div>
+
+<script>
+  // User profile dropdown
+  function toggleDropdown() {
+    const menu = document.getElementById('userDropdownMenu');
+    menu.classList.toggle('open');
+  }
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.user-dropdown')) {
+      document.getElementById('userDropdownMenu')?.classList.remove('open');
+    }
+  });
+
+  // Auto-remove flash messages after 3s
+  document.querySelectorAll('.flash-message').forEach(msg => {
+    setTimeout(() => msg.style.opacity = '0', 3000);
+    setTimeout(() => msg.remove(), 3400);
+  });
+
+  function showInvoice(b) {
+    const base   = parseFloat(b.amount);
+    const gst    = (base * 0.18).toFixed(2);
+
+    document.getElementById('inv-id').textContent             = 'Booking #' + b.id;
+    document.getElementById('inv-date-generated').textContent = 'Generated: ' + new Date().toLocaleDateString('en-IN');
+    document.getElementById('inv-dest').textContent           = b.dest;
+    document.getElementById('inv-vehicle').textContent        = b.vehicle;
+    document.getElementById('inv-date').textContent           = b.date;
+    document.getElementById('inv-status').textContent         = b.status;
+    document.getElementById('inv-gst').textContent            = '₹' + gst;
+    document.getElementById('inv-total').textContent          = '₹' + b.amount;
+
+    document.getElementById('invoiceOverlay').classList.add('active');
+    document.getElementById('invoiceModal').classList.add('active');
+  }
+
+  function closeInvoice() {
+    document.getElementById('invoiceOverlay').classList.remove('active');
+    document.getElementById('invoiceModal').classList.remove('active');
+  }
+
+  function printInvoice() {
+    window.print();
+  }
+</script>
 
 </body>
 </html>

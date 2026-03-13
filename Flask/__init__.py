@@ -1,4 +1,5 @@
 import os
+from datetime import date
 from flask import Flask, render_template, request, redirect, session, url_for, flash
 from dotenv import load_dotenv
 import mysql.connector
@@ -15,7 +16,6 @@ def create_app():
 
     app = Flask(__name__)
     app.secret_key = os.getenv("SECRET_KEY")
-    # print("Secret Key:", app.secret_key)
 
     # Register blueprint
     app.register_blueprint(booking_bp)
@@ -48,7 +48,6 @@ def create_app():
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM users")
         users = cursor.fetchall()
-        # print("User Data:", users)
 
         cursor.close()
         connection.close()
@@ -75,24 +74,17 @@ def create_app():
     def register():
         if request.method == 'POST':
 
-            
             name = request.form['name']
-            print("Name: ", name)
             email = request.form['email']
-            print("Email: ", email)
             phone_no = request.form['phone_no']
-            print("Phone Number: ", phone_no)
             password = request.form['password']
-            print("Password: ", password)
 
-        
             if not name or not email or not phone_no or not password:
                 return "All fields are required!"
 
-           
-            name_pattern = r'^[A-Za-z]{2,}(?:\s[A-Za-z]{2,})+$'
-            email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,}$'
-            phone_pattern = r'^[6-9][0-9]{9}$'
+            name_pattern     = r'^[A-Za-z]{2,}(?:\s[A-Za-z]{2,})+$'
+            email_pattern    = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,}$'
+            phone_pattern    = r'^[6-9][0-9]{9}$'
             password_pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&-]).{8,}$'
 
             if not re.match(name_pattern, name):
@@ -107,10 +99,13 @@ def create_app():
             if not re.match(password_pattern, password):
                 return "Password must contain uppercase, lowercase, number and special character"
 
-            conn = get_db_connection()
-            cursor = conn.cursor(dictionary=True) #error: tuple indices must be integers or slices, not str
+            conn   = get_db_connection()
+            cursor = conn.cursor(dictionary=True)
 
-            cursor.execute("SELECT email, phone_no FROM users WHERE email=%s OR phone_no=%s",(email, phone_no))
+            cursor.execute(
+                "SELECT email, phone_no FROM users WHERE email=%s OR phone_no=%s",
+                (email, phone_no)
+            )
             existing_user = cursor.fetchone()
 
             if existing_user:
@@ -125,11 +120,9 @@ def create_app():
                     conn.close()
                     return "Phone number already registered!"
 
-           
             hashed_password = generate_password_hash(password)
-            session.clear()  
+            session.clear()
 
-            # 7️⃣ Insert user
             query = """
             INSERT INTO users (name, email, phone_no, password)
             VALUES (%s, %s, %s, %s)
@@ -137,17 +130,13 @@ def create_app():
             cursor.execute(query, (name, email, phone_no, hashed_password))
             conn.commit()
 
-            session['user_id'] = cursor.lastrowid
+            session['user_id']   = cursor.lastrowid
             session['user_name'] = name
 
             cursor.close()
             conn.close()
 
             flash("Registration successful!", "success")
-
-            session['user_id'] = cursor.lastrowid
-            session['user_name'] = name
-
             return redirect(url_for('dashboard'))
 
         return render_template('register.html')    
@@ -155,18 +144,13 @@ def create_app():
     @app.route('/login', methods=['GET','POST'])
     def login():
         if request.method == 'POST':
-            email = request.form['email']
-            print("Username: ", email)
-
+            email    = request.form['email']
             password = request.form['password']
-            print("Password", password)
 
-            conn = get_db_connection()
+            conn   = get_db_connection()
             cursor = conn.cursor(dictionary=True)
 
-            query = "SELECT * FROM users WHERE email=%s"
-            cursor.execute(query, (email,))
-
+            cursor.execute("SELECT * FROM users WHERE email=%s", (email,))
             user = cursor.fetchone()
 
             cursor.close()
@@ -175,27 +159,22 @@ def create_app():
             if user:
                 stored_password = user['password']
 
-                # If password is hashed
                 if stored_password.startswith('pbkdf2:') or stored_password.startswith('scrypt:'):
                     password_valid = check_password_hash(stored_password, password)
-
-                # If password is plain text
                 else:
                     password_valid = stored_password == password
 
                 if password_valid:
                     session.clear()
-                    session['user_id'] = user['user_id']
+                    session['user_id']   = user['user_id']
                     session['user_name'] = user['name']
 
                     flash("Login Successfully!", "success")
-                    return redirect('/dashboard')   
+                    return redirect('/dashboard')
 
             flash("Invalid email or password", "error")
             return render_template("login.html")
 
-
-    
         return render_template("login.html")
 
 
@@ -205,11 +184,11 @@ def create_app():
             return redirect(url_for('login'))
 
         connection = get_db_connection()
-        cursor = connection.cursor(dictionary=True)
+        cursor     = connection.cursor(dictionary=True)
 
         if request.method == 'POST':
-            name = request.form['name']
-            phone = request.form['phone']
+            name     = request.form['name']
+            phone    = request.form['phone']
             password = request.form['password']
 
             if password:
@@ -220,20 +199,32 @@ def create_app():
                 """, (name, phone, password, session['user_id']))
             else:
                 cursor.execute("""
-                    UPDATE user 
+                    UPDATE users 
                     SET name=%s, phone=%s 
                     WHERE user_id=%s
                 """, (name, phone, session['user_id']))
 
             connection.commit()
+            session['user_name'] = name
+            flash('Profile updated successfully!', 'success')
 
         cursor.execute("SELECT * FROM users WHERE user_id=%s", (session['user_id'],))
         user = cursor.fetchone()
 
+        # Booking stats for sidebar
+        cursor.execute("SELECT booking_status FROM booking WHERE user_id=%s", (session['user_id'],))
+        bookings = cursor.fetchall()
+        total_trips = len(bookings)
+        confirmed   = len([b for b in bookings if b['booking_status'] == 'Confirmed'])
+        completed   = len([b for b in bookings if b['booking_status'] == 'Completed'])
+
         cursor.close()
         connection.close()
 
-        return render_template('profile.html', user=user)      
+        return render_template('profile.html', user=user,
+                               total_trips=total_trips,
+                               confirmed=confirmed,
+                               completed=completed)
 
 
     @app.route('/dashboard')
@@ -242,11 +233,10 @@ def create_app():
             return redirect('/login')
 
         connection = get_db_connection()
-        cursor = connection.cursor(dictionary=True)
+        cursor     = connection.cursor(dictionary=True)
 
-        # Update ALL users' past confirmed bookings globally
+        # Auto-complete past confirmed bookings
         today = date.today()
-        
         cursor.execute("""
             UPDATE booking 
             SET booking_status = 'Completed' 
@@ -255,7 +245,7 @@ def create_app():
         """, (today,))
         connection.commit()
 
-        # Now fetch this user's bookings (already updated)
+        # Fetch this user's bookings
         query = """
         SELECT 
             b.booking_id,
@@ -266,51 +256,145 @@ def create_app():
             p.total_amount
         FROM booking b
         JOIN destination d ON b.destination_id = d.destination_id
-        JOIN vehicle v ON b.vehicle_id = v.vehicle_id
-        JOIN pricing p ON b.booking_id = p.booking_id
+        JOIN vehicle v     ON b.vehicle_id     = v.vehicle_id
+        JOIN pricing p     ON b.booking_id     = p.booking_id
         WHERE b.user_id = %s
+        ORDER BY b.travel_date DESC
         """
         cursor.execute(query, (session['user_id'],))
         bookings = cursor.fetchall()
 
-        # Stats AFTER updating
         total_trips = len(bookings)
-        confirmed  = len([b for b in bookings if b['booking_status'] == 'Confirmed'])
-        cancelled  = len([b for b in bookings if b['booking_status'] == 'Cancelled'])
-        completed   = len([b for b in bookings if b['booking_status'] == 'Completed'])  
+        confirmed   = len([b for b in bookings if b['booking_status'] == 'Confirmed'])
+        cancelled   = len([b for b in bookings if b['booking_status'] == 'Cancelled'])
+        completed   = len([b for b in bookings if b['booking_status'] == 'Completed'])
         total_spent = sum(b['total_amount'] for b in bookings)
 
         cursor.close()
         connection.close()
-        print("STATS →", total_trips, confirmed, completed, cancelled, total_spent)
 
         return render_template(
             "dashboard.html",
-            user_name=session['user_name'],
-            bookings=bookings,
-            total_trips=total_trips,
-            confirmed=confirmed,
-            cancelled=cancelled,
-            completed=completed,
-            total_spent=total_spent
+            user_name   = session['user_name'],
+            bookings    = bookings,
+            total_trips = total_trips,
+            confirmed   = confirmed,
+            cancelled   = cancelled,
+            completed   = completed,
+            total_spent = total_spent
         )
+
+
+    @app.route('/my_bookings')
+    def my_bookings():
+        # Redirect to login if not logged in
+        if 'user_id' not in session:
+            return redirect(url_for('login'))
+
+        connection = get_db_connection()
+        cursor     = connection.cursor(dictionary=True)
+
+        # Auto-complete past confirmed bookings
+        today = date.today()
+        cursor.execute("""
+            UPDATE booking 
+            SET booking_status = 'Completed' 
+            WHERE booking_status = 'Confirmed' 
+            AND travel_date <= %s
+        """, (today,))
+        connection.commit()
+
+        # Fetch this user's bookings
+        query = """
+        SELECT 
+            b.booking_id,
+            b.travel_date,
+            b.booking_status,
+            d.destination_name,
+            v.vehicle_name,
+            p.total_amount
+        FROM booking b
+        JOIN destination d ON b.destination_id = d.destination_id
+        JOIN vehicle v     ON b.vehicle_id     = v.vehicle_id
+        JOIN pricing p     ON b.booking_id     = p.booking_id
+        WHERE b.user_id = %s
+        ORDER BY b.travel_date DESC
+        """
+        cursor.execute(query, (session['user_id'],))
+        bookings = cursor.fetchall()
+
+        # Compute stats
+        total_trips = len(bookings)
+        confirmed   = len([b for b in bookings if b['booking_status'] == 'Confirmed'])
+        cancelled   = len([b for b in bookings if b['booking_status'] == 'Cancelled'])
+        completed   = len([b for b in bookings if b['booking_status'] == 'Completed'])
+        total_spent = sum(b['total_amount'] for b in bookings)
+
+        cursor.close()
+        connection.close()
+
+        return render_template(
+            "my_bookings.html",
+            bookings    = bookings,
+            total_trips = total_trips,
+            confirmed   = confirmed,
+            cancelled   = cancelled,
+            completed   = completed,
+            total_spent = total_spent
+        )
+
+
+    @app.route('/cancel_booking/<int:booking_id>', methods=['POST'])
+    def cancel_booking(booking_id):
+        if 'user_id' not in session:
+            return redirect(url_for('login'))
+
+        connection = get_db_connection()
+        cursor     = connection.cursor(dictionary=True)
+
+        # Verify booking belongs to this user and is still Confirmed
+        cursor.execute("""
+            SELECT booking_id, booking_status 
+            FROM booking 
+            WHERE booking_id = %s AND user_id = %s
+        """, (booking_id, session['user_id']))
+        booking = cursor.fetchone()
+
+        if booking and booking['booking_status'] == 'Confirmed':
+            cursor.execute("""
+                UPDATE booking 
+                SET booking_status = 'Cancelled' 
+                WHERE booking_id = %s
+            """, (booking_id,))
+            connection.commit()
+            flash("Booking cancelled successfully.", "success")
+        else:
+            flash("Unable to cancel this booking.", "error")
+
+        cursor.close()
+        connection.close()
+
+        # Redirect back to wherever the user came from
+        referrer = request.referrer or url_for('my_bookings')
+        return redirect(referrer)
+
 
     @app.route('/logout', methods=['GET','POST'])
     def logout():
-        session.pop('user_id',None)
-        session.pop('user_name', None) 
+        session.pop('user_id',  None)
+        session.pop('user_name', None)
         return redirect(url_for('index'))
 
 
     @app.route('/contact', methods=['GET', 'POST'])
     def contact():
         if request.method == 'POST':
-            name = request.form['name']
-            email = request.form['email']
+            name    = request.form['name']
+            email   = request.form['email']
             message = request.form['message']
 
             connection = get_db_connection()
-            cursor = connection.cursor()
+            cursor     = connection.cursor()
 
             cursor.execute(
                 "INSERT INTO contact (name, email, message) VALUES (%s,%s,%s)",
@@ -322,10 +406,9 @@ def create_app():
             connection.close()
 
             flash("Message Sent Successfully!")
-
             return redirect(url_for('index'))
 
-        return redirect(url_for('index'))   
+        return redirect(url_for('index'))
 
 
     return app

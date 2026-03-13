@@ -44,11 +44,41 @@ GoHigh <b>Rentals</b>
 <nav>
 
 <a href="/dashboard">Dashboard</a>
-<a href="#">My Bookings</a>
+<a href="{{ url_for('my_bookings') }}">My Bookings</a>
 <a href="#destinations">Destinations</a>
-<a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
 
-</nav>
+<!-- User Profile Dropdown -->
+<div class="user-dropdown">
+  <button class="user-avatar-btn" onclick="toggleDropdown()">
+    <div class="user-avatar-circle">
+      {{ session['user_name'][0].upper() }}
+    </div>
+    <span class="user-name-short">{{ session['user_name'].split()[0] }}</span>
+    <i class="fas fa-chevron-down user-chevron"></i>
+  </button>
+  <div class="user-dropdown-menu" id="userDropdownMenu">
+    <div class="dropdown-header">
+      <div class="dropdown-avatar">{{ session['user_name'][0].upper() }}</div>
+      <div>
+        <p class="dropdown-name">{{ session['user_name'] }}</p>
+        <p class="dropdown-role">Traveler</p>
+      </div>
+    </div>
+    <div class="dropdown-divider"></div>
+    <a href="{{ url_for('profile') }}" class="dropdown-item">
+      <i class="fas fa-user-edit"></i> Edit Profile
+    </a>
+    <a href="{{ url_for('my_bookings') }}" class="dropdown-item">
+      <i class="fas fa-calendar-check"></i> My Bookings
+    </a>
+    <div class="dropdown-divider"></div>
+    <a href="{{ url_for('logout') }}" class="dropdown-item logout-item">
+      <i class="fas fa-sign-out-alt"></i> Logout
+    </a>
+  </div>
+</div>
+
+</nav></nav>
 
 </header>
 <!-- FLASH MESSAGE  -->
@@ -411,6 +441,7 @@ GoHigh <b>Rentals</b>
 
 <h2>📸 Travel Gallery</h2>
 
+<div class="gallery-viewport">
 <div class="gallery-container" id="galleryContainer">
 
 <img src="{{ url_for('static', filename='images/gallery1.jpg') }}">
@@ -420,6 +451,7 @@ GoHigh <b>Rentals</b>
 <img src="{{ url_for('static', filename='images/gallery5.jpg') }}">
 <img src="{{ url_for('static', filename='images/gallery6.jpg') }}">
 
+</div>
 </div>
 
 
@@ -538,6 +570,7 @@ GoHigh <b>Rentals</b>
 </section>
 
 
+
 <!-- Quick Booking -->
 <section class="quick-booking">
   <h2>📅 Quick Booking</h2>
@@ -589,6 +622,17 @@ GoHigh <b>Rentals</b>
 </div>
 
 <script>
+
+// User profile dropdown
+function toggleDropdown() {
+  const menu = document.getElementById('userDropdownMenu');
+  menu.classList.toggle('open');
+}
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.user-dropdown')) {
+    document.getElementById('userDropdownMenu')?.classList.remove('open');
+  }
+});
 
 // Auto-remove flash messages
 document.querySelectorAll('.flash-message').forEach(msg => {
@@ -832,89 +876,80 @@ document.querySelectorAll('.destination-card img').forEach(img => {
 
 
 // ===============================
-// ⭐ REVIEW SLIDER — 2 cards at a time, Infinite Circular
+// ⭐ REVIEW SLIDER — Infinite Circular
 // ===============================
 
-(function () {
-  const wrapper     = document.getElementById('reviewWrapper');
-  const dotsEl      = document.getElementById('reviewDots');
-  const GAP         = 24;
-  let currentIndex  = 0;
-  let autoTimer;
-  let transitioning = false;
+window.addEventListener('load', function () {
 
-  // Clone originals for seamless infinite loop
-  const origCards = Array.from(wrapper.querySelectorAll('.review-card'));
+  const wrapper    = document.getElementById('reviewWrapper');
+  const dotsEl     = document.getElementById('reviewDots');
+  let current      = 0;
+  let busy         = false;
+  let autoTimer;
+
+  // Snapshot originals, then clone for infinite loop
+  const origCards  = Array.from(wrapper.querySelectorAll('.review-card'));
+  const total      = origCards.length;
   origCards.forEach(c => wrapper.appendChild(c.cloneNode(true)));
 
-  function getCardWidth() {
-    const card = wrapper.querySelectorAll('.review-card')[0];
-    return card.offsetWidth + GAP;
+  // Measure after layout
+  function step() {
+    const card = wrapper.querySelector('.review-card');
+    return card.getBoundingClientRect().width + 24; // 24 = gap
   }
 
-  // One dot per original card
-  function buildDots() {
+  function go(animated) {
+    wrapper.style.transition = animated ? 'transform 0.5s cubic-bezier(.4,0,.2,1)' : 'none';
+    wrapper.style.transform  = `translateX(-${current * step()}px)`;
+  }
+
+  function dots() {
     dotsEl.innerHTML = '';
     origCards.forEach((_, i) => {
       const d = document.createElement('button');
       d.className = 'review-dot' + (i === 0 ? ' active' : '');
-      d.setAttribute('aria-label', 'Review ' + (i + 1));
-      d.addEventListener('click', () => { if (!transitioning) { resetAuto(); jumpTo(i); } });
+      d.onclick = () => { if (!busy) { clearInterval(autoTimer); jump(i); startAuto(); } };
       dotsEl.appendChild(d);
     });
   }
 
-  function updateDots() {
+  function syncDots() {
     dotsEl.querySelectorAll('.review-dot').forEach((d, i) =>
-      d.classList.toggle('active', i === currentIndex % origCards.length));
+      d.classList.toggle('active', i === current % total));
   }
 
-  function setTransform(animated) {
-    wrapper.style.transition = animated ? 'transform 0.5s ease' : 'none';
-    wrapper.style.transform  = `translateX(-${currentIndex * getCardWidth()}px)`;
-  }
-
-  function jumpTo(i) {
-    currentIndex = i;
-    setTransform(true);
-    updateDots();
-  }
+  function jump(i) { current = i; go(true); syncDots(); }
 
   window.slideReviews = function (dir) {
-    if (transitioning) return;
-    resetAuto();
-    transitioning = true;
-    currentIndex += dir;
-    setTransform(true);
-    updateDots();
-
+    if (busy) return;
+    busy = true;
+    clearInterval(autoTimer);
+    current += dir;
+    go(true);
+    syncDots();
     setTimeout(() => {
-      if (currentIndex >= origCards.length) {
-        currentIndex -= origCards.length;
-        setTransform(false);
-      } else if (currentIndex < 0) {
-        currentIndex += origCards.length;
-        setTransform(false);
-      }
+      if (current >= total)      { current -= total; go(false); }
+      else if (current < 0)      { current += total; go(false); }
       requestAnimationFrame(() => requestAnimationFrame(() => {
-        wrapper.style.transition = 'transform 0.5s ease';
-        transitioning = false;
-        updateDots();
+        wrapper.style.transition = 'transform 0.5s cubic-bezier(.4,0,.2,1)';
+        busy = false;
+        syncDots();
+        startAuto();
       }));
     }, 520);
   };
 
-  function resetAuto() {
+  function startAuto() {
     clearInterval(autoTimer);
     autoTimer = setInterval(() => slideReviews(1), 3500);
   }
 
-  buildDots();
-  resetAuto();
-  window.addEventListener('resize', () => {
-    buildDots(); currentIndex = 0; setTransform(false);
-  });
-})();
+  dots();
+  go(false);
+  startAuto();
+  window.addEventListener('resize', () => { go(false); });
+
+}); // end review load
 
 
 // ===============================
@@ -964,25 +999,31 @@ function toggleReview(btn) {
 
 
 
-(function () {
-  const gallery   = document.getElementById('galleryContainer');
-  const origImgs  = Array.from(gallery.querySelectorAll('img'));
+// ===============================
+// 📸 GALLERY — Infinite Circular
+// ===============================
 
-  // Clone images and append for seamless infinite loop
+window.addEventListener('load', function () {
+
+  const gallery  = document.getElementById('galleryContainer');
+  const origImgs = Array.from(gallery.querySelectorAll('img'));
+  const total    = origImgs.length;
+
+  // Clone all images for seamless loop
   origImgs.forEach(img => gallery.appendChild(img.cloneNode(true)));
 
-  const GAP = 20;
-  let offset      = 0;
-  let looping     = false;
+  let offset  = 0;
+  let looping = false;
 
-  function imgWidth() {
-    return gallery.querySelectorAll('img')[0].offsetWidth + GAP;
+  function imgStep() {
+    const img = gallery.querySelector('img');
+    return img.getBoundingClientRect().width + 20; // 20 = gap
   }
 
   function slideGallery() {
     if (looping) return;
-    const w         = imgWidth();
-    const loopPoint = origImgs.length * w;
+    const w         = imgStep();
+    const loopPoint = total * w;
 
     offset += w;
     gallery.style.transition = 'transform 0.6s ease';
@@ -1003,7 +1044,8 @@ function toggleReview(btn) {
   }
 
   setInterval(slideGallery, 3000);
-})();
+
+}); // end gallery load
 
 
 </script>
