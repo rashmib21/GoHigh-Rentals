@@ -346,6 +346,152 @@
     }
     .danger-btn:hover { background: #e74c3c; color: #fff; }
 
+    /* Review button */
+    .review-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 28px;
+      background: linear-gradient(135deg, #1a3a2a, #2D6A4F);
+      color: #fff;
+      border: none;
+      border-radius: 14px;
+      font-size: .92rem;
+      font-weight: 800;
+      font-family: 'Nunito', sans-serif;
+      cursor: pointer;
+      transition: transform .2s, box-shadow .2s;
+      box-shadow: 0 6px 20px rgba(45,106,79,.3);
+    }
+    .review-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(45,106,79,.4); }
+
+    /* ── MODAL OVERLAY ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.45);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-box {
+      background: #fff;
+      border-radius: 22px;
+      box-shadow: 0 24px 64px rgba(28,43,58,.22);
+      width: 100%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 36px 32px 28px;
+      position: relative;
+      animation: modalPop .25s ease;
+    }
+    @keyframes modalPop { from { opacity:0; transform:scale(.94) translateY(12px); } to { opacity:1; transform:none; } }
+    .modal-close {
+      position: absolute;
+      top: 18px; right: 22px;
+      background: #f4f7fa;
+      border: none;
+      border-radius: 50%;
+      width: 34px; height: 34px;
+      font-size: 1rem;
+      cursor: pointer;
+      color: #666;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .2s;
+    }
+    .modal-close:hover { background: #e8edf2; }
+    .modal-title { font-size: 1.15rem; font-weight: 800; color: #1C2B3A; margin-bottom: 6px; }
+    .modal-sub   { font-size: .82rem; color: #999; margin-bottom: 22px; }
+
+    /* Delete confirm modal */
+    .delete-confirm-box { border: 2px solid #fde8e8; border-radius: 14px; padding: 18px 20px; margin-bottom: 16px; }
+    .delete-confirm-box p { font-size: .85rem; color: #666; margin-bottom: 14px; }
+    .confirm-type-label { font-size: .78rem; font-weight: 800; color: #2E4A5C; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 8px; }
+    .confirm-input {
+      width: 100%; padding: 11px 14px;
+      border: 2px solid #e8f0f5; border-radius: 10px;
+      font-size: .92rem; font-family: 'Nunito', sans-serif;
+      color: #1C2B3A; outline: none; margin-bottom: 14px;
+      transition: border-color .2s;
+    }
+    .confirm-input:focus { border-color: #e74c3c; box-shadow: 0 0 0 4px rgba(231,76,60,.08); }
+    .delete-final-btn {
+      width: 100%; padding: 12px;
+      background: #e74c3c; color: #fff;
+      border: none; border-radius: 10px;
+      font-size: .92rem; font-weight: 800;
+      font-family: 'Nunito', sans-serif;
+      cursor: pointer; transition: background .2s;
+    }
+    .delete-final-btn:disabled { background: #ccc; cursor: not-allowed; }
+    .delete-final-btn:not(:disabled):hover { background: #c0392b; }
+
+    /* Review modal */
+    .star-row { display: flex; gap: 6px; margin-bottom: 18px; }
+    .star-btn {
+      font-size: 2rem; background: none; border: none;
+      cursor: pointer; color: #ddd; transition: color .15s, transform .15s;
+      line-height: 1;
+    }
+    .star-btn.active { color: #f39c12; }
+    .star-btn:hover  { transform: scale(1.15); }
+    .review-textarea {
+      width: 100%; min-height: 100px;
+      padding: 12px 14px;
+      border: 2px solid #e8f0f5; border-radius: 12px;
+      font-size: .9rem; font-family: 'Nunito', sans-serif;
+      color: #1C2B3A; resize: vertical; outline: none;
+      transition: border-color .2s;
+      margin-bottom: 14px;
+    }
+    .review-textarea:focus { border-color: #4A9B8E; box-shadow: 0 0 0 4px rgba(74,155,142,.08); }
+    .media-upload-area {
+      border: 2px dashed #d0dce6;
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      cursor: pointer;
+      color: #999;
+      font-size: .85rem;
+      margin-bottom: 8px;
+      transition: border-color .2s, background .2s;
+    }
+    .media-upload-area:hover { border-color: #4A9B8E; background: #f5fbfa; }
+    .media-preview { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+    .media-thumb {
+      width: 66px; height: 66px;
+      border-radius: 10px;
+      object-fit: cover;
+      border: 2px solid #e8f0f5;
+    }
+    .video-thumb {
+      width: 66px; height: 66px;
+      border-radius: 10px;
+      background: #1C2B3A;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: .7rem; font-weight: 700;
+      border: 2px solid #e8f0f5;
+    }
+    .submit-review-btn {
+      width: 100%; padding: 12px;
+      background: linear-gradient(135deg, #1a3a2a, #2D6A4F);
+      color: #fff; border: none; border-radius: 12px;
+      font-size: .95rem; font-weight: 800;
+      font-family: 'Nunito', sans-serif;
+      cursor: pointer; transition: opacity .2s;
+    }
+    .submit-review-btn:hover { opacity: .88; }
+    .review-success { text-align: center; padding: 16px 0; }
+    .review-success-icon {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: #d5eee3; display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 14px; font-size: 1.8rem;
+    }
+
     /* ── RESPONSIVE ── */
     @media (max-width: 860px) {
       .profile-layout { grid-template-columns: 1fr; }
@@ -536,6 +682,27 @@
 
     </form>
 
+    <!-- Write a Review -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-header-left">
+          <div class="panel-icon teal"><i class="fas fa-star"></i></div>
+          <div>
+            <div class="panel-title">Write a Review</div>
+            <div class="panel-subtitle">Share your travel experience with the community</div>
+          </div>
+        </div>
+      </div>
+      <div class="panel-body" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;">
+        <p style="font-size:.88rem; color:#888; max-width:420px;">
+          Loved your trip? Rate destinations, vehicles, and services to help other travelers make better choices.
+        </p>
+        <button class="review-btn" onclick="openReviewModal()">
+          <i class="fas fa-star"></i> Write a Review
+        </button>
+      </div>
+    </div>
+
     <!-- Danger Zone -->
     <div class="panel">
       <div class="panel-header">
@@ -553,7 +720,7 @@
             <h4>Delete Account</h4>
             <p>Permanently delete your account and all booking history. This cannot be undone.</p>
           </div>
-          <button class="danger-btn" onclick="return confirm('Are you sure you want to delete your account? This cannot be undone.')">
+          <button class="danger-btn" onclick="openDeleteModal()">
             <i class="fas fa-trash-alt"></i> Delete Account
           </button>
         </div>
@@ -563,8 +730,74 @@
   </main>
 </div>
 
+<!-- ── DELETE ACCOUNT MODAL ── -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeDeleteModal()"><i class="fas fa-times"></i></button>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+      <div style="width:46px;height:46px;border-radius:12px;background:#fde8df;display:flex;align-items:center;justify-content:center;">
+        <i class="fas fa-exclamation-triangle" style="color:#E07B54;font-size:1.1rem;"></i>
+      </div>
+      <div>
+        <div class="modal-title" style="color:#c0392b;">Delete Account</div>
+        <div class="modal-sub" style="margin:0;">This action is permanent and cannot be reversed.</div>
+      </div>
+    </div>
+    <div class="delete-confirm-box">
+      <p>This will permanently erase your account, all booking history, and reviews. You will be logged out immediately.</p>
+      <div class="confirm-type-label">Type <strong>DELETE</strong> to confirm</div>
+      <input class="confirm-input" id="deleteConfirmInput" placeholder="Type DELETE here" oninput="checkDeleteInput()" autocomplete="off">
+      <form method="POST" action="{{ url_for('delete_account') }}" id="deleteForm">
+        <button type="submit" class="delete-final-btn" id="deleteFinalBtn" disabled>
+          <i class="fas fa-trash-alt"></i> Yes, permanently delete my account
+        </button>
+      </form>
+    </div>
+    <p style="font-size:.75rem;color:#bbb;text-align:center;">Changed your mind? <a href="#" onclick="closeDeleteModal();return false;" style="color:#4A9B8E;">Cancel and go back</a></p>
+  </div>
+</div>
+
+<!-- ── REVIEW MODAL ── -->
+<div class="modal-overlay" id="reviewModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeReviewModal()"><i class="fas fa-times"></i></button>
+    <div id="reviewFormContent">
+      <div class="modal-title">Write a Review</div>
+      <div class="modal-sub">Your feedback helps other travelers</div>
+      <div style="font-size:.78rem;font-weight:800;color:#2E4A5C;text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px;">Your Rating</div>
+      <div class="star-row" id="starRow">
+        <button class="star-btn" onclick="setRating(1)" type="button">&#9733;</button>
+        <button class="star-btn" onclick="setRating(2)" type="button">&#9733;</button>
+        <button class="star-btn" onclick="setRating(3)" type="button">&#9733;</button>
+        <button class="star-btn" onclick="setRating(4)" type="button">&#9733;</button>
+        <button class="star-btn" onclick="setRating(5)" type="button">&#9733;</button>
+      </div>
+      <form method="POST" action="{{ url_for('submit_review') }}" enctype="multipart/form-data" id="reviewForm" onsubmit="return validateReview()">
+        <div style="font-size:.78rem;font-weight:800;color:#2E4A5C;text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px;">Your Review</div>
+        <textarea class="review-textarea" name="review_text" id="reviewText" placeholder="Tell others about your experience — what made it special?"></textarea>
+        <input type="hidden" name="rating" id="ratingInput" value="0">
+        <div style="font-size:.78rem;font-weight:800;color:#2E4A5C;text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px;">Photos &amp; Videos <span style="font-weight:400;color:#bbb;">(optional, max 10)</span></div>
+        <div class="media-upload-area" onclick="document.getElementById('mediaFiles').click()">
+          <i class="fas fa-cloud-upload-alt" style="font-size:1.4rem;margin-bottom:6px;display:block;color:#4A9B8E;"></i>
+          Click to add photos or videos<br>
+          <span style="font-size:.75rem;">PNG, JPG, GIF, MP4 · Max 10 files</span>
+        </div>
+        <input type="file" id="mediaFiles" name="media" multiple accept="image/*,video/*" style="display:none" onchange="previewMedia(this)">
+        <div class="media-preview" id="mediaPreview"></div>
+        <button type="submit" class="submit-review-btn"><i class="fas fa-paper-plane"></i> Submit Review</button>
+      </form>
+    </div>
+    <div class="review-success" id="reviewSuccess" style="display:none;">
+      <div class="review-success-icon">&#9733;</div>
+      <div class="modal-title">Review Submitted!</div>
+      <p style="font-size:.88rem;color:#888;margin:8px 0 20px;">Thank you, {{ user.name }}. Your review helps other travelers make better decisions.</p>
+      <button onclick="closeReviewModal()" style="padding:10px 28px;border:2px solid #4A9B8E;border-radius:10px;background:none;color:#4A9B8E;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer;">Close</button>
+    </div>
+  </div>
+</div>
+
 <script>
-  // Password strength
+  // ── Password strength ──
   function checkStrength(val) {
     const fill  = document.getElementById('strengthFill');
     const label = document.getElementById('strengthLabel');
@@ -573,7 +806,6 @@
     if (/[A-Z]/.test(val)) score++;
     if (/[0-9]/.test(val)) score++;
     if (/[^A-Za-z0-9]/.test(val)) score++;
-
     const levels = [
       { w: '0%',   color: '#eee',    text: 'Enter a password' },
       { w: '30%',  color: '#e74c3c', text: 'Weak' },
@@ -589,35 +821,103 @@
   }
 
   function checkMatch() {
-    const p1    = document.getElementById('newPass').value;
-    const p2    = document.getElementById('confirmPass').value;
-    const hint  = document.getElementById('matchHint');
+    const p1   = document.getElementById('newPass').value;
+    const p2   = document.getElementById('confirmPass').value;
+    const hint = document.getElementById('matchHint');
     if (!p2) { hint.textContent = ''; return; }
     if (p1 === p2) { hint.textContent = '✔ Passwords match'; hint.style.color = '#2ecc71'; }
     else           { hint.textContent = '✖ Passwords do not match'; hint.style.color = '#e74c3c'; }
   }
 
   function validateForm() {
-  const current = document.querySelector('input[name="current_password"]').value;
-  const p1 = document.getElementById('newPass').value;
-  const p2 = document.getElementById('confirmPass').value;
-
-  if (p1 && !current) {
-    alert('Please enter your current password to set a new one.');
-    return false;
+    const current = document.querySelector('input[name="current_password"]').value;
+    const p1 = document.getElementById('newPass').value;
+    const p2 = document.getElementById('confirmPass').value;
+    if (p1 && !current) { alert('Please enter your current password to set a new one.'); return false; }
+    if (p1 && p1 !== p2) { alert('New passwords do not match!'); return false; }
+    return true;
   }
-  if (p1 && p1 !== p2) {
-    alert('New passwords do not match!');
-    return false;
-  }
-  return true;
-}
 
   // Auto-dismiss flash messages
   document.querySelectorAll('.flash-bar').forEach(el => {
     setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity .4s'; }, 3500);
     setTimeout(() => el.remove(), 3900);
   });
+
+  // ── DELETE MODAL ──
+  function openDeleteModal() {
+    document.getElementById('deleteModal').classList.add('active');
+    document.getElementById('deleteConfirmInput').value = '';
+    document.getElementById('deleteFinalBtn').disabled = true;
+  }
+  function closeDeleteModal() {
+    document.getElementById('deleteModal').classList.remove('active');
+  }
+  function checkDeleteInput() {
+    const val = document.getElementById('deleteConfirmInput').value;
+    document.getElementById('deleteFinalBtn').disabled = (val !== 'DELETE');
+  }
+  // Close modal on overlay click
+  document.getElementById('deleteModal').addEventListener('click', function(e) {
+    if (e.target === this) closeDeleteModal();
+  });
+
+  // ── REVIEW MODAL ──
+  let currentRating = 0;
+  function openReviewModal() {
+    document.getElementById('reviewModal').classList.add('active');
+    document.getElementById('reviewFormContent').style.display = 'block';
+    document.getElementById('reviewSuccess').style.display = 'none';
+    currentRating = 0;
+    updateStars();
+    document.getElementById('reviewText').value = '';
+    document.getElementById('mediaPreview').innerHTML = '';
+    document.getElementById('ratingInput').value = '0';
+  }
+  function closeReviewModal() {
+    document.getElementById('reviewModal').classList.remove('active');
+  }
+  document.getElementById('reviewModal').addEventListener('click', function(e) {
+    if (e.target === this) closeReviewModal();
+  });
+  function setRating(r) {
+    currentRating = r;
+    document.getElementById('ratingInput').value = r;
+    updateStars();
+  }
+  function updateStars() {
+    document.querySelectorAll('.star-btn').forEach((s, i) => {
+      s.classList.toggle('active', i < currentRating);
+    });
+  }
+  function previewMedia(input) {
+    const preview = document.getElementById('mediaPreview');
+    preview.innerHTML = '';
+    const files = Array.from(input.files).slice(0, 10);
+    files.forEach(f => {
+      if (f.type.startsWith('image/')) {
+        const img = document.createElement('img');
+        img.className = 'media-thumb';
+        img.src = URL.createObjectURL(f);
+        preview.appendChild(img);
+      } else {
+        const div = document.createElement('div');
+        div.className = 'video-thumb';
+        div.innerHTML = '<i class="fas fa-film"></i><br>Video';
+        preview.appendChild(div);
+      }
+    });
+  }
+  function validateReview() {
+    if (currentRating === 0) { alert('Please select a star rating.'); return false; }
+    if (!document.getElementById('reviewText').value.trim()) { alert('Please write your review.'); return false; }
+    // Show success state instead of page redirect (form still submits)
+    setTimeout(() => {
+      document.getElementById('reviewFormContent').style.display = 'none';
+      document.getElementById('reviewSuccess').style.display = 'block';
+    }, 100);
+    return true;
+  }
 </script>
 
 </body>

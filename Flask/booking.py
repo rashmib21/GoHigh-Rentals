@@ -88,9 +88,28 @@ def create_booking():
     user_id = session["user_id"]
 
     conn = get_db_connection()
-    cursor = conn.cursor()
+    cursor = conn.cursor(dictionary=True)
 
-    # Insert booking
+    # ── Booking limit: max 3 confirmed bookings per user ──
+    cursor.execute("""
+        SELECT COUNT(*) as active_count FROM booking
+        WHERE user_id = %s AND booking_status = 'Confirmed'
+    """, (user_id,))
+    count = cursor.fetchone()['active_count']
+    if count >= 3:
+        cursor.close()
+        conn.close()
+        return """
+        <html><body style="font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;background:#f0f5f8;">
+        <div style="text-align:center;background:#fff;padding:40px;border-radius:20px;box-shadow:0 8px 32px rgba(0,0,0,.1);max-width:420px;">
+          <div style="font-size:3rem;margin-bottom:12px;">⚠️</div>
+          <h2 style="color:#c0392b;margin-bottom:8px;">Booking Limit Reached</h2>
+          <p style="color:#888;margin-bottom:24px;">You already have 3 active bookings. Please cancel an existing booking before making a new one.</p>
+          <a href="/my_bookings" style="display:inline-block;padding:12px 28px;background:#1C2B3A;color:#fff;border-radius:12px;text-decoration:none;font-weight:700;">View My Bookings</a>
+        </div></body></html>
+        """, 400
+
+    cursor = conn.cursor()
     cursor.execute("""
     INSERT INTO booking
     (destination_id, vehicle_id, travel_date, booking_status, user_id, booking_date)
@@ -190,4 +209,4 @@ def cancel_booking(booking_id):
     conn.commit()
     conn.close()
 
-    return redirect('/dashboard')    
+    return redirect('/dashboard')

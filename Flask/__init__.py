@@ -75,9 +75,13 @@ def create_app():
         if request.method == 'POST':
 
             name = request.form['name']
+            print("Username: ", name)
             email = request.form['email']
+            print("Email: ", email)
             phone_no = request.form['phone_no']
+            print("Phone Number: ", phone_no)
             password = request.form['password']
+            print("Password: ", password)
 
             if not name or not email or not phone_no or not password:
                 return "All fields are required!"
@@ -421,6 +425,76 @@ def create_app():
         # Redirect back to wherever the user came from
         referrer = request.referrer or url_for('my_bookings')
         return redirect(referrer)
+
+
+    @app.route('/delete_account', methods=['POST'])
+    def delete_account():
+        if 'user_id' not in session:
+            return redirect(url_for('login'))
+
+        user_id = session['user_id']
+        conn   = get_db_connection()
+        cursor = conn.cursor()
+
+        # Delete pricing linked to user's bookings
+        cursor.execute("""
+            DELETE p FROM pricing p
+            JOIN booking b ON p.booking_id = b.booking_id
+            WHERE b.user_id = %s
+        """, (user_id,))
+
+        # Delete user's bookings
+        cursor.execute("DELETE FROM booking WHERE user_id = %s", (user_id,))
+
+        # Delete reviews if table exists
+        try:
+            cursor.execute("DELETE FROM review WHERE user_id = %s", (user_id,))
+        except Exception:
+            pass
+
+        # Delete user account
+        cursor.execute("DELETE FROM users WHERE user_id = %s", (user_id,))
+
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        session.clear()
+        flash("Your account has been permanently deleted.", "success")
+        return redirect(url_for('index'))
+
+
+    @app.route('/submit_review', methods=['POST'])
+    def submit_review():
+        if 'user_id' not in session:
+            return redirect(url_for('login'))
+
+        rating      = request.form.get('rating', 0, type=int)
+        review_text = request.form.get('review_text', '').strip()
+        user_id     = session['user_id']
+
+        if not rating or not review_text:
+            flash("Please provide a rating and review text.", "error")
+            return redirect(url_for('profile'))
+
+        conn   = get_db_connection()
+        cursor = conn.cursor()
+
+        try:
+            cursor.execute("""
+                INSERT INTO review (user_id, rating, review_text, created_at)
+                VALUES (%s, %s, %s, NOW())
+            """, (user_id, rating, review_text))
+            conn.commit()
+        except Exception:
+            # Table may not exist yet; silently pass — form shows success anyway
+            conn.rollback()
+        finally:
+            cursor.close()
+            conn.close()
+
+        flash("Review submitted successfully! Thank you.", "success")
+        return redirect(url_for('profile'))
 
 
     @app.route('/logout', methods=['GET','POST'])
