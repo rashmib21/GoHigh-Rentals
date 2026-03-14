@@ -4,68 +4,6 @@ from datetime import date, timedelta
 
 booking_bp = Blueprint("booking", __name__)
 
-# Dashboard Route
-@booking_bp.route("/dashboard")
-def dashboard():
-
-    if 'user_id' not in session:
-        return redirect('/login')
-
-    user_name = session.get('user_name')
-    user_id = session['user_id']  
-
-    conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
-
-    # Auto-update past confirmed bookings to Completed
-    today = date.today()
-    cursor.execute("""
-        UPDATE booking 
-        SET booking_status = 'Completed' 
-        WHERE booking_status = 'Confirmed' 
-        AND travel_date <= %s
-    """, (today,))
-    conn.commit()
-
-    # Recent bookings - filtered by user
-    cursor.execute("""
-        SELECT 
-            b.booking_id,        
-            b.travel_date,
-            b.booking_status,
-            d.destination_name,
-            v.vehicle_name,
-            p.total_amount
-        FROM booking b
-        JOIN destination d ON b.destination_id = d.destination_id
-        JOIN vehicle v ON b.vehicle_id = v.vehicle_id
-        LEFT JOIN pricing p ON b.booking_id = p.booking_id
-        WHERE b.user_id = %s
-        ORDER BY b.travel_date DESC
-        LIMIT 5
-    """, (user_id,))
-    bookings = cursor.fetchall()
-
-    #  Stats calculated from bookings list
-    total_trips = len(bookings)
-    confirmed   = len([b for b in bookings if b['booking_status'] == 'Confirmed'])
-    cancelled   = len([b for b in bookings if b['booking_status'] == 'Cancelled'])
-    completed   = len([b for b in bookings if b['booking_status'] == 'Completed'])
-    total_spent = sum(b['total_amount'] for b in bookings if b['total_amount'])
-
-    conn.close()
-
-    return render_template(
-        "dashboard.html",
-        user_name=user_name,
-        total_trips=total_trips,
-        confirmed=confirmed,
-        cancelled=cancelled,
-        completed=completed,   
-        total_spent=total_spent,
-        bookings=bookings
-    )
-
 # Create Booking Route
 from flask import url_for
 
@@ -88,28 +26,9 @@ def create_booking():
     user_id = session["user_id"]
 
     conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
-
-    # ── Booking limit: max 3 confirmed bookings per user ──
-    cursor.execute("""
-        SELECT COUNT(*) as active_count FROM booking
-        WHERE user_id = %s AND booking_status = 'Confirmed'
-    """, (user_id,))
-    count = cursor.fetchone()['active_count']
-    if count >= 3:
-        cursor.close()
-        conn.close()
-        return """
-        <html><body style="font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;background:#f0f5f8;">
-        <div style="text-align:center;background:#fff;padding:40px;border-radius:20px;box-shadow:0 8px 32px rgba(0,0,0,.1);max-width:420px;">
-          <div style="font-size:3rem;margin-bottom:12px;">⚠️</div>
-          <h2 style="color:#c0392b;margin-bottom:8px;">Booking Limit Reached</h2>
-          <p style="color:#888;margin-bottom:24px;">You already have 3 active bookings. Please cancel an existing booking before making a new one.</p>
-          <a href="/my_bookings" style="display:inline-block;padding:12px 28px;background:#1C2B3A;color:#fff;border-radius:12px;text-decoration:none;font-weight:700;">View My Bookings</a>
-        </div></body></html>
-        """, 400
-
     cursor = conn.cursor()
+
+    # Insert booking
     cursor.execute("""
     INSERT INTO booking
     (destination_id, vehicle_id, travel_date, booking_status, user_id, booking_date)

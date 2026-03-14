@@ -8,134 +8,230 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+  <style>
+    /* ── USER REVIEW CARDS in slider ── */
+    .review-card.user-submitted {
+      border: 2px solid rgba(74,155,142,0.35);
+      position: relative;
+    }
+    .review-card.user-submitted::before {
+      content: "✦ Verified Traveler";
+      position: absolute;
+      top: 10px; right: 12px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: #4A9B8E;
+      background: rgba(74,155,142,0.1);
+      padding: 3px 8px;
+      border-radius: 20px;
+      letter-spacing: 0.3px;
+    }
+    .review-card .review-date {
+      font-size: 0.72rem;
+      color: #bbb;
+      margin-top: 6px;
+    }
+
+    /* ── TEXT REVIEW user-submitted badge ── */
+    .text-review.user-submitted {
+      border-left: 3px solid #4A9B8E;
+    }
+    .user-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #4A9B8E;
+      background: rgba(74,155,142,0.1);
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+      letter-spacing: 0.3px;
+    }
+
+    /* ── FIXED DROPDOWN ── */
+    .user-dropdown { position: relative; }
+    .user-avatar-btn {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.12);
+      border: 1.5px solid rgba(255,255,255,0.28);
+      border-radius: 50px;
+      padding: 5px 14px 5px 5px;
+      cursor: pointer;
+      color: #fff;
+      font-family: inherit;
+      outline: none;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .user-avatar-btn:hover {
+      background: rgba(255,255,255,0.22);
+      border-color: rgba(255,255,255,0.5);
+    }
+    .user-avatar-circle {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: linear-gradient(135deg, #E07B54, #c96940);
+      color: #fff; font-size: 0.95rem; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(224,123,84,0.55);
+      text-transform: uppercase;
+    }
+    .user-name-short {
+      font-size: 0.875rem; font-weight: 700; color: #fff;
+      max-width: 100px; overflow: hidden;
+      text-overflow: ellipsis; white-space: nowrap;
+    }
+    .user-chevron {
+      font-size: 0.72rem; color: rgba(255,255,255,0.8);
+      transition: transform 0.3s; margin-left: 2px;
+    }
+    .user-dropdown-menu {
+      display: none; position: absolute;
+      top: calc(100% + 10px); right: 0;
+      background: #fff; border-radius: 18px;
+      min-width: 240px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.22), 0 4px 16px rgba(0,0,0,0.1);
+      border: 1px solid rgba(0,0,0,0.07);
+      overflow: hidden; z-index: 9999;
+      animation: dropdownFade 0.2s ease;
+    }
+    .user-dropdown-menu.open { display: block; }
+    @keyframes dropdownFade {
+      from { opacity:0; transform:translateY(-6px) scale(0.98); }
+      to   { opacity:1; transform:translateY(0) scale(1); }
+    }
+    .dropdown-header {
+      display: flex; align-items: center; gap: 13px;
+      padding: 18px 18px 14px;
+      background: linear-gradient(135deg, #f5f9fc, #fff);
+      border-bottom: 1px solid #eef2f6;
+    }
+    .dropdown-avatar {
+      width: 46px; height: 46px; border-radius: 50%;
+      background: linear-gradient(135deg, #E07B54, #c96940);
+      color: #fff; font-size: 1.2rem; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; box-shadow: 0 4px 12px rgba(224,123,84,0.45);
+      text-transform: uppercase;
+    }
+    .dropdown-name {
+      font-size: 0.95rem; font-weight: 800; color: #1C2B3A;
+      margin: 0 0 3px; line-height: 1.2;
+    }
+    .dropdown-role {
+      font-size: 0.78rem; color: #E07B54; font-weight: 700; margin: 0;
+    }
+    .dropdown-divider { height: 1px; background: #eef2f6; margin: 4px 0; }
+    .dropdown-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 18px; font-size: 0.9rem; font-weight: 700;
+      color: #1C2B3A; text-decoration: none;
+      transition: background 0.15s; cursor: pointer;
+      border: none; background: none; width: 100%;
+      text-align: left; font-family: inherit;
+    }
+    .dropdown-item i {
+      width: 18px; font-size: 0.9rem; color: #4A9B8E;
+      text-align: center; flex-shrink: 0; transition: color 0.15s;
+    }
+    .dropdown-item:hover { background: #f0f8f6; }
+    .dropdown-item:hover i { color: #1C2B3A; }
+    .review-item { color: #2D6A4F; }
+    .review-item i { color: #2D6A4F; }
+    .review-item:hover { background: #eaf6ef; }
+    .logout-item { color: #c0392b; }
+    .logout-item i { color: #e74c3c; }
+    .logout-item:hover { background: #fff5f5; }
+    @media (max-width: 640px) {
+      .user-name-short { display: none; }
+      .user-avatar-btn { padding: 5px; border-radius: 50%; }
+      .user-dropdown-menu { right: -10px; min-width: 220px; }
+    }
+  </style>
 </head>
 <body class="dashboard-page">
 
-<!-- <header>
-    <div class="logo-container">
-        <img src="{{ url_for('static', filename='images/logo.png') }}" 
-             alt="GoHigh Rentals Logo">
-        <div class="brand-text">
-            <h2>GOHIGH RENTALS</h2>
-            <p>Himalayan Expeditions</p>
-        </div>
-    </div>
-    <nav class="nav-menu">
-        <a href="#destinations"><i class="fas fa-map-marked-alt"></i> Destinations</a>
-        <a href="#bookings"><i class="fas fa-calendar-check"></i> My Bookings</a>
-        <a href="/profile"><i class="fas fa-user"></i> Profile</a>
-        <a href="{{ url_for('logout') }}" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>    
-    </nav>
-</header> -->
-
 <header class="navbar">
+  <div class="logo">
+    <img src="{{ url_for('static', filename='images/logo.png') }}">
+    <span class="brand">GoHigh <b>Rentals</b></span>
+  </div>
 
-<div class="logo">
+  <nav>
+    <a href="/dashboard">Dashboard</a>
+    <a href="{{ url_for('my_bookings') }}">My Bookings</a>
+    <a href="#destinations">Destinations</a>
 
-<img src="{{ url_for('static', filename='images/logo.png') }}">
-
-<span class="brand">
-GoHigh <b>Rentals</b>
-</span>
-
-</div>
-
-
-<nav>
-
-<a href="/dashboard">Dashboard</a>
-<a href="{{ url_for('my_bookings') }}">My Bookings</a>
-<a href="#destinations">Destinations</a>
-
-<!-- User Profile Dropdown -->
-<div class="user-dropdown">
-  <button class="user-avatar-btn" onclick="toggleDropdown()">
-    <div class="user-avatar-circle">
-      {{ session['user_name'][0].upper() }}
-    </div>
-    <span class="user-name-short">{{ session['user_name'].split()[0] }}</span>
-    <i class="fas fa-chevron-down user-chevron"></i>
-  </button>
-  <div class="user-dropdown-menu" id="userDropdownMenu">
-    <div class="dropdown-header">
-      <div class="dropdown-avatar">{{ session['user_name'][0].upper() }}</div>
-      <div>
-        <p class="dropdown-name">{{ session['user_name'] }}</p>
-        <p class="dropdown-role">Traveler</p>
+    <!-- User Profile Dropdown -->
+    <div class="user-dropdown">
+      <button class="user-avatar-btn" onclick="toggleDropdown()">
+        <div class="user-avatar-circle">{{ session['user_name'][0].upper() }}</div>
+        <span class="user-name-short">{{ session['user_name'].split()[0] }}</span>
+        <i class="fas fa-chevron-down user-chevron"></i>
+      </button>
+      <div class="user-dropdown-menu" id="userDropdownMenu">
+        <div class="dropdown-header">
+          <div class="dropdown-avatar">{{ session['user_name'][0].upper() }}</div>
+          <div>
+            <p class="dropdown-name">{{ session['user_name'] }}</p>
+            <p class="dropdown-role">Traveler</p>
+          </div>
+        </div>
+        <div class="dropdown-divider"></div>
+        <a href="{{ url_for('profile') }}" class="dropdown-item">
+          <i class="fas fa-user-edit"></i> Edit Profile
+        </a>
+        <a href="{{ url_for('my_bookings') }}" class="dropdown-item">
+          <i class="fas fa-calendar-check"></i> My Bookings
+        </a>
+        <a href="{{ url_for('profile') }}#review" class="dropdown-item review-item">
+          <i class="fas fa-star"></i> Write a Review
+        </a>
+        <div class="dropdown-divider"></div>
+        <a href="{{ url_for('logout') }}" class="dropdown-item logout-item">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
       </div>
     </div>
-    <div class="dropdown-divider"></div>
-    <a href="{{ url_for('profile') }}" class="dropdown-item">
-      <i class="fas fa-user-edit"></i> Edit Profile
-    </a>
-    <a href="{{ url_for('my_bookings') }}" class="dropdown-item">
-      <i class="fas fa-calendar-check"></i> My Bookings
-    </a>
-    <div class="dropdown-divider"></div>
-    <a href="{{ url_for('logout') }}" class="dropdown-item logout-item">
-      <i class="fas fa-sign-out-alt"></i> Logout
-    </a>
-  </div>
-</div>
-
-</nav>
-
+  </nav>
 </header>
-<!-- FLASH MESSAGE  -->
 
+<!-- FLASH MESSAGE -->
 {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        {% for category, message in messages %}
-            <div class="flash-message {{ category }}">
-                {{ message }}
-            </div>
-        {% endfor %}
-    {% endif %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="flash-message {{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
 {% endwith %}
 
-
 <section class="dashboard-hero">
-
-    <div class="hero-inner">
-
-        <div class="hero-text">
-            <h1>Welcome back, {{ user_name }}!</h1>
-            <p>Ready for your next Himalayan adventure? 🏔️</p>
-        </div>
-
-        <a href="{{ url_for('booking.create_booking_page') }}" class="new-booking-btn">
-            <i class="fas fa-plus"></i> New Booking
-        </a>
-
+  <div class="hero-inner">
+    <div class="hero-text">
+      <h1>Welcome back, {{ user_name }}!</h1>
+      <p>Ready for your next Himalayan adventure? 🏔️</p>
     </div>
-
+    <a href="{{ url_for('booking.create_booking_page') }}" class="new-booking-btn">
+      <i class="fas fa-plus"></i> New Booking
+    </a>
+  </div>
 </section>
-
-
-
-
-
 
 <!-- Destinations Section -->
 <section class="destinations" id="destinations">
     <h2>Popular Himalayan Destinations</h2>
-
     <div class="destination-container">
 
-        <!-- Manali -->
         <div class="destination-card">
-            <div class="rating">
-                <i class="fas fa-star"></i> 4.8
-            </div>
+            <div class="rating"><i class="fas fa-star"></i> 4.8</div>
             <div class="destination-badge">Popular</div>
             <img src="{{ url_for('static', filename='images/manali.jpg') }}" alt="Manali Himalayas">
             <div class="card-content">
                 <h3>Manali</h3>
                 <p class="location"><i class="fas fa-map-pin"></i> Himachal Pradesh</p>
-                <div class="price">
-                    <i class="fas fa-tag"></i>
-                    <span>₹2,499 <small>/day</small></span>
-                </div>
+                <div class="price"><i class="fas fa-tag"></i><span>₹2,499 <small>/day</small></span></div>
                 <div class="features">
                     <span><i class="fas fa-mountain"></i> Rohtang Pass</span>
                     <span><i class="fas fa-campground"></i> Solang Valley</span>
@@ -148,46 +244,34 @@ GoHigh <b>Rentals</b>
             </div>
         </div>
 
-        <!-- Leh Ladakh -->
         <div class="destination-card">
-            <div class="rating">
-                <i class="fas fa-star"></i> 4.9
-            </div>
+            <div class="rating"><i class="fas fa-star"></i> 4.9</div>
             <div class="destination-badge">Adventure</div>
             <img src="{{ url_for('static', filename='images/leh.jpg') }}" alt="Leh Ladakh Mountains">
             <div class="card-content">
                 <h3>Leh Ladakh</h3>
                 <p class="location"><i class="fas fa-map-pin"></i> Ladakh</p>
-                <div class="price">
-                    <i class="fas fa-tag"></i>
-                    <span>₹3,499 <small>/day</small></span>
-                </div>
+                <div class="price"><i class="fas fa-tag"></i><span>₹3,499 <small>/day</small></span></div>
                 <div class="features">
                     <span><i class="fas fa-mountain"></i> Khardung La</span>
                     <span><i class="fas fa-campground"></i> Nubra Valley</span>
                     <span><i class="fas fa-map"></i> Pangong Lake</span>
                 </div>
-               <form action="{{ url_for('booking.create_booking_page') }}" method="GET">
+                <form action="{{ url_for('booking.create_booking_page') }}" method="GET">
                     <input type="hidden" name="destination_id" value="15">
                     <button class="book-btn">Book Now</button>
                 </form>
             </div>
         </div>
 
-        <!-- Shimla -->
         <div class="destination-card">
-            <div class="rating">
-                <i class="fas fa-star"></i> 4.7
-            </div>
+            <div class="rating"><i class="fas fa-star"></i> 4.7</div>
             <div class="destination-badge">Family</div>
             <img src="{{ url_for('static', filename='images/shimla.jpg') }}" alt="Shimla Hills">
             <div class="card-content">
                 <h3>Shimla</h3>
                 <p class="location"><i class="fas fa-map-pin"></i> Himachal Pradesh</p>
-                <div class="price">
-                    <i class="fas fa-tag"></i>
-                    <span>₹1,999 <small>/day</small></span>
-                </div>
+                <div class="price"><i class="fas fa-tag"></i><span>₹1,999 <small>/day</small></span></div>
                 <div class="features">
                     <span><i class="fas fa-car"></i> Mall Road</span>
                     <span><i class="fas fa-hotel"></i> The Ridge</span>
@@ -200,24 +284,18 @@ GoHigh <b>Rentals</b>
             </div>
         </div>
 
-        <!-- Auli -->
         <div class="destination-card">
-            <div class="rating">
-                <i class="fas fa-star"></i> 4.8
-            </div>
+            <div class="rating"><i class="fas fa-star"></i> 4.8</div>
             <div class="destination-badge">Skiing</div>
             <img src="{{ url_for('static', filename='images/auli.jpg') }}" alt="Auli Ski Slopes">
             <div class="card-content">
                 <h3>Auli</h3>
                 <p class="location"><i class="fas fa-map-pin"></i> Uttarakhand</p>
-                <div class="price">
-                    <i class="fas fa-tag"></i>
-                    <span>₹2,799 <small>/day</small></span>
-                </div>
+                <div class="price"><i class="fas fa-tag"></i><span>₹2,799 <small>/day</small></span></div>
                 <div class="features">
                     <span><i class="fas fa-skiing"></i> Skiing</span>
                     <span><i class="fas fa-campground"></i> Camping</span>
-                    <span><i class="fa-solid fa-cable-car"></i>Cable Car</span>
+                    <span><i class="fa-solid fa-cable-car"></i> Cable Car</span>
                 </div>
                 <form action="{{ url_for('booking.create_booking_page') }}" method="GET">
                     <input type="hidden" name="destination_id" value="14">
@@ -226,20 +304,14 @@ GoHigh <b>Rentals</b>
             </div>
         </div>
 
-        <!-- Spiti Valley -->
         <div class="destination-card">
-            <div class="rating">
-                <i class="fas fa-star"></i> 4.9
-            </div>
+            <div class="rating"><i class="fas fa-star"></i> 4.9</div>
             <div class="destination-badge">Offbeat</div>
             <img src="{{ url_for('static', filename='images/spiti.jpg') }}" alt="Spiti Valley">
             <div class="card-content">
                 <h3>Spiti Valley</h3>
                 <p class="location"><i class="fas fa-map-pin"></i> Himachal Pradesh</p>
-                <div class="price">
-                    <i class="fas fa-tag"></i>
-                    <span>₹3,999 <small>/day</small></span>
-                </div>
+                <div class="price"><i class="fas fa-tag"></i><span>₹3,999 <small>/day</small></span></div>
                 <div class="features">
                     <span><i class="fas fa-mountain"></i> Key Monastery</span>
                     <span><i class="fas fa-campground"></i> Chandratal</span>
@@ -252,34 +324,19 @@ GoHigh <b>Rentals</b>
             </div>
         </div>
 
-        <!-- Rishikesh -->
         <div class="destination-card">
-            <div class="rating">
-                <i class="fas fa-star"></i> 4.8
-            </div>
-
+            <div class="rating"><i class="fas fa-star"></i> 4.8</div>
             <div class="destination-badge">Yoga Capital of the World</div>
-
             <img src="{{ url_for('static', filename='images/rishikesh.jpg') }}" alt="Rishikesh">
-
             <div class="card-content">
                 <h3>Rishikesh</h3>
-
-                <p class="location">
-                    <i class="fas fa-map-pin"></i> Uttarakhand
-                </p>
-
-                <div class="price">
-                    <i class="fas fa-tag"></i>
-                    <span>₹3,299 <small>/day</small></span>
-                </div>
-
+                <p class="location"><i class="fas fa-map-pin"></i> Uttarakhand</p>
+                <div class="price"><i class="fas fa-tag"></i><span>₹3,299 <small>/day</small></span></div>
                 <div class="features">
                     <span><i class="fas fa-water"></i> River Rafting</span>
                     <span><i class="fas fa-campground"></i> Riverside Camp</span>
                     <span><i class="fas fa-om"></i> Yoga Retreat</span>
                 </div>
-
                 <form action="{{ url_for('booking.create_booking_page') }}" method="GET">
                     <input type="hidden" name="destination_id" value="12">
                     <button class="book-btn">Book Now</button>
@@ -287,20 +344,14 @@ GoHigh <b>Rentals</b>
             </div>
         </div>
 
-        <!-- Dharamshala -->
         <div class="destination-card">
-            <div class="rating">
-                <i class="fas fa-star"></i> 4.7
-            </div>
+            <div class="rating"><i class="fas fa-star"></i> 4.7</div>
             <div class="destination-badge">Spiritual</div>
             <img src="{{ url_for('static', filename='images/dharamshala.jpg') }}" alt="Dharamshala">
             <div class="card-content">
                 <h3>Dharamshala</h3>
                 <p class="location"><i class="fas fa-map-pin"></i> Himachal Pradesh</p>
-                <div class="price">
-                    <i class="fas fa-tag"></i>
-                    <span>₹2,199 <small>/day</small></span>
-                </div>
+                <div class="price"><i class="fas fa-tag"></i><span>₹2,199 <small>/day</small></span></div>
                 <div class="features">
                     <span><i class="fas fa-pray"></i> Dalai Lama</span>
                     <span><i class="fas fa-mountain"></i> Triund</span>
@@ -313,20 +364,14 @@ GoHigh <b>Rentals</b>
             </div>
         </div>
 
-        <!-- Dalhousie -->
         <div class="destination-card">
-            <div class="rating">
-                <i class="fas fa-star"></i> 4.6
-            </div>
+            <div class="rating"><i class="fas fa-star"></i> 4.6</div>
             <div class="destination-badge">Mini Switzerland</div>
             <img src="{{ url_for('static', filename='images/dalhousie.jpg') }}" alt="Dalhousie">
             <div class="card-content">
                 <h3>Dalhousie</h3>
                 <p class="location"><i class="fas fa-map-pin"></i> Himachal Pradesh</p>
-                <div class="price">
-                    <i class="fas fa-tag"></i>
-                    <span>₹2,099 <small>/day</small></span>
-                </div>
+                <div class="price"><i class="fas fa-tag"></i><span>₹2,099 <small>/day</small></span></div>
                 <div class="features">
                     <span><i class="fas fa-church"></i> St. John's</span>
                     <span><i class="fas fa-mountain"></i> Khajjiar</span>
@@ -342,14 +387,11 @@ GoHigh <b>Rentals</b>
     </div>
 </section>
 
-<!-- Review Section -->
-
+<!-- ── REVIEW SLIDER ── -->
 <section class="user-reviews">
-
   <h2>⭐ Traveler Reviews</h2>
 
   <div class="review-slider">
-
     <button class="review-btn prev" onclick="slideReviews(-1)" aria-label="Previous">
       <i class="fas fa-chevron-left"></i>
     </button>
@@ -357,6 +399,7 @@ GoHigh <b>Rentals</b>
     <div class="review-viewport">
       <div class="review-wrapper" id="reviewWrapper">
 
+        <!-- Static curated reviews -->
         <div class="review-card">
           <img src="{{ url_for('static', filename='images/review1.jpg') }}" alt="Rahul Sharma">
           <div class="review-stars">★★★★★</div>
@@ -421,51 +464,53 @@ GoHigh <b>Rentals</b>
           <p class="review-text">"Auli skiing trip was a dream come true! GoHigh's SUV handled the snow roads perfectly. 10/10 experience."</p>
         </div>
 
+        <!-- ── USER-SUBMITTED REVIEWS (from DB) ── -->
+        {% if user_reviews %}
+          {% for rev in user_reviews %}
+          <div class="review-card user-submitted">
+            <div class="review-stars">
+              {% for i in range(rev.rating) %}★{% endfor %}{% for i in range(5 - rev.rating) %}☆{% endfor %}
+            </div>
+            <h4>{{ rev.reviewer_name }}</h4>
+            <p class="location"><i class="fas fa-check-circle" style="color:#4A9B8E;"></i> Verified Traveler</p>
+            <p class="review-text">"{{ rev.review_text }}"</p>
+            <p class="review-date">{{ rev.created_at.strftime('%d %b %Y') if rev.created_at else '' }}</p>
+          </div>
+          {% endfor %}
+        {% endif %}
+
       </div>
     </div>
 
     <button class="review-btn next" onclick="slideReviews(1)" aria-label="Next">
       <i class="fas fa-chevron-right"></i>
     </button>
-
   </div>
 
-  <!-- Dot pagination -->
   <div class="review-dots" id="reviewDots"></div>
-
 </section>
 
 
 <!-- Travel Gallery -->
 <section class="gallery-section">
-
-<h2>📸 Travel Gallery</h2>
-
-<div class="gallery-viewport">
-<div class="gallery-container" id="galleryContainer">
-
-<img src="{{ url_for('static', filename='images/gallery1.jpg') }}">
-<img src="{{ url_for('static', filename='images/gallery2.jpg') }}">
-<img src="{{ url_for('static', filename='images/gallery3.jpg') }}">
-<img src="{{ url_for('static', filename='images/gallery4.jpg') }}">
-<img src="{{ url_for('static', filename='images/gallery5.jpg') }}">
-<img src="{{ url_for('static', filename='images/gallery6.jpg') }}">
-
-</div>
-</div>
-
-
-
+  <h2>📸 Travel Gallery</h2>
+  <div class="gallery-viewport">
+    <div class="gallery-container" id="galleryContainer">
+      <img src="{{ url_for('static', filename='images/gallery1.jpg') }}">
+      <img src="{{ url_for('static', filename='images/gallery2.jpg') }}">
+      <img src="{{ url_for('static', filename='images/gallery3.jpg') }}">
+      <img src="{{ url_for('static', filename='images/gallery4.jpg') }}">
+      <img src="{{ url_for('static', filename='images/gallery5.jpg') }}">
+      <img src="{{ url_for('static', filename='images/gallery6.jpg') }}">
+    </div>
+  </div>
 </section>
 
-<!-- Text Reviews -->
 
-
+<!-- ── TEXT REVIEWS ── -->
 <section class="text-reviews">
-
   <h2>💬 What Travelers Say</h2>
 
-  <!-- Destination Filter Tabs -->
   <div class="review-filter-tabs">
     <button class="filter-tab active" data-filter="all">All</button>
     <button class="filter-tab" data-filter="shimla">Shimla</button>
@@ -474,10 +519,12 @@ GoHigh <b>Rentals</b>
     <button class="filter-tab" data-filter="spiti">Spiti Valley</button>
     <button class="filter-tab" data-filter="rishikesh">Rishikesh</button>
     <button class="filter-tab" data-filter="dharamshala">Dharamshala</button>
+    {% if user_reviews %}<button class="filter-tab" data-filter="user">✦ Community</button>{% endif %}
   </div>
 
   <div class="text-review-container" id="textReviewContainer">
 
+    <!-- Static reviews -->
     <div class="text-review" data-dest="shimla">
       <div class="quote-icon">&ldquo;</div>
       <p class="review-short">Best Himalayan travel experience! Booking was simple and the vehicles were excellent.</p>
@@ -485,10 +532,7 @@ GoHigh <b>Rentals</b>
       <button class="read-more-btn" onclick="toggleReview(this)">Read more <i class="fas fa-chevron-down"></i></button>
       <div class="text-review-footer">
         <img src="{{ url_for('static', filename='images/review2.jpg') }}" alt="Priya Mehta">
-        <div>
-          <h4>Priya Mehta</h4>
-          <span>Shimla Trip</span>
-        </div>
+        <div><h4>Priya Mehta</h4><span>Shimla Trip</span></div>
       </div>
     </div>
 
@@ -499,76 +543,85 @@ GoHigh <b>Rentals</b>
       <button class="read-more-btn" onclick="toggleReview(this)">Read more <i class="fas fa-chevron-down"></i></button>
       <div class="text-review-footer">
         <img src="{{ url_for('static', filename='images/review5.jpg') }}" alt="Arjun Kapoor">
-        <div>
-          <h4>Arjun Kapoor</h4>
-          <span>Leh Ladakh Road Trip</span>
-        </div>
+        <div><h4>Arjun Kapoor</h4><span>Leh Ladakh Road Trip</span></div>
       </div>
     </div>
 
     <div class="text-review" data-dest="rishikesh">
       <div class="quote-icon">&ldquo;</div>
       <p class="review-short">Customer support was great and the journey was amazing.</p>
-      <p class="review-full hidden">Customer support was great and the journey was amazing. Loved every moment of the Rishikesh trip. We did river rafting, bungee jumping and a yoga retreat — all in one weekend! GoHigh made the logistics effortless. The car was spotless and pick-up was right on time.</p>
+      <p class="review-full hidden">Customer support was great and the journey was amazing. Loved every moment of the Rishikesh trip. We did river rafting, bungee jumping and a yoga retreat — all in one weekend!</p>
       <button class="read-more-btn" onclick="toggleReview(this)">Read more <i class="fas fa-chevron-down"></i></button>
       <div class="text-review-footer">
         <img src="{{ url_for('static', filename='images/review6.jpg') }}" alt="Sneha Joshi">
-        <div>
-          <h4>Sneha Joshi</h4>
-          <span>Rishikesh Adventure</span>
-        </div>
+        <div><h4>Sneha Joshi</h4><span>Rishikesh Adventure</span></div>
       </div>
     </div>
 
     <div class="text-review" data-dest="manali">
       <div class="quote-icon">&ldquo;</div>
       <p class="review-short">Amazing road trip to Manali. The vehicle was perfect for mountain roads.</p>
-      <p class="review-full hidden">Amazing road trip to Manali. The vehicle was perfect for mountain roads and the booking was super smooth! We drove through Rohtang Pass and Solang Valley without any issues. The Innova was well-maintained and gave excellent mileage. GoHigh exceeded all our expectations!</p>
+      <p class="review-full hidden">Amazing road trip to Manali. The vehicle was perfect for mountain roads and the booking was super smooth! We drove through Rohtang Pass and Solang Valley without any issues. GoHigh exceeded all our expectations!</p>
       <button class="read-more-btn" onclick="toggleReview(this)">Read more <i class="fas fa-chevron-down"></i></button>
       <div class="text-review-footer">
         <img src="{{ url_for('static', filename='images/review1.jpg') }}" alt="Rahul Sharma">
-        <div>
-          <h4>Rahul Sharma</h4>
-          <span>Manali Trip</span>
-        </div>
+        <div><h4>Rahul Sharma</h4><span>Manali Trip</span></div>
       </div>
     </div>
 
     <div class="text-review" data-dest="spiti">
       <div class="quote-icon">&ldquo;</div>
       <p class="review-short">Spiti was breathtaking! Everything was smooth and well-organised.</p>
-      <p class="review-full hidden">Spiti was breathtaking! Everything was smooth and well-organised. Will definitely book again. The remote roads of Spiti can be challenging but our GoHigh vehicle was fully equipped for it. Key Monastery, Chandratal Lake — every stop was magical. The best trip of my life!</p>
+      <p class="review-full hidden">Spiti was breathtaking! Everything was smooth and well-organised. Will definitely book again. The remote roads of Spiti can be challenging but our GoHigh vehicle was fully equipped for it.</p>
       <button class="read-more-btn" onclick="toggleReview(this)">Read more <i class="fas fa-chevron-down"></i></button>
       <div class="text-review-footer">
         <img src="{{ url_for('static', filename='images/review4.jpg') }}" alt="Anita Verma">
-        <div>
-          <h4>Anita Verma</h4>
-          <span>Spiti Valley Trek</span>
-        </div>
+        <div><h4>Anita Verma</h4><span>Spiti Valley Trek</span></div>
       </div>
     </div>
 
     <div class="text-review" data-dest="dharamshala">
       <div class="quote-icon">&ldquo;</div>
       <p class="review-short">Peaceful and spiritual journey to Dharamshala. Truly a soul-refreshing trip.</p>
-      <p class="review-full hidden">Peaceful and spiritual journey to Dharamshala. Truly a soul-refreshing trip. The vehicle was clean and the driver was very helpful, pointing out all the best local cafes and viewpoints. We visited Triund, the Dalai Lama temple and enjoyed amazing Tibetan food. GoHigh made it all seamless!</p>
+      <p class="review-full hidden">Peaceful and spiritual journey to Dharamshala. Truly a soul-refreshing trip. The vehicle was clean and the driver was very helpful, pointing out all the best local cafes and viewpoints.</p>
       <button class="read-more-btn" onclick="toggleReview(this)">Read more <i class="fas fa-chevron-down"></i></button>
       <div class="text-review-footer">
         <img src="{{ url_for('static', filename='images/review7.jpg') }}" alt="Vikram Rathore">
-        <div>
-          <h4>Vikram Rathore</h4>
-          <span>Dharamshala Retreat</span>
-        </div>
+        <div><h4>Vikram Rathore</h4><span>Dharamshala Retreat</span></div>
       </div>
     </div>
 
+    <!-- ── USER-SUBMITTED REVIEWS in text section ── -->
+    {% if user_reviews %}
+      {% for rev in user_reviews %}
+      <div class="text-review user-submitted" data-dest="user">
+        <span class="user-badge"><i class="fas fa-check-circle"></i> Verified Community Review</span>
+        <div class="quote-icon">&ldquo;</div>
+        <p class="review-short">{{ rev.review_text[:120] }}{% if rev.review_text|length > 120 %}…{% endif %}</p>
+        {% if rev.review_text|length > 120 %}
+        <p class="review-full hidden">{{ rev.review_text }}</p>
+        <button class="read-more-btn" onclick="toggleReview(this)">Read more <i class="fas fa-chevron-down"></i></button>
+        {% endif %}
+        <div class="text-review-footer">
+          <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#E07B54,#c96940);display:flex;align-items:center;justify-content:center;color:#fff;font-size:1rem;font-weight:800;flex-shrink:0;">
+            {{ rev.reviewer_name[0].upper() }}
+          </div>
+          <div>
+            <h4>{{ rev.reviewer_name }}</h4>
+            <span>
+              {% for i in range(rev.rating) %}★{% endfor %}{% for i in range(5 - rev.rating) %}☆{% endfor %}
+              &nbsp;·&nbsp; {{ rev.created_at.strftime('%d %b %Y') if rev.created_at else '' }}
+            </span>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    {% endif %}
+
   </div>
 
-  <!-- No results message -->
   <p class="no-reviews-msg hidden" id="noReviewsMsg">No reviews found for this destination yet. Be the first! 🏔️</p>
-
 </section>
-
 
 
 <!-- Quick Booking -->
@@ -598,13 +651,9 @@ GoHigh <b>Rentals</b>
     </button>
   </div>
 
-  <!-- Result Panel -->
   <div class="availability-result" id="availabilityResult" style="display:none;">
-
     <div class="result-header" id="resultHeader"></div>
-
     <div class="vehicle-grid" id="vehicleGrid"></div>
-
     <div class="booking-summary" id="bookingSummary" style="display:none;">
       <h4>📋 Booking Summary</h4>
       <div class="summary-details" id="summaryDetails"></div>
@@ -612,21 +661,17 @@ GoHigh <b>Rentals</b>
         <i class="fas fa-check-circle"></i> Proceed to Book
       </a>
     </div>
-
   </div>
 </section>
 
-<!-- Scroll to Top Button -->
 <div class="scroll-top" id="scrollTop">
     <i class="fas fa-arrow-up"></i>
 </div>
 
 <script>
-
-// User profile dropdown
+// ── Dropdown ──
 function toggleDropdown() {
-  const menu = document.getElementById('userDropdownMenu');
-  menu.classList.toggle('open');
+  document.getElementById('userDropdownMenu').classList.toggle('open');
 }
 document.addEventListener('click', function(e) {
   if (!e.target.closest('.user-dropdown')) {
@@ -639,430 +684,196 @@ document.querySelectorAll('.flash-message').forEach(msg => {
     setTimeout(() => msg.remove(), 2000);
 });
 
-
 // Smooth scroll
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         e.preventDefault();
         const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            target.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-        }
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
 });
 
-
-// Scroll to top button
+// Scroll to top
 const scrollTop = document.getElementById('scrollTop');
-
 window.addEventListener('scroll', () => {
-    if (window.pageYOffset > 300) {
-        scrollTop.classList.add('show');
-    } else {
-        scrollTop.classList.remove('show');
-    }
+    scrollTop.classList.toggle('show', window.pageYOffset > 300);
 });
-
 scrollTop.addEventListener('click', () => {
-    window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 
-
-// ===============================
-// 📅 AVAILABILITY CHECKER
-// ===============================
-
-// Mock vehicle inventory per destination
+// ── Availability Checker ──
 const vehicleInventory = {
   manali:      [
-    { name: 'Mahindra Thar',    type: 'SUV',      seats: 4, price: 2499, fuel: 'Diesel', img: 'https://cdn-icons-png.flaticon.com/512/3774/3774278.png', available: true  },
-    { name: 'Toyota Innova',    type: 'MUV',      seats: 7, price: 3199, fuel: 'Diesel', img: 'https://cdn-icons-png.flaticon.com/512/3774/3774278.png', available: true  },
-    { name: 'Royal Enfield 350',type: 'Bike',     seats: 2, price: 1299, fuel: 'Petrol', img: 'https://cdn-icons-png.flaticon.com/512/3774/3774278.png', available: false },
+    { name: 'Mahindra Thar',    type: 'SUV',      seats: 4, price: 2499, fuel: 'Diesel', available: true  },
+    { name: 'Toyota Innova',    type: 'MUV',      seats: 7, price: 3199, fuel: 'Diesel', available: true  },
+    { name: 'Royal Enfield 350',type: 'Bike',     seats: 2, price: 1299, fuel: 'Petrol', available: false },
   ],
   leh:         [
-    { name: 'Mahindra Scorpio', type: 'SUV',      seats: 7, price: 3499, fuel: 'Diesel', img: '', available: true  },
-    { name: 'Royal Enfield 500',type: 'Bike',     seats: 2, price: 1599, fuel: 'Petrol', img: '', available: true  },
-    { name: 'Toyota Fortuner',  type: 'SUV',      seats: 7, price: 4299, fuel: 'Diesel', img: '', available: false },
+    { name: 'Mahindra Scorpio', type: 'SUV',      seats: 7, price: 3499, fuel: 'Diesel', available: true  },
+    { name: 'Royal Enfield 500',type: 'Bike',     seats: 2, price: 1599, fuel: 'Petrol', available: true  },
+    { name: 'Toyota Fortuner',  type: 'SUV',      seats: 7, price: 4299, fuel: 'Diesel', available: false },
   ],
   shimla:      [
-    { name: 'Maruti Swift Dzire',type:'Sedan',    seats: 5, price: 1499, fuel: 'Petrol', img: '', available: true  },
-    { name: 'Toyota Innova',    type: 'MUV',      seats: 7, price: 2799, fuel: 'Diesel', img: '', available: true  },
-    { name: 'Hyundai Creta',    type: 'SUV',      seats: 5, price: 1999, fuel: 'Petrol', img: '', available: true  },
+    { name: 'Maruti Swift Dzire',type:'Sedan',    seats: 5, price: 1499, fuel: 'Petrol', available: true  },
+    { name: 'Toyota Innova',    type: 'MUV',      seats: 7, price: 2799, fuel: 'Diesel', available: true  },
+    { name: 'Hyundai Creta',    type: 'SUV',      seats: 5, price: 1999, fuel: 'Petrol', available: true  },
   ],
   auli:        [
-    { name: 'Mahindra Thar',    type: 'SUV',      seats: 4, price: 2799, fuel: 'Diesel', img: '', available: true  },
-    { name: 'Toyota Fortuner',  type: 'SUV',      seats: 7, price: 4499, fuel: 'Diesel', img: '', available: false },
+    { name: 'Mahindra Thar',    type: 'SUV',      seats: 4, price: 2799, fuel: 'Diesel', available: true  },
+    { name: 'Toyota Fortuner',  type: 'SUV',      seats: 7, price: 4499, fuel: 'Diesel', available: false },
   ],
   spiti:       [
-    { name: 'Mahindra Bolero',  type: 'SUV',      seats: 7, price: 2999, fuel: 'Diesel', img: '', available: true  },
-    { name: 'Royal Enfield 500',type: 'Bike',     seats: 2, price: 1499, fuel: 'Petrol', img: '', available: true  },
+    { name: 'Mahindra Bolero',  type: 'SUV',      seats: 7, price: 2999, fuel: 'Diesel', available: true  },
+    { name: 'Royal Enfield 500',type: 'Bike',     seats: 2, price: 1499, fuel: 'Petrol', available: true  },
   ],
   kashmir:     [
-    { name: 'Toyota Innova',    type: 'MUV',      seats: 7, price: 3299, fuel: 'Diesel', img: '', available: true  },
-    { name: 'Mahindra Scorpio', type: 'SUV',      seats: 7, price: 3799, fuel: 'Diesel', img: '', available: false },
+    { name: 'Toyota Innova',    type: 'MUV',      seats: 7, price: 3299, fuel: 'Diesel', available: true  },
+    { name: 'Mahindra Scorpio', type: 'SUV',      seats: 7, price: 3799, fuel: 'Diesel', available: false },
   ],
   dharamshala: [
-    { name: 'Hyundai Creta',    type: 'SUV',      seats: 5, price: 2199, fuel: 'Petrol', img: '', available: true  },
-    { name: 'Maruti Ertiga',    type: 'MUV',      seats: 6, price: 1899, fuel: 'Petrol', img: '', available: true  },
+    { name: 'Hyundai Creta',    type: 'SUV',      seats: 5, price: 2199, fuel: 'Petrol', available: true  },
+    { name: 'Maruti Ertiga',    type: 'MUV',      seats: 6, price: 1899, fuel: 'Petrol', available: true  },
   ],
   dalhousie:   [
-    { name: 'Maruti Swift',     type: 'Hatchback',seats: 5, price: 1499, fuel: 'Petrol', img: '', available: true  },
-    { name: 'Hyundai Creta',    type: 'SUV',      seats: 5, price: 2099, fuel: 'Diesel', img: '', available: true  },
+    { name: 'Maruti Swift',     type: 'Hatchback',seats: 5, price: 1499, fuel: 'Petrol', available: true  },
+    { name: 'Hyundai Creta',    type: 'SUV',      seats: 5, price: 2099, fuel: 'Diesel', available: true  },
   ],
 };
-
-const vehicleIcons = {
-  'SUV':       'fa-truck-monster',
-  'MUV':       'fa-van-shuttle',
-  'Bike':      'fa-motorcycle',
-  'Sedan':     'fa-car',
-  'Hatchback': 'fa-car-side',
-};
-
-let selectedVehicle = null;
-let bookingDest = '', bookingIn = '', bookingOut = '', bookingDays = 0;
+const vehicleIcons = { 'SUV':'fa-truck-monster','MUV':'fa-van-shuttle','Bike':'fa-motorcycle','Sedan':'fa-car','Hatchback':'fa-car-side' };
+let selectedVehicle = null, bookingDest='', bookingIn='', bookingOut='', bookingDays=0;
 
 function checkAvailability() {
-  const dest    = document.getElementById('destination-select').value;
-  const checkIn = document.getElementById('check-in').value;
-  const checkOut= document.getElementById('check-out').value;
-
-  // Validation
-  if (!dest || !checkIn || !checkOut) {
-    shakeForm(); return;
-  }
-  const inDate  = new Date(checkIn);
-  const outDate = new Date(checkOut);
-  if (outDate <= inDate) {
-    alert('⚠️ Check-out date must be after check-in date.');
-    return;
-  }
-
-  bookingDays = Math.ceil((outDate - inDate) / (1000 * 60 * 60 * 24));
-  bookingDest = dest;
-  bookingIn   = checkIn;
-  bookingOut  = checkOut;
-  selectedVehicle = null;
-
-  const resultPanel = document.getElementById('availabilityResult');
-  const header      = document.getElementById('resultHeader');
-  const grid        = document.getElementById('vehicleGrid');
-  const summary     = document.getElementById('bookingSummary');
-
-  summary.style.display = 'none';
-  resultPanel.style.display = 'block';
-  resultPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-  const vehicles  = vehicleInventory[dest] || [];
-  const available = vehicles.filter(v => v.available);
-  const destLabel = document.querySelector(`#destination-select option[value="${dest}"]`).text;
-
-  // Header
-  header.innerHTML = `
-    <div class="result-info">
-      <span class="result-badge ${available.length > 0 ? 'badge-green' : 'badge-red'}">
-        ${available.length > 0 ? '✅ ' + available.length + ' Vehicles Available' : '❌ No Vehicles Available'}
-      </span>
-      <p>📍 <strong>${destLabel}</strong> &nbsp;|&nbsp; 📅 ${formatDate(checkIn)} → ${formatDate(checkOut)} &nbsp;|&nbsp; 🌙 ${bookingDays} night${bookingDays > 1 ? 's' : ''}</p>
-    </div>`;
-
-  // Vehicle cards
-  if (vehicles.length === 0) {
-    grid.innerHTML = '<p class="no-vehicle-msg">No vehicles listed for this destination yet.</p>';
-    return;
-  }
-
-  grid.innerHTML = vehicles.map((v, i) => `
-    <div class="vehicle-card ${!v.available ? 'unavailable' : ''}" 
-         onclick="${v.available ? 'selectVehicle(' + i + ', \'' + dest + '\')' : ''}">
-      <div class="vehicle-status-badge ${v.available ? 'status-available' : 'status-booked'}">
-        ${v.available ? 'Available' : 'Booked'}
-      </div>
-      <div class="vehicle-icon">
-        <i class="fas ${vehicleIcons[v.type] || 'fa-car'}"></i>
-      </div>
-      <h4>${v.name}</h4>
-      <div class="vehicle-meta">
-        <span><i class="fas fa-tag"></i> ${v.type}</span>
-        <span><i class="fas fa-users"></i> ${v.seats} seats</span>
-        <span><i class="fas fa-gas-pump"></i> ${v.fuel}</span>
-      </div>
-      <div class="vehicle-price">
-        ₹${v.price.toLocaleString()} <small>/day</small>
-        ${bookingDays > 0 ? '<div class="vehicle-total">Total: ₹' + (v.price * bookingDays).toLocaleString() + '</div>' : ''}
-      </div>
-      ${v.available ? '<button class="select-vehicle-btn">Select Vehicle</button>' : '<button class="select-vehicle-btn disabled" disabled>Not Available</button>'}
-    </div>`).join('');
+  const dest=document.getElementById('destination-select').value;
+  const checkIn=document.getElementById('check-in').value;
+  const checkOut=document.getElementById('check-out').value;
+  if (!dest||!checkIn||!checkOut){shakeForm();return;}
+  const inDate=new Date(checkIn),outDate=new Date(checkOut);
+  if(outDate<=inDate){alert('⚠️ Check-out date must be after check-in date.');return;}
+  bookingDays=Math.ceil((outDate-inDate)/(1000*60*60*24));
+  bookingDest=dest;bookingIn=checkIn;bookingOut=checkOut;selectedVehicle=null;
+  const resultPanel=document.getElementById('availabilityResult');
+  const header=document.getElementById('resultHeader');
+  const grid=document.getElementById('vehicleGrid');
+  const summary=document.getElementById('bookingSummary');
+  summary.style.display='none';
+  resultPanel.style.display='block';
+  resultPanel.scrollIntoView({behavior:'smooth',block:'start'});
+  const vehicles=vehicleInventory[dest]||[];
+  const available=vehicles.filter(v=>v.available);
+  const destLabel=document.querySelector(`#destination-select option[value="${dest}"]`).text;
+  header.innerHTML=`<div class="result-info"><span class="result-badge ${available.length>0?'badge-green':'badge-red'}">${available.length>0?'✅ '+available.length+' Vehicles Available':'❌ No Vehicles Available'}</span><p>📍 <strong>${destLabel}</strong> &nbsp;|&nbsp; 📅 ${formatDate(checkIn)} → ${formatDate(checkOut)} &nbsp;|&nbsp; 🌙 ${bookingDays} night${bookingDays>1?'s':''}</p></div>`;
+  if(vehicles.length===0){grid.innerHTML='<p class="no-vehicle-msg">No vehicles listed for this destination yet.</p>';return;}
+  grid.innerHTML=vehicles.map((v,i)=>`<div class="vehicle-card ${!v.available?'unavailable':''}" onclick="${v.available?'selectVehicle('+i+', \''+dest+'\')':''}"><div class="vehicle-status-badge ${v.available?'status-available':'status-booked'}">${v.available?'Available':'Booked'}</div><div class="vehicle-icon"><i class="fas ${vehicleIcons[v.type]||'fa-car'}"></i></div><h4>${v.name}</h4><div class="vehicle-meta"><span><i class="fas fa-tag"></i> ${v.type}</span><span><i class="fas fa-users"></i> ${v.seats} seats</span><span><i class="fas fa-gas-pump"></i> ${v.fuel}</span></div><div class="vehicle-price">₹${v.price.toLocaleString()} <small>/day</small>${bookingDays>0?'<div class="vehicle-total">Total: ₹'+(v.price*bookingDays).toLocaleString()+'</div>':''}</div>${v.available?'<button class="select-vehicle-btn">Select Vehicle</button>':'<button class="select-vehicle-btn disabled" disabled>Not Available</button>'}</div>`).join('');
 }
-
-function selectVehicle(index, dest) {
-  const vehicle = vehicleInventory[dest][index];
-  if (!vehicle.available) return;
-
-  selectedVehicle = vehicle;
-
-  // Highlight selected card
-  document.querySelectorAll('.vehicle-card').forEach((c, i) =>
-    c.classList.toggle('selected', i === index));
-
-  // Show summary
-  const total = vehicle.price * bookingDays;
-  const destLabel = document.querySelector(`#destination-select option[value="${dest}"]`).text;
-  const summary = document.getElementById('bookingSummary');
-  const details = document.getElementById('summaryDetails');
-
-  details.innerHTML = `
-    <div class="summary-row"><span>Destination</span><strong>${destLabel}</strong></div>
-    <div class="summary-row"><span>Vehicle</span><strong>${vehicle.name} (${vehicle.type})</strong></div>
-    <div class="summary-row"><span>Check-in</span><strong>${formatDate(bookingIn)}</strong></div>
-    <div class="summary-row"><span>Check-out</span><strong>${formatDate(bookingOut)}</strong></div>
-    <div class="summary-row"><span>Duration</span><strong>${bookingDays} night${bookingDays > 1 ? 's' : ''}</strong></div>
-    <div class="summary-row"><span>Rate</span><strong>₹${vehicle.price.toLocaleString()}/day</strong></div>
-    <div class="summary-row total-row"><span>Total Estimate</span><strong>₹${total.toLocaleString()}</strong></div>`;
-
-  summary.style.display = 'block';
-  summary.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+function selectVehicle(index,dest){
+  const vehicle=vehicleInventory[dest][index];
+  if(!vehicle.available)return;
+  selectedVehicle=vehicle;
+  document.querySelectorAll('.vehicle-card').forEach((c,i)=>c.classList.toggle('selected',i===index));
+  const total=vehicle.price*bookingDays;
+  const destLabel=document.querySelector(`#destination-select option[value="${dest}"]`).text;
+  const summary=document.getElementById('bookingSummary');
+  document.getElementById('summaryDetails').innerHTML=`<div class="summary-row"><span>Destination</span><strong>${destLabel}</strong></div><div class="summary-row"><span>Vehicle</span><strong>${vehicle.name} (${vehicle.type})</strong></div><div class="summary-row"><span>Check-in</span><strong>${formatDate(bookingIn)}</strong></div><div class="summary-row"><span>Check-out</span><strong>${formatDate(bookingOut)}</strong></div><div class="summary-row"><span>Duration</span><strong>${bookingDays} night${bookingDays>1?'s':''}</strong></div><div class="summary-row"><span>Rate</span><strong>₹${vehicle.price.toLocaleString()}/day</strong></div><div class="summary-row total-row"><span>Total Estimate</span><strong>₹${total.toLocaleString()}</strong></div>`;
+  summary.style.display='block';
+  summary.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
-
-function resetBooking() {
-  document.getElementById('destination-select').value = '';
-  document.getElementById('check-in').value  = '';
-  document.getElementById('check-out').value = '';
-  document.getElementById('availabilityResult').style.display = 'none';
-  document.getElementById('bookingSummary').style.display     = 'none';
-  selectedVehicle = null;
+function resetBooking(){
+  document.getElementById('destination-select').value='';
+  document.getElementById('check-in').value='';
+  document.getElementById('check-out').value='';
+  document.getElementById('availabilityResult').style.display='none';
+  document.getElementById('bookingSummary').style.display='none';
+  selectedVehicle=null;
 }
-
-function formatDate(str) {
-  const d = new Date(str);
-  return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
-}
-
-function shakeForm() {
-  const form = document.querySelector('.booking-form');
-  form.classList.add('shake');
-  setTimeout(() => form.classList.remove('shake'), 600);
-}
-
-// Set min date to today
-window.addEventListener('DOMContentLoaded', () => {
-  const today = new Date().toISOString().split('T')[0];
-  document.getElementById('check-in').min  = today;
-  document.getElementById('check-out').min = today;
-  document.getElementById('check-in').addEventListener('change', function () {
-    const checkOut = document.getElementById('check-out');
-    // check-out must always be after check-in
-    checkOut.min = this.value;
-    // If existing check-out is on or before new check-in, reset it
-    if (checkOut.value && checkOut.value <= this.value) {
-      checkOut.value = '';
-    }
+function formatDate(str){const d=new Date(str);return d.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});}
+function shakeForm(){const form=document.querySelector('.booking-form');form.classList.add('shake');setTimeout(()=>form.classList.remove('shake'),600);}
+window.addEventListener('DOMContentLoaded',()=>{
+  const today=new Date().toISOString().split('T')[0];
+  document.getElementById('check-in').min=today;
+  document.getElementById('check-out').min=today;
+  document.getElementById('check-in').addEventListener('change',function(){
+    const checkOut=document.getElementById('check-out');
+    checkOut.min=this.value;
+    if(checkOut.value&&checkOut.value<=this.value)checkOut.value='';
   });
 });
 
-
-
-// Image load handling
-document.querySelectorAll('.destination-card img').forEach(img => {
-
-    img.addEventListener('load', function() {
-        this.classList.add('loaded');
-    });
-
-    img.onerror = function() {
-        this.src = "https://via.placeholder.com/600x400?text=Himalayan+Destination";
-    };
-
+// Image fallback
+document.querySelectorAll('.destination-card img').forEach(img=>{
+    img.addEventListener('load',function(){this.classList.add('loaded');});
+    img.onerror=function(){this.src="https://via.placeholder.com/600x400?text=Himalayan+Destination";};
 });
 
-
-// ===============================
-// ⭐ REVIEW SLIDER — Infinite Circular
-// ===============================
-
+// ── Review Slider ──
 window.addEventListener('load', function () {
-
-  const wrapper    = document.getElementById('reviewWrapper');
-  const dotsEl     = document.getElementById('reviewDots');
-  let current      = 0;
-  let busy         = false;
-  let autoTimer;
-
-  // Snapshot originals, then clone for infinite loop
-  const origCards  = Array.from(wrapper.querySelectorAll('.review-card'));
-  const total      = origCards.length;
-  origCards.forEach(c => wrapper.appendChild(c.cloneNode(true)));
-
-  // Measure after layout
-  function step() {
-    const card = wrapper.querySelector('.review-card');
-    return card.getBoundingClientRect().width + 24; // 24 = gap
-  }
-
-  function go(animated) {
-    wrapper.style.transition = animated ? 'transform 0.5s cubic-bezier(.4,0,.2,1)' : 'none';
-    wrapper.style.transform  = `translateX(-${current * step()}px)`;
-  }
-
-  function dots() {
-    dotsEl.innerHTML = '';
-    origCards.forEach((_, i) => {
-      const d = document.createElement('button');
-      d.className = 'review-dot' + (i === current ? ' active' : '');
-      d.onclick = () => { if (!busy) { clearInterval(autoTimer); jump(i); startAuto(); } };
-      dotsEl.appendChild(d);
-    });
-  }
-
-  function syncDots() {
-    const idx = ((current % total) + total) % total;
-    dotsEl.querySelectorAll('.review-dot').forEach((d, i) =>
-      d.classList.toggle('active', i === idx));
-  }
-
-  function jump(i) { current = i; go(true); syncDots(); }
-
-  window.slideReviews = function (dir) {
-    if (busy) return;
-    busy = true;
-    clearInterval(autoTimer);
-    current += dir;
-    go(true);
-    syncDots();
-    setTimeout(() => {
-      if (current >= total)      { current -= total; go(false); }
-      else if (current < 0)      { current += total; go(false); }
-      requestAnimationFrame(() => requestAnimationFrame(() => {
-        wrapper.style.transition = 'transform 0.5s cubic-bezier(.4,0,.2,1)';
-        busy = false;
-        syncDots();
-        startAuto();
-      }));
-    }, 520);
+  const wrapper=document.getElementById('reviewWrapper');
+  const dotsEl=document.getElementById('reviewDots');
+  let current=0,busy=false,autoTimer;
+  const origCards=Array.from(wrapper.querySelectorAll('.review-card'));
+  const total=origCards.length;
+  origCards.forEach(c=>wrapper.appendChild(c.cloneNode(true)));
+  function step(){const card=wrapper.querySelector('.review-card');return card.getBoundingClientRect().width+24;}
+  function go(animated){wrapper.style.transition=animated?'transform 0.5s cubic-bezier(.4,0,.2,1)':'none';wrapper.style.transform=`translateX(-${current*step()}px)`;}
+  function dots(){dotsEl.innerHTML='';origCards.forEach((_,i)=>{const d=document.createElement('button');d.className='review-dot'+(i===current?' active':'');d.onclick=()=>{if(!busy){clearInterval(autoTimer);jump(i);startAuto();}};dotsEl.appendChild(d);});}
+  function syncDots(){const idx=((current%total)+total)%total;dotsEl.querySelectorAll('.review-dot').forEach((d,i)=>d.classList.toggle('active',i===idx));}
+  function jump(i){current=i;go(true);syncDots();}
+  window.slideReviews=function(dir){
+    if(busy)return;busy=true;clearInterval(autoTimer);current+=dir;go(true);syncDots();
+    setTimeout(()=>{
+      if(current>=total){current-=total;go(false);}
+      else if(current<0){current+=total;go(false);}
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{wrapper.style.transition='transform 0.5s cubic-bezier(.4,0,.2,1)';busy=false;syncDots();startAuto();}));
+    },520);
   };
+  function startAuto(){clearInterval(autoTimer);autoTimer=setInterval(()=>slideReviews(1),3500);}
+  dots();go(false);startAuto();
+  window.addEventListener('resize',()=>{go(false);});
+});
 
-  function startAuto() {
-    clearInterval(autoTimer);
-    autoTimer = setInterval(() => slideReviews(1), 3500);
-  }
-
-  dots();
-  go(false);
-  startAuto();
-  window.addEventListener('resize', () => { go(false); });
-
-}); // end review load
-
-
-// ===============================
-// 💬 REVIEW FILTER BY DESTINATION
-// ===============================
-
-document.querySelectorAll('.filter-tab').forEach(tab => {
-  tab.addEventListener('click', function () {
-    // Update active tab
-    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+// ── Review Filter ──
+document.querySelectorAll('.filter-tab').forEach(tab=>{
+  tab.addEventListener('click',function(){
+    document.querySelectorAll('.filter-tab').forEach(t=>t.classList.remove('active'));
     this.classList.add('active');
-
-    const filter = this.dataset.filter;
-    const cards  = document.querySelectorAll('#textReviewContainer .text-review');
-    let visible  = 0;
-
-    cards.forEach(card => {
-      const match = filter === 'all' || card.dataset.dest === filter;
-      card.style.display = match ? '' : 'none';
-      if (match) visible++;
+    const filter=this.dataset.filter;
+    let visible=0;
+    document.querySelectorAll('#textReviewContainer .text-review').forEach(card=>{
+      const match=filter==='all'||card.dataset.dest===filter;
+      card.style.display=match?'':'none';
+      if(match)visible++;
     });
-
-    // Show/hide no-results message
-    const msg = document.getElementById('noReviewsMsg');
-    msg.classList.toggle('hidden', visible > 0);
+    document.getElementById('noReviewsMsg').classList.toggle('hidden',visible>0);
   });
 });
 
-
-// ===============================
-// 💬 EXPAND / COLLAPSE REVIEW
-// ===============================
-
-function toggleReview(btn) {
-  const card  = btn.closest('.text-review');
-  const short = card.querySelector('.review-short');
-  const full  = card.querySelector('.review-full');
-  const icon  = btn.querySelector('i');
-  const expanded = full.classList.contains('hidden');
-
-  short.classList.toggle('hidden', expanded);
-  full.classList.toggle('hidden', !expanded);
-  btn.innerHTML = expanded
-    ? 'Read less <i class="fas fa-chevron-up"></i>'
-    : 'Read more <i class="fas fa-chevron-down"></i>';
+// ── Expand/Collapse Review ──
+function toggleReview(btn){
+  const card=btn.closest('.text-review');
+  const short=card.querySelector('.review-short');
+  const full=card.querySelector('.review-full');
+  const expanded=full.classList.contains('hidden');
+  short.classList.toggle('hidden',expanded);
+  full.classList.toggle('hidden',!expanded);
+  btn.innerHTML=expanded?'Read less <i class="fas fa-chevron-up"></i>':'Read more <i class="fas fa-chevron-down"></i>';
 }
 
-
-
-// ===============================
-// 📸 GALLERY — Infinite Circular
-// ===============================
-
-window.addEventListener('load', function () {
-
-  const gallery  = document.getElementById('galleryContainer');
-  const origImgs = Array.from(gallery.querySelectorAll('img'));
-  const total    = origImgs.length;
-
-  // Clone all images for seamless loop
-  origImgs.forEach(img => gallery.appendChild(img.cloneNode(true)));
-
-  let offset  = 0;
-  let looping = false;
-
-  function imgStep() {
-    // Use offsetWidth which works after load; fallback to 260
-    const img = gallery.querySelector('img');
-    const w = img.offsetWidth || img.getBoundingClientRect().width || 260;
-    const gap = parseInt(getComputedStyle(gallery).gap) || 20;
-    return w + gap;
+// ── Gallery ──
+window.addEventListener('load',function(){
+  const gallery=document.getElementById('galleryContainer');
+  const origImgs=Array.from(gallery.querySelectorAll('img'));
+  const total=origImgs.length;
+  origImgs.forEach(img=>gallery.appendChild(img.cloneNode(true)));
+  let offset=0,looping=false;
+  function imgStep(){const img=gallery.querySelector('img');const w=img.offsetWidth||img.getBoundingClientRect().width||260;const gap=parseInt(getComputedStyle(gallery).gap)||20;return w+gap;}
+  function slideGallery(){
+    if(looping)return;const w=imgStep();if(w<=20)return;
+    const loopPoint=total*w;offset+=w;
+    gallery.style.transition='transform 0.6s ease';gallery.style.transform=`translateX(-${offset}px)`;
+    if(offset>=loopPoint){looping=true;setTimeout(()=>{offset=0;gallery.style.transition='none';gallery.style.transform='translateX(0)';requestAnimationFrame(()=>requestAnimationFrame(()=>{gallery.style.transition='transform 0.6s ease';looping=false;}));},650);}
   }
-
-  function slideGallery() {
-    if (looping) return;
-    const w         = imgStep();
-    if (w <= 20) return; // images not ready yet
-    const loopPoint = total * w;
-
-    offset += w;
-    gallery.style.transition = 'transform 0.6s ease';
-    gallery.style.transform  = `translateX(-${offset}px)`;
-
-    if (offset >= loopPoint) {
-      looping = true;
-      setTimeout(() => {
-        offset = 0;
-        gallery.style.transition = 'none';
-        gallery.style.transform  = 'translateX(0)';
-        requestAnimationFrame(() => requestAnimationFrame(() => {
-          gallery.style.transition = 'transform 0.6s ease';
-          looping = false;
-        }));
-      }, 650);
-    }
-  }
-
-  // Wait a tick so images have rendered dimensions
-  setTimeout(() => {
-    setInterval(slideGallery, 3000);
-  }, 300);
-
-}); // end gallery load
-
-
+  setTimeout(()=>{setInterval(slideGallery,3000);},300);
+});
 </script>
 
 </body>

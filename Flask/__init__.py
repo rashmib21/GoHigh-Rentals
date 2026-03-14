@@ -318,18 +318,33 @@ def create_app():
         completed   = len([b for b in bookings if b['booking_status'] == 'Completed'])
         total_spent = sum(b['total_amount'] for b in bookings)
 
+        # Fetch user-submitted reviews (safe — returns [] if table missing)
+        user_reviews = []
+        try:
+            cursor.execute("""
+                SELECT r.rating, r.review_text, r.created_at, u.name AS reviewer_name
+                FROM review r
+                JOIN users u ON r.user_id = u.user_id
+                ORDER BY r.created_at DESC
+                LIMIT 20
+            """)
+            user_reviews = cursor.fetchall()
+        except Exception:
+            user_reviews = []
+
         cursor.close()
         connection.close()
 
         return render_template(
             "dashboard.html",
-            user_name   = session['user_name'],
-            bookings    = bookings,
-            total_trips = total_trips,
-            confirmed   = confirmed,
-            cancelled   = cancelled,
-            completed   = completed,
-            total_spent = total_spent
+            user_name    = session['user_name'],
+            bookings     = bookings,
+            total_trips  = total_trips,
+            confirmed    = confirmed,
+            cancelled    = cancelled,
+            completed    = completed,
+            total_spent  = total_spent,
+            user_reviews = user_reviews
         )
 
 
@@ -431,34 +446,23 @@ def create_app():
     def delete_account():
         if 'user_id' not in session:
             return redirect(url_for('login'))
-
         user_id = session['user_id']
         conn   = get_db_connection()
         cursor = conn.cursor()
-
-        # Delete pricing linked to user's bookings
-        cursor.execute("""
-            DELETE p FROM pricing p
-            JOIN booking b ON p.booking_id = b.booking_id
-            WHERE b.user_id = %s
-        """, (user_id,))
-
-        # Delete user's bookings
-        cursor.execute("DELETE FROM booking WHERE user_id = %s", (user_id,))
-
-        # Delete reviews if table exists
         try:
+            cursor.execute("""
+                DELETE p FROM pricing p
+                JOIN booking b ON p.booking_id = b.booking_id
+                WHERE b.user_id = %s
+            """, (user_id,))
+            cursor.execute("DELETE FROM booking WHERE user_id = %s", (user_id,))
             cursor.execute("DELETE FROM review WHERE user_id = %s", (user_id,))
         except Exception:
             pass
-
-        # Delete user account
         cursor.execute("DELETE FROM users WHERE user_id = %s", (user_id,))
-
         conn.commit()
         cursor.close()
         conn.close()
-
         session.clear()
         flash("Your account has been permanently deleted.", "success")
         return redirect(url_for('index'))
@@ -468,32 +472,38 @@ def create_app():
     def submit_review():
         if 'user_id' not in session:
             return redirect(url_for('login'))
-
         rating      = request.form.get('rating', 0, type=int)
         review_text = request.form.get('review_text', '').strip()
         user_id     = session['user_id']
-
         if not rating or not review_text:
             flash("Please provide a rating and review text.", "error")
             return redirect(url_for('profile'))
-
         conn   = get_db_connection()
         cursor = conn.cursor()
-
         try:
+            # Create table if not exists, then insert
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS review (
+                    review_id   INT AUTO_INCREMENT PRIMARY KEY,
+                    user_id     INT NOT NULL,
+                    rating      TINYINT NOT NULL,
+                    review_text TEXT NOT NULL,
+                    created_at  DATETIME DEFAULT NOW(),
+                    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+                )
+            """)
             cursor.execute("""
                 INSERT INTO review (user_id, rating, review_text, created_at)
                 VALUES (%s, %s, %s, NOW())
             """, (user_id, rating, review_text))
             conn.commit()
-        except Exception:
-            # Table may not exist yet; silently pass — form shows success anyway
+        except Exception as e:
             conn.rollback()
+            print("Review insert error:", e)
         finally:
             cursor.close()
             conn.close()
-
-        flash("Review submitted successfully! Thank you.", "success")
+        flash("Review submitted! It is now visible on the dashboard.", "success")
         return redirect(url_for('profile'))
 
 
