@@ -1,0 +1,92 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Manage Vehicles{% endblock %}
+{% block page_icon %}fas fa-car{% endblock %}
+{% block page_name %}Manage Vehicles{% endblock %}
+
+{% block content %}
+
+<div class="page-heading">
+    <div>
+        <h2>🚗 Vehicle Fleet</h2>
+        <p>Add, edit or delete vehicles from your fleet.</p>
+    </div>
+    <a href="{{ url_for('admin.admin_add_vehicle') }}" class="btn btn-orange">
+        <i class="fas fa-plus"></i> Add New Vehicle
+    </a>
+</div>
+
+<div class="section-card">
+    <div class="section-header">
+        <h3><i class="fas fa-list"></i> All Vehicles</h3>
+        <span style="font-size:0.82rem; color:#888; font-weight:700;">
+            Total: {{ vehicles | length }} vehicles
+        </span>
+    </div>
+
+    {% if vehicles %}
+    <div style="overflow-x: auto;">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>#ID</th>
+                <th>Vehicle Name</th>
+                <th>Vehicle Number</th>
+                <th>Type</th>
+                <th>Seats</th>
+                <th>Fuel</th>
+                <th>Count</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for v in vehicles %}
+            <tr>
+                <td style="color:#aaa;">{{ v.vehicle_id }}</td>
+                <td><strong>{{ v.vehicle_name }}</strong></td>
+                <td style="color:#607080;">{{ v.vehicle_number }}</td>
+                <td>{{ v.vehicle_type }}</td>
+                <td>{{ v.seating_capacity }}</td>
+                <td>{{ v.fuel_type }}</td>
+                <td>{{ v.vehicle_count }}</td>
+                <td>
+                    {% if v.availability_status == 'Available' %}
+                        <span class="badge confirmed">Available</span>
+                    {% else %}
+                        <span class="badge cancelled">Unavailable</span>
+                    {% endif %}
+                </td>
+                <td style="display:flex; gap:8px; flex-wrap:wrap;">
+                    <!-- Edit button -->
+                    <a href="{{ url_for('admin.admin_edit_vehicle', vehicle_id=v.vehicle_id) }}"
+                       class="btn btn-primary">
+                        <i class="fas fa-edit"></i> Edit
+                    </a>
+                    <!-- Delete button -->
+                    <form method="POST"
+                          action="{{ url_for('admin.admin_delete_vehicle', vehicle_id=v.vehicle_id) }}"
+                          onsubmit="return confirm('Delete {{ v.vehicle_name }}? This cannot be undone.')">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-car-crash"></i>
+        <p>No vehicles added yet.</p>
+        <a href="{{ url_for('admin.admin_add_vehicle') }}" class="btn btn-orange" style="margin-top:14px;">
+            <i class="fas fa-plus"></i> Add Your First Vehicle
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

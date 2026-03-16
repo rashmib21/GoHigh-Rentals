@@ -17,7 +17,7 @@
         <img src="{{ url_for('static', filename='images/logo.png') }}" 
              alt="GoHigh Rentals Logo">
         <div class="brand-text">
-            <h2 class="headline"><a href="#home" style="text-decoration: none;" >GOHIGH RENTALS</a></h2>
+            <h2 class="headline"><a href="#home" style="text-decoration: none;">GOHIGH RENTALS</a></h2>
             <p>Himalayan Expeditions</p>
         </div>
     </div>
@@ -135,29 +135,33 @@
     </div>
 
     <div class="footer-bottom">
-    <span>© 2026 GoHigh Rentals | Designed by Rashmi Barethiya</span>
+        <span>© 2026 GoHigh Rentals | Designed by Rashmi Barethiya</span>
 
-    <a href="{{ url_for('admin.admin_login') }}"
-       style="
-           margin-left: 24px;
-           display: inline-flex;
-           align-items: center;
-           gap: 6px;
-           padding: 5px 14px;
-           background: rgba(255,255,255,0.08);
-           border: 1px solid rgba(255,255,255,0.15);
-           border-radius: 20px;
-           color: rgba(255,255,255,0.35);
-           text-decoration: none;
-           font-size: 0.72rem;
-           font-weight: 700;
-           letter-spacing: 0.5px;
-       "
-    >
-        <i class="fas fa-shield-alt"></i> Admin
-    </a>
-</div>
-</footer>
+        <!-- ── Admin Login Button (hidden in footer, only admin knows it's here) ── -->
+        <a href="{{ url_for('admin.admin_login') }}"
+           style="
+               margin-left: 24px;
+               display: inline-flex;
+               align-items: center;
+               gap: 6px;
+               padding: 5px 14px;
+               background: rgba(255,255,255,0.08);
+               border: 1px solid rgba(255,255,255,0.15);
+               border-radius: 20px;
+               color: rgba(255,255,255,0.35);
+               text-decoration: none;
+               font-size: 0.72rem;
+               font-weight: 700;
+               letter-spacing: 0.5px;
+               transition: all 0.2s;
+           "
+           onmouseover="this.style.background='rgba(74,155,142,0.2)'; this.style.color='rgba(255,255,255,0.7)'; this.style.borderColor='rgba(74,155,142,0.4)'"
+           onmouseout="this.style.background='rgba(255,255,255,0.08)'; this.style.color='rgba(255,255,255,0.35)'; this.style.borderColor='rgba(255,255,255,0.15)'">
+           Admin
+        </a>
 
-</body>
-</html>
+        </div>
+        </footer>
+
+        </body>
+        </html>

@@ -1,0 +1,103 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Edit Vehicle{% endblock %}
+{% block page_icon %}fas fa-edit{% endblock %}
+{% block page_name %}Edit Vehicle{% endblock %}
+
+{% block content %}
+
+<div class="page-heading">
+    <div>
+        <h2>✏️ Edit Vehicle</h2>
+        <p>Update the details for {{ vehicle.vehicle_name }}.</p>
+    </div>
+    <a href="{{ url_for('admin.admin_vehicles') }}" class="btn btn-dark">
+        <i class="fas fa-arrow-left"></i> Back to Vehicles
+    </a>
+</div>
+
+<div class="form-card">
+    <form method="POST">
+
+        <!-- vehicle_name -->
+        <div class="form-group">
+            <label>Vehicle Name</label>
+            <input type="text" name="vehicle_name"
+                   value="{{ vehicle.vehicle_name }}" required>
+        </div>
+
+        <!-- vehicle_number (UNIQUE in DB) -->
+        <div class="form-group">
+            <label>Vehicle Number (Registration)</label>
+            <input type="text" name="vehicle_number"
+                   value="{{ vehicle.vehicle_number }}" required>
+        </div>
+
+        <!-- vehicle_type -->
+        <div class="form-group">
+            <label>Vehicle Type</label>
+            <select name="vehicle_type" required>
+                <option value="SUV"             {% if vehicle.vehicle_type == 'SUV' %}selected{% endif %}>SUV</option>
+                <option value="MUV"             {% if vehicle.vehicle_type == 'MUV' %}selected{% endif %}>MUV</option>
+                <option value="Sedan"           {% if vehicle.vehicle_type == 'Sedan' %}selected{% endif %}>Sedan</option>
+                <option value="Hatchback"       {% if vehicle.vehicle_type == 'Hatchback' %}selected{% endif %}>Hatchback</option>
+                <option value="Bike"            {% if vehicle.vehicle_type == 'Bike' %}selected{% endif %}>Bike</option>
+                <option value="Tempo Traveller" {% if vehicle.vehicle_type == 'Tempo Traveller' %}selected{% endif %}>Tempo Traveller</option>
+            </select>
+        </div>
+
+        <!-- seating_capacity -->
+        <div class="form-group">
+            <label>Seating Capacity</label>
+            <input type="number" name="seating_capacity"
+                   value="{{ vehicle.seating_capacity }}" min="1" max="50" required>
+        </div>
+
+        <!-- fuel_type -->
+        <div class="form-group">
+            <label>Fuel Type</label>
+            <select name="fuel_type" required>
+                <option value="Petrol"   {% if vehicle.fuel_type == 'Petrol' %}selected{% endif %}>Petrol</option>
+                <option value="Diesel"   {% if vehicle.fuel_type == 'Diesel' %}selected{% endif %}>Diesel</option>
+                <option value="CNG"      {% if vehicle.fuel_type == 'CNG' %}selected{% endif %}>CNG</option>
+                <option value="Electric" {% if vehicle.fuel_type == 'Electric' %}selected{% endif %}>Electric</option>
+            </select>
+        </div>
+
+        <!-- vehicle_count -->
+        <div class="form-group">
+            <label>Vehicle Count</label>
+            <input type="number" name="vehicle_count"
+                   value="{{ vehicle.vehicle_count }}" min="1" required>
+        </div>
+
+        <!-- availability_status -->
+        <div class="form-group">
+            <label>Availability Status</label>
+            <select name="availability_status">
+                <option value="Available"   {% if vehicle.availability_status == 'Available' %}selected{% endif %}>Available</option>
+                <option value="Unavailable" {% if vehicle.availability_status == 'Unavailable' %}selected{% endif %}>Unavailable</option>
+            </select>
+        </div>
+
+        <!-- category_id (optional) -->
+        <div class="form-group">
+            <label>Category ID <span style="color:#aaa; font-weight:400;">(optional)</span></label>
+            <input type="number" name="category_id"
+                   value="{{ vehicle.category_id if vehicle.category_id else '' }}"
+                   placeholder="Leave blank if not used">
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-orange">
+                <i class="fas fa-save"></i> Save Changes
+            </button>
+            <a href="{{ url_for('admin.admin_vehicles') }}" class="btn btn-dark">
+                Cancel
+            </a>
+        </div>
+
+    </form>
+</div>
+
+{% endblock %}

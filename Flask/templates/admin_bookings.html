@@ -1,0 +1,124 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Manage Bookings{% endblock %}
+{% block page_icon %}fas fa-calendar-check{% endblock %}
+{% block page_name %}Manage Bookings{% endblock %}
+
+{% block content %}
+
+<div class="page-heading">
+    <div>
+        <h2>📋 All Bookings</h2>
+        <p>Accept or cancel user bookings from here.</p>
+    </div>
+</div>
+
+<div class="section-card">
+    <div class="section-header">
+        <h3><i class="fas fa-list"></i> Booking List</h3>
+        <span style="font-size:0.82rem; color:#888; font-weight:700;">
+            Total: {{ bookings | length }} bookings
+        </span>
+    </div>
+
+    {% if bookings %}
+    <div style="overflow-x: auto;">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>#ID</th>
+                <th>User</th>
+                <th>Email</th>
+                <th>Destination</th>
+                <th>Vehicle</th>
+                <th>Travel Date</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for b in bookings %}
+            <tr>
+
+            <td style="color:#aaa;">{{ b.booking_id }}</td>
+            <td><strong>{{ b.user_name }}</strong></td>
+            <td style="color:#888;">{{ b.user_email }}</td>
+            <td>{{ b.destination_name }}</td>
+            <td>{{ b.vehicle_name }}</td>
+            <td>{{ b.travel_date }}</td>
+            <td><strong>₹{{ b.total_amount }}</strong></td>
+
+            <td>
+            <span class="badge {{ b.booking_status | lower }}">
+            {{ b.booking_status }}
+            </span>
+            </td>
+
+            <td>
+
+            {% if b.booking_status == 'Pending' %}
+
+            <form method="POST"
+                  action="{{ url_for('admin.admin_accept_booking', booking_id=b.booking_id) }}"
+                  style="display:inline;"
+                  onsubmit="return confirm('Accept booking #{{ b.booking_id }}?')">
+            <button type="submit" class="btn btn-success">
+            <i class="fas fa-check"></i> Accept
+            </button>
+            </form>
+
+            <form method="POST"
+                  action="{{ url_for('admin.admin_cancel_booking', booking_id=b.booking_id) }}"
+                  style="display:inline;"
+                  onsubmit="return confirm('Cancel booking #{{ b.booking_id }}?')">
+            <button type="submit" class="btn btn-danger">
+            <i class="fas fa-times"></i> Cancel
+            </button>
+            </form>
+
+            {% elif b.booking_status == 'Confirmed' %}
+
+            <form method="POST"
+                  action="{{ url_for('admin.admin_cancel_booking', booking_id=b.booking_id) }}"
+                  style="display:inline;"
+                  onsubmit="return confirm('Cancel booking #{{ b.booking_id }}?')">
+            <button type="submit" class="btn btn-danger">
+            <i class="fas fa-times"></i> Cancel
+            </button>
+            </form>
+
+            {% elif b.booking_status == 'Cancelled' %}
+
+            <form method="POST"
+                  action="{{ url_for('admin.admin_accept_booking', booking_id=b.booking_id) }}"
+                  style="display:inline;"
+                  onsubmit="return confirm('Accept booking #{{ b.booking_id }}?')">
+            <button type="submit" class="btn btn-success">
+            <i class="fas fa-check"></i> Accept
+            </button>
+            </form>
+
+            {% else %}
+
+            <span style="color:#aaa; font-size:0.8rem;">✅ Done</span>
+
+            {% endif %}
+
+            </td>
+
+            </tr>
+            {% endfor %}
+            </tbody>
+    </table>
+    </div>
+
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-calendar-times"></i>
+        <p>No bookings found.</p>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

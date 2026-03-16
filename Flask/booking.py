@@ -32,7 +32,7 @@ def create_booking():
     cursor.execute("""
     INSERT INTO booking
     (destination_id, vehicle_id, travel_date, booking_status, user_id, booking_date)
-    VALUES (%s,%s,%s,'Confirmed',%s,%s)
+    VALUES (%s,%s,%s,'Pending',%s,%s)
     """,(destination_id, vehicle_id, travel_date, user_id, date.today()))
 
     conn.commit()

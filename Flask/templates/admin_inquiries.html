@@ -1,0 +1,66 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Contact Inquiries{% endblock %}
+{% block page_icon %}fas fa-envelope{% endblock %}
+{% block page_name %}Contact Inquiries{% endblock %}
+
+{% block content %}
+
+<div class="page-heading">
+    <div>
+        <h2>📨 Contact Inquiries</h2>
+        <p>Messages submitted by users from the Contact Us form.</p>
+    </div>
+</div>
+
+<div class="section-card">
+    <div class="section-header">
+        <h3><i class="fas fa-inbox"></i> All Inquiries</h3>
+        <span style="font-size:0.82rem; color:#888; font-weight:700;">
+            Total: {{ inquiries | length }} messages
+        </span>
+    </div>
+
+    {% if inquiries %}
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Message</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for inq in inquiries %}
+            <tr>
+                <td style="color:#aaa;">{{ inq.id }}</td>
+                <td><strong>{{ inq.name }}</strong></td>
+                <td>{{ inq.email }}</td>
+                <td style="max-width: 380px; line-height: 1.5;">
+                    {{ inq.message }}
+                </td>
+                <td>
+                    <form method="POST"
+                          action="{{ url_for('admin.admin_delete_inquiry', inquiry_id=inq.id) }}"
+                          onsubmit="return confirm('Delete this inquiry from {{ inq.name }}?')">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-inbox"></i>
+        <p>No inquiries yet. The contact form has not been submitted by anyone.</p>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

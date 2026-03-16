@@ -1,0 +1,104 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Add Vehicle{% endblock %}
+{% block page_icon %}fas fa-plus-circle{% endblock %}
+{% block page_name %}Add New Vehicle{% endblock %}
+
+{% block content %}
+
+<div class="page-heading">
+    <div>
+        <h2>➕ Add New Vehicle</h2>
+        <p>Fill in the details to add a vehicle to your fleet.</p>
+    </div>
+    <a href="{{ url_for('admin.admin_vehicles') }}" class="btn btn-dark">
+        <i class="fas fa-arrow-left"></i> Back to Vehicles
+    </a>
+</div>
+
+<div class="form-card">
+    <form method="POST">
+
+        <!-- vehicle_name -->
+        <div class="form-group">
+            <label>Vehicle Name</label>
+            <input type="text" name="vehicle_name"
+                   placeholder="e.g. Toyota Innova" required>
+        </div>
+
+        <!-- vehicle_number (UNIQUE in DB) -->
+        <div class="form-group">
+            <label>Vehicle Number (Registration)</label>
+            <input type="text" name="vehicle_number"
+                   placeholder="e.g. HP 01 AB 1234" required>
+        </div>
+
+        <!-- vehicle_type -->
+        <div class="form-group">
+            <label>Vehicle Type</label>
+            <select name="vehicle_type" required>
+                <option value="">-- Select Type --</option>
+                <option value="SUV">SUV</option>
+                <option value="MUV">MUV</option>
+                <option value="Sedan">Sedan</option>
+                <option value="Hatchback">Hatchback</option>
+                <option value="Bike">Bike</option>
+                <option value="Tempo Traveller">Tempo Traveller</option>
+            </select>
+        </div>
+
+        <!-- seating_capacity -->
+        <div class="form-group">
+            <label>Seating Capacity</label>
+            <input type="number" name="seating_capacity"
+                   placeholder="e.g. 7" min="1" max="50" required>
+        </div>
+
+        <!-- fuel_type -->
+        <div class="form-group">
+            <label>Fuel Type</label>
+            <select name="fuel_type" required>
+                <option value="">-- Select Fuel --</option>
+                <option value="Petrol">Petrol</option>
+                <option value="Diesel">Diesel</option>
+                <option value="CNG">CNG</option>
+                <option value="Electric">Electric</option>
+            </select>
+        </div>
+
+        <!-- vehicle_count -->
+        <div class="form-group">
+            <label>Vehicle Count (How many of this vehicle you have)</label>
+            <input type="number" name="vehicle_count"
+                   placeholder="e.g. 3" min="1" value="1" required>
+        </div>
+
+        <!-- availability_status -->
+        <div class="form-group">
+            <label>Availability Status</label>
+            <select name="availability_status">
+                <option value="Available">Available</option>
+                <option value="Unavailable">Unavailable</option>
+            </select>
+        </div>
+
+        <!-- category_id (optional) -->
+        <div class="form-group">
+            <label>Category ID <span style="color:#aaa; font-weight:400;">(optional)</span></label>
+            <input type="number" name="category_id"
+                   placeholder="Leave blank if not used">
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-orange">
+                <i class="fas fa-plus"></i> Add Vehicle
+            </button>
+            <a href="{{ url_for('admin.admin_vehicles') }}" class="btn btn-dark">
+                Cancel
+            </a>
+        </div>
+
+    </form>
+</div>
+
+{% endblock %}
