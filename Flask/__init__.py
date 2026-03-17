@@ -234,17 +234,42 @@ def create_app():
     def dashboard():
         if 'user_id' not in session:
             return redirect(url_for('login'))
-
+        
+        user_id = session['user_id']   # ← ADD THIS LINE
+        
         connection = get_db_connection()
         cursor     = connection.cursor(dictionary=True)
-
         today = date.today()
+        
         cursor.execute("""
             UPDATE booking 
             SET booking_status = 'Completed' 
             WHERE booking_status = 'Confirmed' AND travel_date <= %s
         """, (today,))
         connection.commit()
+
+        # NOTIFICATIONS QUERY
+        cursor.execute("""
+        SELECT b.booking_id, b.booking_status, d.destination_name
+        FROM booking b
+        JOIN destination d ON b.destination_id = d.destination_id
+        WHERE b.user_id = %s 
+        AND b.booking_status IN ('Confirmed', 'Cancelled')
+        AND b.notified = 0
+        """, (user_id,))
+        notifications = cursor.fetchall()
+
+        if notifications:
+            cursor.execute("""
+                UPDATE booking 
+                SET notified = 1
+                WHERE user_id = %s 
+                AND booking_status IN ('Confirmed', 'Cancelled')
+                AND notified = 0
+            """, (user_id,))
+            connection.commit()
+
+
 
         cursor.execute("""
             SELECT b.booking_id, b.travel_date, b.booking_status,
@@ -256,15 +281,15 @@ def create_app():
             WHERE b.user_id = %s
             ORDER BY b.travel_date DESC
             LIMIT 5
-        """, (session['user_id'],))
+        """, (user_id,))   
         bookings = cursor.fetchall()
-
+        
         total_trips = len(bookings)
         confirmed   = len([b for b in bookings if b['booking_status'] == 'Confirmed'])
         cancelled   = len([b for b in bookings if b['booking_status'] == 'Cancelled'])
         completed   = len([b for b in bookings if b['booking_status'] == 'Completed'])
         total_spent = sum(b['total_amount'] for b in bookings)
-
+        
         user_reviews = []
         try:
             cursor.execute("""
@@ -277,22 +302,22 @@ def create_app():
             user_reviews = cursor.fetchall()
         except Exception:
             user_reviews = []
-
+        
         cursor.close()
         connection.close()
-
+        
         return render_template(
             "dashboard.html",
-            user_name    = session['user_name'],
-            bookings     = bookings,
-            total_trips  = total_trips,
-            confirmed    = confirmed,
-            cancelled    = cancelled,
-            completed    = completed,
-            total_spent  = total_spent,
-            user_reviews = user_reviews
+            user_name     = session['user_name'],
+            bookings      = bookings,
+            total_trips   = total_trips,
+            confirmed     = confirmed,
+            cancelled     = cancelled,
+            completed     = completed,
+            total_spent   = total_spent,
+            user_reviews  = user_reviews,
+            notifications = notifications   # ← ADD THIS
         )
-
 
     @app.route('/my_bookings')
     def my_bookings():

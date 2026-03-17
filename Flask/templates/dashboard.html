@@ -207,6 +207,39 @@
   {% endif %}
 {% endwith %}
 
+<!-- ── BOOKING NOTIFICATIONS ── -->
+{% if notifications %}
+<div style="position: fixed; top: 80px; right: 20px; z-index: 9999; 
+            display: flex; flex-direction: column; gap: 10px; max-width: 320px;">
+  {% for n in notifications %}
+    {% if n.booking_status == 'Confirmed' %}
+      <div class="notif-toast" style="background:#e6f9f0; border-left: 4px solid #1a7a4a; 
+           color:#1a7a4a; padding: 14px 18px; border-radius: 10px; font-size:0.9rem;
+           box-shadow: 0 4px 16px rgba(0,0,0,0.12); font-weight:600;">
+        🎉 Booking to <strong>{{ n.destination_name }}</strong> is <strong>Confirmed!</strong>
+      </div>
+    {% elif n.booking_status == 'Cancelled' %}
+      <div class="notif-toast" style="background:#fff0f0; border-left: 4px solid #c0392b; 
+           color:#c0392b; padding: 14px 18px; border-radius: 10px; font-size:0.9rem;
+           box-shadow: 0 4px 16px rgba(0,0,0,0.12); font-weight:600;">
+        ❌ Booking to <strong>{{ n.destination_name }}</strong> was <strong>Cancelled.</strong>
+      </div>
+    {% endif %}
+  {% endfor %}
+</div>
+
+<!-- Auto dismiss after 4 seconds -->
+<script>
+  setTimeout(() => {
+    document.querySelectorAll('.notif-toast').forEach(t => {
+      t.style.transition = 'opacity 0.5s';
+      t.style.opacity = '0';
+      setTimeout(() => t.remove(), 500);
+    });
+  }, 4000);
+</script>
+{% endif %}
+
 <section class="dashboard-hero">
   <div class="hero-inner">
     <div class="hero-text">
@@ -218,6 +251,9 @@
     </a>
   </div>
 </section>
+
+
+
 
 <!-- Destinations Section -->
 <section class="destinations" id="destinations">

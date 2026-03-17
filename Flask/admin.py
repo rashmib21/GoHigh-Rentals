@@ -172,7 +172,8 @@ def admin_accept_booking(booking_id):
  
     cursor.execute("""
         UPDATE booking
-        SET booking_status = 'Confirmed'
+        SET booking_status = 'Confirmed',
+        notified = 0
         WHERE booking_id = %s
     """, (booking_id,))
  
@@ -196,7 +197,8 @@ def admin_cancel_booking(booking_id):
  
     cursor.execute("""
         UPDATE booking
-        SET booking_status = 'Cancelled'
+        SET booking_status = 'Cancelled',
+        notified = 0
         WHERE booking_id = %s
     """, (booking_id,))
  
