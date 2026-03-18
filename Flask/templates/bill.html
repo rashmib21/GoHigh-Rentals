@@ -1,169 +1,315 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Booking Invoice</title>
-
-<style>
-
-body{
-    font-family: Arial, sans-serif;
-    background:#f4f6f9;
-    margin:0;
-    padding:0;
-}
-
-/* Invoice container */
-.invoice-container{
-    width:650px;
-    margin:50px auto;
-    background:white;
-    padding:30px;
-    border-radius:10px;
-    box-shadow:0px 5px 15px rgba(0,0,0,0.1);
-}
-
-/* Company name */
-.company{
-    text-align:center;
-    font-size:24px;
-    font-weight:bold;
-    color:#2c3e50;
-}
-
-/* Invoice title */
-.title{
-    text-align:center;
-    margin-top:10px;
-    margin-bottom:25px;
-    font-size:20px;
-    color:#555;
-}
-
-/* Booking details */
-.details{
-    margin-bottom:20px;
-}
-
-.details p{
-    margin:5px 0;
-    font-size:15px;
-}
-
-/* Table */
-table{
-    width:100%;
-    border-collapse:collapse;
-    margin-top:10px;
-}
-
-table th{
-    background:#3498db;
-    color:white;
-    padding:10px;
-    text-align:left;
-}
-
-table td{
-    padding:10px;
-    border-bottom:1px solid #ddd;
-}
-
-/* Total row */
-.total-row{
-    font-weight:bold;
-    background:#f9f9f9;
-}
-
-/* Total amount highlight */
-.total-amount{
-    font-size:20px;
-    color:#27ae60;
-    font-weight:bold;
-    text-align:right;
-    margin-top:10px;
-}
-
-/* Buttons */
-.buttons{
-    text-align:center;
-    margin-top:20px;
-}
-
-.print-btn{
-    padding:10px 20px;
-    background:#3498db;
-    color:white;
-    border:none;
-    border-radius:5px;
-    cursor:pointer;
-}
-
-.print-btn:hover{
-    background:#2980b9;
-}
-
-/* Print styling */
-@media print{
-    .print-btn{
-        display:none;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invoice — GoHigh Rentals</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: #eef2f7;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 16px;
     }
-}
 
-</style>
+    .invoice-card {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 12px 48px rgba(0,0,0,0.14);
+      width: 100%;
+      max-width: 520px;
+      overflow: hidden;
+    }
+
+    /* ── Header ── */
+    .inv-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px 28px 20px;
+      border-bottom: 2px solid #f0f4f8;
+    }
+    .inv-brand { display: flex; align-items: center; gap: 12px; }
+    .inv-brand img { width: 46px; height: 46px; border-radius: 10px; object-fit: contain; }
+    .inv-brand-name { font-size: 1.1rem; font-weight: 900; color: #1C2B3A; }
+    .inv-brand-sub  { font-size: 0.73rem; color: #aaa; }
+    .inv-title-block { text-align: right; }
+    .inv-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 800; color: #1C2B3A; letter-spacing: 3px; }
+    .inv-meta  { font-size: 0.75rem; color: #aaa; margin-top: 4px; line-height: 1.7; }
+
+    /* ── Status banner ── */
+    .inv-status {
+      padding: 10px 28px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-align: center;
+      letter-spacing: 0.4px;
+    }
+    .inv-status.confirmed { background: #d5eee3; color: #1b5e35; }
+    .inv-status.pending   { background: #fff8e1; color: #8a6820; }
+    .inv-status.cancelled { background: #fae3da; color: #b34a28; }
+    .inv-status.completed { background: #ddeef8; color: #1a4a6e; }
+
+    /* ── Body rows ── */
+    .inv-body { padding: 20px 28px 0; }
+
+    .inv-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 11px 0;
+      border-bottom: 1px dashed #eef2f5;
+      font-size: 0.9rem;
+    }
+    .inv-row:last-child { border-bottom: none; }
+    .inv-row .label { color: #888; }
+    .inv-row .value { font-weight: 700; color: #1C2B3A; }
+
+    /* ── Price breakdown box ── */
+    .price-box {
+      background: #f8fafc;
+      border-radius: 14px;
+      margin: 18px 0 0;
+      padding: 16px 18px;
+      border: 1.5px solid #e8eef3;
+    }
+    .price-line {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.88rem;
+      padding: 6px 0;
+      color: #555;
+    }
+    .price-line.divider { border-top: 1.5px dashed #dde3eb; margin-top: 6px; padding-top: 10px; }
+    .price-line.total {
+      font-size: 1.05rem;
+      font-weight: 900;
+      color: #1C2B3A;
+      border-top: 2px solid #1C2B3A;
+      margin-top: 8px;
+      padding-top: 10px;
+    }
+    .price-line.total .amount { color: #E07B54; }
+    .gst-note {
+      font-size: 0.72rem;
+      color: #aaa;
+      text-align: right;
+      margin-top: 4px;
+    }
+
+    /* ── Cancellation refund box ── */
+    .refund-box {
+      background: #fff8f0;
+      border: 1.5px solid #f5a623;
+      border-radius: 12px;
+      margin: 14px 0 0;
+      padding: 14px 18px;
+    }
+    .refund-box h4 { font-size: 0.82rem; font-weight: 800; color: #e67e22; margin-bottom: 8px; }
+    .refund-line {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      padding: 4px 0;
+      color: #555;
+    }
+    .refund-line.refund-total { font-weight: 800; color: #2D6A4F; }
+    .refund-line.deduction    { color: #c0392b; }
+
+    /* ── Footer ── */
+    .inv-footer {
+      padding: 18px 28px 24px;
+      text-align: center;
+    }
+    .inv-footer p { font-size: 0.78rem; color: #bbb; line-height: 1.7; }
+    .inv-footer a { color: #4A9B8E; font-weight: 700; text-decoration: none; }
+
+    /* ── Buttons ── */
+    .inv-actions {
+      display: flex;
+      gap: 12px;
+      padding: 0 28px 24px;
+    }
+    .btn-print {
+      flex: 1;
+      padding: 13px;
+      background: linear-gradient(135deg, #1C2B3A, #2E4A5C);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 0.92rem;
+      font-weight: 800;
+      font-family: 'Nunito', sans-serif;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: opacity 0.2s;
+    }
+    .btn-print:hover { opacity: 0.88; }
+    .btn-close {
+      flex: 1;
+      padding: 13px;
+      background: #fae3da;
+      color: #b34a28;
+      border: none;
+      border-radius: 12px;
+      font-size: 0.92rem;
+      font-weight: 800;
+      font-family: 'Nunito', sans-serif;
+      cursor: pointer;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.2s;
+    }
+    .btn-close:hover { background: #f5c9bb; }
+
+    @media print {
+      body { background: #fff; padding: 0; }
+      .invoice-card { box-shadow: none; border-radius: 0; max-width: 100%; }
+      .inv-actions { display: none !important; }
+    }
+  </style>
 </head>
-
 <body>
 
-    <div class="invoice-container">
+<div class="invoice-card">
 
-    <div class="company">GoHigh Rental</div>
-    <div class="title">Booking Invoice</div>
+  <!-- Header -->
+  <div class="inv-header">
+    <div class="inv-brand">
+      <img src="/static/images/logo.png" alt="GoHigh">
+      <div>
+        <div class="inv-brand-name">GoHigh Rentals</div>
+        <div class="inv-brand-sub">Himalayan Expeditions</div>
+      </div>
+    </div>
+    <div class="inv-title-block">
+      <div class="inv-title">INVOICE</div>
+      <div class="inv-meta">
+        Booking #{{ bill.booking_id }}<br>
+        Generated: {{ bill.booking_date or 'N/A' }}
+      </div>
+    </div>
+  </div>
 
-    <div class="details">
-    <p><b>Destination:</b> {{ bill.destination_name }}</p>
-    <p><b>Vehicle:</b> {{ bill.vehicle_type }}</p>
-    <p><b>Travel Date:</b> {{ bill.travel_date }}</p>
+  <!-- Status banner -->
+  <div class="inv-status {{ bill.booking_status | lower }}">
+    {% if bill.booking_status == 'Confirmed' %}✅ Booking Confirmed
+    {% elif bill.booking_status == 'Pending' %}⏳ Awaiting Confirmation
+    {% elif bill.booking_status == 'Cancelled' %}❌ Booking Cancelled
+    {% elif bill.booking_status == 'Completed' %}🏁 Trip Completed
+    {% else %}{{ bill.booking_status }}{% endif %}
+  </div>
+
+  <!-- Detail rows -->
+  <div class="inv-body">
+
+    <div class="inv-row">
+      <span class="label">Destination</span>
+      <span class="value">{{ bill.destination_name }}</span>
     </div>
 
-    <table>
-
-    <tr>
-    <th>Description</th>
-    <th>Amount</th>
-    </tr>
-
-    <tr>
-    <td>Base Amount</td>
-    <td>₹{{ bill.base_amount }}</td>
-    </tr>
-
-    <tr>
-    <td>Tax</td>
-    <td>₹{{ bill.tax_amount }}</td>
-    </tr>
-
-    <tr>
-    <td>Discount</td>
-    <td>- ₹{{ bill.discount }}</td>
-    </tr>
-
-    <tr class="total-row">
-    <td>Total Amount</td>
-    <td>₹{{ bill.total_amount }}</td>
-    </tr>
-
-    </table>
-
-    <div class="total-amount">
-    Amount to Pay: ₹{{ bill.total_amount }}
+    <div class="inv-row">
+      <span class="label">Vehicle</span>
+      <span class="value">{{ bill.vehicle_name }}</span>
     </div>
 
-    <div class="buttons">
-    <button class="print-btn" onclick="window.print()">Print Invoice</button>
+    <div class="inv-row">
+      <span class="label">Travel Date</span>
+      <span class="value">{{ bill.travel_date }}</span>
+    </div>
 
+    <div class="inv-row">
+      <span class="label">Booking Type</span>
+      <span class="value">
+        {{ bill.pricing_type or 'Daily' }}
+        {% if bill.duration_value and bill.duration_unit %}
+          — {{ bill.duration_value }} {{ bill.duration_unit }}{{ 's' if bill.duration_value > 1 else '' }}
+        {% endif %}
+      </span>
     </div>
-    <a href="/dashboard"><-- Back to dashboard</a>
+
+    <!-- FIX 1: Full price breakdown -->
+    <div class="price-box">
+
+      <div class="price-line">
+        <span>Rate × Duration</span>
+        <span>
+          ₹{{ "%.2f"|format(bill.base_amount / bill.duration_value if bill.duration_value else bill.base_amount) }}
+          × {{ bill.duration_value or 1 }} {{ bill.duration_unit or 'day' }}{{ 's' if (bill.duration_value or 1) > 1 else '' }}
+        </span>
+      </div>
+
+      <div class="price-line">
+        <span>Base Amount</span>
+        <span>₹{{ "%.2f"|format(bill.base_amount) }}</span>
+      </div>
+
+      <div class="price-line">
+        <span>Discount</span>
+        <span style="color:#2D6A4F;">— ₹{{ "%.2f"|format(bill.discount or 0) }}</span>
+      </div>
+
+      <div class="price-line divider">
+        <span>{{ bill.gst_label or 'GST (18%)' }}</span>
+        <span>₹{{ "%.2f"|format(bill.tax_amount) }}</span>
+      </div>
+
+      <div class="price-line total">
+        <span>Total Amount</span>
+        <span class="amount">₹{{ "%.2f"|format(bill.total_amount) }}</span>
+      </div>
+
+      <div class="gst-note">* GST included as per Government regulations</div>
     </div>
+
+    <!-- Cancellation refund box (shown only if cancelled by user) -->
+    {% if bill.booking_status == 'Cancelled' and bill.cancellation_pct %}
+    <div class="refund-box">
+      <h4>🔴 Cancellation Summary</h4>
+      <div class="refund-line deduction">
+        <span>Cancellation Fee ({{ bill.cancellation_pct }}%)</span>
+        <span>— ₹{{ "%.2f"|format(bill.cancellation_deduction) }}</span>
+      </div>
+      <div class="refund-line refund-total">
+        <span>Refund Amount</span>
+        <span>₹{{ "%.2f"|format(bill.refund_amount) }}</span>
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+
+  <!-- Footer -->
+  <div class="inv-footer" style="margin-top: 18px;">
+    <p>
+      Thank you for choosing GoHigh Rentals 🏔️<br>
+      For queries: <a href="mailto:support@gohighrentals.com">support@gohighrentals.com</a>
+    </p>
+  </div>
+
+  <!-- Action buttons -->
+  <div class="inv-actions">
+    <button class="btn-print" onclick="window.print()">
+      <i class="fas fa-print"></i> Print Invoice
+    </button>
+    <a href="/dashboard" class="btn-close">
+      <i class="fas fa-times"></i> Close
+    </a>
+  </div>
+
+</div>
 
 </body>
 </html>

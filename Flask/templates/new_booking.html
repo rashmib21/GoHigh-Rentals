@@ -1,321 +1,414 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>New Booking</title>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<title>New Booking — GoHigh Rentals</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-    font-family: 'Montserrat', sans-serif;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 30px 16px;
+  font-family: 'Nunito', sans-serif;
+  background: linear-gradient(135deg, #1C2B3A, #2E4A5C, #1a3a2a);
+  background-size: 400% 400%;
+  animation: gradShift 14s ease infinite;
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 40px 16px;
+}
+@keyframes gradShift {
+  0%,100% { background-position: 0% 50%; }
+  50%      { background-position: 100% 50%; }
 }
 
-.booking-container {
-    width: 460px;
-    background: white;
-    padding: 40px;
-    border-radius: 18px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+.booking-card {
+  width: 100%;
+  max-width: 500px;
+  background: #fff;
+  border-radius: 22px;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.3);
+  overflow: hidden;
 }
 
-.booking-container h2 {
-    text-align: center;
-    margin-bottom: 6px;
-    font-size: 1.5rem;
-    color: #1C2B3A;
+.card-header {
+  background: linear-gradient(135deg, #1C2B3A, #2E4A5C);
+  padding: 28px 30px 22px;
+  color: #fff;
+  text-align: center;
 }
-.booking-container .subtitle {
-    text-align: center;
-    font-size: 0.82rem;
-    color: #999;
-    margin-bottom: 28px;
-}
+.card-header h2 { font-size: 1.4rem; font-weight: 900; margin-bottom: 4px; }
+.card-header p  { font-size: 0.82rem; color: rgba(255,255,255,0.7); }
 
-label {
-    font-weight: 700;
-    font-size: 0.82rem;
-    display: block;
-    margin-top: 18px;
-    margin-bottom: 6px;
-    color: #444;
-    text-transform: uppercase;
-    letter-spacing: 0.4px;
+.card-body { padding: 28px 30px; }
+
+/* Form fields */
+.form-group { margin-bottom: 18px; }
+.form-group label {
+  display: block;
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: #2E4A5C;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 7px;
 }
+.form-group label i { color: #4A9B8E; margin-right: 4px; }
 
 select, input[type="date"], input[type="number"] {
-    width: 100%;
-    padding: 11px 14px;
-    border-radius: 9px;
-    border: 1.5px solid #dde3eb;
-    font-size: 0.92rem;
-    font-family: inherit;
-    color: #1C2B3A;
-    background: #f8fafc;
-    outline: none;
-    transition: border-color 0.2s, background 0.2s;
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid #dde3eb;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-family: 'Nunito', sans-serif;
+  color: #1C2B3A;
+  background: #f8fafc;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
 }
 select:focus, input:focus {
-    border-color: #764ba2;
-    background: #fff;
+  border-color: #4A9B8E;
+  background: #fff;
 }
 
-/* ── Booking Type Toggle ── */
-.type-toggle {
-    display: flex;
-    gap: 10px;
-    margin-top: 6px;
-}
+/* Booking type toggle */
+.type-toggle { display: flex; gap: 10px; }
 .type-btn {
-    flex: 1;
-    padding: 11px;
-    border: 1.5px solid #dde3eb;
-    border-radius: 9px;
-    background: #f8fafc;
-    font-family: inherit;
-    font-size: 0.9rem;
-    font-weight: 700;
-    color: #666;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-align: center;
+  flex: 1; padding: 10px;
+  border: 1.5px solid #dde3eb;
+  border-radius: 10px;
+  background: #f8fafc;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
 }
 .type-btn.active {
-    background: #764ba2;
-    border-color: #764ba2;
-    color: #fff;
-}
-.type-btn:hover:not(.active) {
-    border-color: #764ba2;
-    color: #764ba2;
+  background: #2E4A5C;
+  border-color: #2E4A5C;
+  color: #fff;
 }
 
-/* ── Price Preview Card ── */
+/* Price preview */
 .price-preview {
-    margin-top: 22px;
-    background: linear-gradient(135deg, #f5f0ff, #ede8ff);
-    border: 1.5px solid #c4aff0;
-    border-radius: 12px;
-    padding: 16px 18px;
-    display: none;
+  background: linear-gradient(135deg, #f0f8f6, #e8f5f2);
+  border: 1.5px solid #b2d8d0;
+  border-radius: 14px;
+  padding: 16px 18px;
+  margin-bottom: 18px;
+  display: none;
 }
 .price-preview.show { display: block; }
-.price-preview .price-title {
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: #764ba2;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 10px;
+.price-title {
+  font-size: 0.73rem;
+  font-weight: 800;
+  color: #2D6A4F;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
 }
 .price-row {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.88rem;
-    color: #555;
-    margin-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.86rem;
+  color: #555;
+  margin-bottom: 5px;
 }
 .price-row.total {
-    border-top: 1.5px dashed #c4aff0;
-    margin-top: 8px;
-    padding-top: 8px;
-    font-weight: 800;
-    font-size: 1rem;
-    color: #1C2B3A;
+  border-top: 1.5px dashed #b2d8d0;
+  margin-top: 8px;
+  padding-top: 8px;
+  font-weight: 900;
+  font-size: 1rem;
+  color: #1C2B3A;
 }
-.price-row.total span:last-child { color: #764ba2; }
+.price-row.total span:last-child { color: #E07B54; }
+.gst-note {
+  font-size: 0.7rem;
+  color: #aaa;
+  text-align: right;
+  margin-top: 4px;
+}
 
-.book-btn {
-    width: 100%;
-    margin-top: 24px;
-    padding: 14px;
-    border: none;
-    border-radius: 10px;
-    background: linear-gradient(135deg, #f05454, #d84545);
-    color: white;
-    font-weight: 700;
-    font-size: 1rem;
-    font-family: inherit;
-    cursor: pointer;
-    transition: opacity 0.2s, transform 0.1s;
+/* Terms & Conditions box */
+.terms-box {
+  background: #f8fafc;
+  border: 1.5px solid #dde3eb;
+  border-radius: 14px;
+  padding: 16px 18px;
+  margin-bottom: 18px;
+  max-height: 200px;
+  overflow-y: auto;
 }
-.book-btn:hover  { opacity: 0.92; transform: translateY(-1px); }
+.terms-box h4 {
+  font-size: 0.82rem;
+  font-weight: 900;
+  color: #1C2B3A;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.terms-box h4 i { color: #4A9B8E; }
+.terms-list { list-style: none; padding: 0; }
+.terms-list li {
+  font-size: 0.78rem;
+  color: #666;
+  line-height: 1.6;
+  padding: 4px 0 4px 18px;
+  position: relative;
+  border-bottom: 1px dashed #eef2f5;
+}
+.terms-list li:last-child { border-bottom: none; }
+.terms-list li::before {
+  content: "•";
+  position: absolute;
+  left: 4px;
+  color: #4A9B8E;
+  font-weight: 900;
+}
+.terms-list li strong { color: #c0392b; }
+
+.terms-accept {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 20px;
+  font-size: 0.82rem;
+  color: #555;
+  cursor: pointer;
+}
+.terms-accept input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin-top: 1px;
+  flex-shrink: 0;
+  accent-color: #4A9B8E;
+  cursor: pointer;
+}
+
+/* Book button */
+.book-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #E07B54, #c96940);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 800;
+  font-family: 'Nunito', sans-serif;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+}
+.book-btn:hover  { opacity: 0.9; transform: translateY(-1px); }
 .book-btn:active { transform: translateY(0); }
 
 .back-link {
-    display: block;
-    text-align: center;
-    margin-top: 16px;
-    text-decoration: none;
-    color: #999;
-    font-size: 0.88rem;
-    font-weight: 600;
+  display: block;
+  text-align: center;
+  margin-top: 14px;
+  text-decoration: none;
+  color: rgba(255,255,255,0.7);
+  font-size: 0.85rem;
+  font-weight: 600;
 }
-.back-link:hover { color: #764ba2; }
+.back-link:hover { color: #fff; }
 </style>
 </head>
 <body>
-<div class="booking-container">
-    <h2>🏔️ Create Booking</h2>
-    <p class="subtitle">Choose destination, vehicle & duration</p>
 
+<div>
+<div class="booking-card">
+
+  <div class="card-header">
+    <h2>🏔️ Create Booking</h2>
+    <p>Choose your destination, vehicle &amp; duration</p>
+  </div>
+
+  <div class="card-body">
     <form action="{{ url_for('booking.create_booking') }}" method="POST" id="bookingForm">
 
-        <!-- Hidden inputs sent to backend -->
-        <input type="hidden" name="booking_type"   id="booking_type_input"   value="day">
-        <input type="hidden" name="duration_value" id="duration_value_hidden" value="1">
+      <!-- Hidden inputs -->
+      <input type="hidden" name="booking_type"   id="booking_type_input"   value="day">
+      <input type="hidden" name="duration_value" id="duration_value_hidden" value="1">
 
-        <!-- Destination -->
-        <label>📍 Destination</label>
+      <!-- Destination -->
+      <div class="form-group">
+        <label><i class="fas fa-map-pin"></i> Destination</label>
         <select name="destination_id" id="destination_select" required>
-            <option value="">Select Destination</option>
-            {% for d in destinations %}
-            <option value="{{ d.destination_id }}"
-                    data-price-day="{{ d.price_per_day }}"
-                    data-price-hour="{{ d.price_per_hour }}"
-                {% if selected_destination_id and d.destination_id|string == selected_destination_id|string %}
-                    selected
-                {% endif %}>
-                {{ d.destination_name }}
-            </option>
-            {% endfor %}
+          <option value="">Select Destination</option>
+          {% for d in destinations %}
+          <option value="{{ d.destination_id }}"
+                  data-price-day="{{ d.price_per_day }}"
+                  data-price-hour="{{ d.price_per_hour }}"
+              {% if selected_destination_id and d.destination_id|string == selected_destination_id|string %}
+                  selected
+              {% endif %}>
+            {{ d.destination_name }}{% if d.state %} — {{ d.state }}{% endif %}
+          </option>
+          {% endfor %}
         </select>
+      </div>
 
-        <!-- Vehicle -->
-        <label>🚗 Vehicle</label>
+      <!-- Vehicle -->
+      <div class="form-group">
+        <label><i class="fas fa-car"></i> Vehicle</label>
         <select name="vehicle_id" required>
-            <option value="">Select Vehicle</option>
-            {% for v in vehicles %}
-            <option value="{{ v.vehicle_id }}">{{ v.vehicle_name }}</option>
-            {% endfor %}
+          <option value="">Select Vehicle</option>
+          {% for v in vehicles %}
+          <option value="{{ v.vehicle_id }}">{{ v.vehicle_name }}</option>
+          {% endfor %}
         </select>
+      </div>
 
-        <!-- Travel Date -->
-        <label>📅 Travel Date</label>
+      <!-- Travel Date -->
+      <div class="form-group">
+        <label><i class="fas fa-calendar-alt"></i> Travel Date</label>
         <input type="date" name="travel_date" id="travel_date" required>
+      </div>
 
-        <!-- Booking Type -->
-        <label>⏱️ Booking Type</label>
+      <!-- Booking Type -->
+      <div class="form-group">
+        <label><i class="fas fa-clock"></i> Booking Type</label>
         <div class="type-toggle">
-            <button type="button" class="type-btn active" id="btn-day"  onclick="setType('day')">
-                🌙 Per Day
-            </button>
-            <button type="button" class="type-btn"        id="btn-hour" onclick="setType('hour')">
-                ⏰ Per Hour
-            </button>
+          <button type="button" class="type-btn active" id="btn-day"  onclick="setType('day')">🌙 Per Day</button>
+          <button type="button" class="type-btn"        id="btn-hour" onclick="setType('hour')">⏰ Per Hour</button>
         </div>
+      </div>
 
-        <!-- Duration -->
-        <label id="duration-label">🔢 Number of Days</label>
-        <input type="number" id="duration_input" min="1" max="30" value="1"
-               oninput="updatePreview()">
+      <!-- Duration -->
+      <div class="form-group">
+        <label id="duration-label"><i class="fas fa-hashtag"></i> Number of Days</label>
+        <input type="number" id="duration_input" min="1" max="30" value="1" oninput="updatePreview()">
+      </div>
 
-        <!-- Live Price Preview -->
-        <div class="price-preview" id="pricePreview">
-            <div class="price-title">💰 Price Estimate</div>
-            <div class="price-row">
-                <span id="preview-rate-label">Rate</span>
-                <span id="preview-rate">₹0</span>
-            </div>
-            <div class="price-row">
-                <span id="preview-duration-label">Duration</span>
-                <span id="preview-duration">1 day</span>
-            </div>
-            <div class="price-row">
-                <span>Base Amount</span>
-                <span id="preview-base">₹0</span>
-            </div>
-            <div class="price-row">
-                <span>Tax (10%)</span>
-                <span id="preview-tax">₹0</span>
-            </div>
-            <div class="price-row total">
-                <span>Total Payable</span>
-                <span id="preview-total">₹0</span>
-            </div>
+      <!-- Live Price Preview with GST -->
+      <div class="price-preview" id="pricePreview">
+        <div class="price-title">💰 Price Estimate (incl. GST)</div>
+        <div class="price-row">
+          <span id="preview-rate-label">Rate (per day)</span>
+          <span id="preview-rate">₹0</span>
         </div>
+        <div class="price-row">
+          <span>Duration</span>
+          <span id="preview-duration">1 day</span>
+        </div>
+        <div class="price-row">
+          <span>Base Amount</span>
+          <span id="preview-base">₹0</span>
+        </div>
+        <div class="price-row">
+          <span>Discount</span>
+          <span style="color:#2D6A4F;">₹0.00</span>
+        </div>
+        <div class="price-row">
+          <span>GST (18%)</span>
+          <span id="preview-gst">₹0</span>
+        </div>
+        <div class="price-row total">
+          <span>Total Payable</span>
+          <span id="preview-total">₹0</span>
+        </div>
+        <div class="gst-note">* 18% GST applied as per Government regulations</div>
+      </div>
 
-        <button class="book-btn" type="submit">Book Now →</button>
+      <!-- Terms & Conditions -->
+      <div class="terms-box">
+        <h4><i class="fas fa-file-contract"></i> Terms &amp; Conditions</h4>
+        <ul class="terms-list">
+          <li>Bookings must be made at least <strong>1 day in advance</strong>. Same-day bookings are not accepted.</li>
+          <li>All prices include <strong>18% GST</strong> as per Government of India regulations.</li>
+          <li><strong>Cancellation Policy:</strong>
+            <br>— Cancel <strong>3+ days</strong> before travel: 10% deduction
+            <br>— Cancel <strong>1–2 days</strong> before travel: 25% deduction
+            <br>— Cancel on <strong>travel day</strong>: 50% deduction
+          </li>
+          <li>Refunds (after deduction) will be processed within <strong>5–7 business days</strong>.</li>
+          <li>Once a booking is <strong>Confirmed by admin</strong>, it cannot be cancelled by the admin. Only the user may cancel.</li>
+          <li>GoHigh Rentals reserves the right to cancel bookings due to <strong>vehicle unavailability or natural calamities</strong>. A full refund will be issued in such cases.</li>
+          <li>Users are responsible for any <strong>damage to the vehicle</strong> during the trip. Additional charges may apply.</li>
+          <li>Travel is subject to <strong>road and weather conditions</strong>. GoHigh Rentals is not liable for delays due to external factors.</li>
+          <li>Valid <strong>government-issued ID</strong> is required at the time of vehicle pickup.</li>
+          <li>By completing this booking, you agree to GoHigh Rentals' full <strong>Terms of Service and Privacy Policy</strong>.</li>
+        </ul>
+      </div>
+
+      <!-- Accept checkbox -->
+      <label class="terms-accept">
+        <input type="checkbox" name="terms_accepted" id="terms_checkbox" value="yes">
+        <span>I have read and agree to the <strong>Terms &amp; Conditions</strong> and <strong>Cancellation Policy</strong> of GoHigh Rentals.</span>
+      </label>
+
+      <button class="book-btn" type="submit">Book Now →</button>
     </form>
+  </div>
 
-    <a href="/dashboard" class="back-link">← Back to Dashboard</a>
+</div>
+<a href="/dashboard" class="back-link">← Back to Dashboard</a>
 </div>
 
 <script>
-    // Set minimum date to tomorrow
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    document.getElementById('travel_date').min = tomorrow.toISOString().split('T')[0];
+  // Set minimum date to tomorrow
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  document.getElementById('travel_date').min = tomorrow.toISOString().split('T')[0];
 
-    let currentType = 'day';
+  let currentType = 'day';
 
-    function setType(type) {
-        currentType = type;
-        document.getElementById('booking_type_input').value = type;
+  function setType(type) {
+    currentType = type;
+    document.getElementById('booking_type_input').value = type;
+    document.getElementById('btn-day').classList.toggle('active',  type === 'day');
+    document.getElementById('btn-hour').classList.toggle('active', type === 'hour');
+    document.getElementById('duration-label').innerHTML =
+      '<i class="fas fa-hashtag"></i> ' +
+      (type === 'day' ? 'Number of Days' : 'Number of Hours');
+    document.getElementById('duration_input').max   = type === 'day' ? 30 : 24;
+    document.getElementById('duration_input').value = 1;
+    updatePreview();
+  }
 
-        document.getElementById('btn-day').classList.toggle('active',  type === 'day');
-        document.getElementById('btn-hour').classList.toggle('active', type === 'hour');
+  function updatePreview() {
+    const sel      = document.getElementById('destination_select');
+    const opt      = sel.options[sel.selectedIndex];
+    const duration = parseInt(document.getElementById('duration_input').value) || 1;
 
-        document.getElementById('duration-label').textContent =
-            type === 'day' ? '🔢 Number of Days' : '🔢 Number of Hours';
+    document.getElementById('duration_value_hidden').value = duration;
 
-        // Sensible max: 30 days or 24 hours
-        document.getElementById('duration_input').max = type === 'day' ? 30 : 24;
-        document.getElementById('duration_input').value = 1;
-
-        updatePreview();
+    if (!opt || !opt.value) {
+      document.getElementById('pricePreview').classList.remove('show');
+      return;
     }
 
-    function updatePreview() {
-        const destSelect = document.getElementById('destination_select');
-        const selected   = destSelect.options[destSelect.selectedIndex];
-        const duration   = parseInt(document.getElementById('duration_input').value) || 1;
+    const priceDay  = parseFloat(opt.dataset.priceDay)  || 0;
+    const priceHour = parseFloat(opt.dataset.priceHour) || 0;
+    const rate      = currentType === 'day' ? priceDay : priceHour;
+    const base      = rate * duration;
+    const gst       = base * 0.18;
+    const total     = base + gst;
 
-        // Sync hidden input
-        document.getElementById('duration_value_hidden').value = duration;
+    const fmt = n => '₹' + n.toLocaleString('en-IN', { minimumFractionDigits: 2 });
 
-        if (!selected || !selected.value) {
-            document.getElementById('pricePreview').classList.remove('show');
-            return;
-        }
+    document.getElementById('preview-rate-label').textContent = currentType === 'day' ? 'Rate (per day)' : 'Rate (per hour)';
+    document.getElementById('preview-rate').textContent     = fmt(rate);
+    document.getElementById('preview-duration').textContent =
+      duration + (currentType === 'day' ? (duration > 1 ? ' days' : ' day') : (duration > 1 ? ' hours' : ' hour'));
+    document.getElementById('preview-base').textContent  = fmt(base);
+    document.getElementById('preview-gst').textContent   = fmt(gst);
+    document.getElementById('preview-total').textContent = fmt(total);
 
-        const priceDay  = parseFloat(selected.dataset.priceDay)  || 0;
-        const priceHour = parseFloat(selected.dataset.priceHour) || 0;
-        const rate      = currentType === 'day' ? priceDay : priceHour;
-        const base      = rate * duration;
-        const tax       = base * 0.10;
-        const total     = base + tax;
+    document.getElementById('pricePreview').classList.add('show');
+  }
 
-        const fmt = n => '₹' + n.toLocaleString('en-IN', {minimumFractionDigits: 2});
-
-        document.getElementById('preview-rate-label').textContent =
-            currentType === 'day' ? 'Rate (per day)' : 'Rate (per hour)';
-        document.getElementById('preview-rate').textContent = fmt(rate);
-
-        document.getElementById('preview-duration-label').textContent = 'Duration';
-        document.getElementById('preview-duration').textContent =
-            duration + (currentType === 'day'
-                ? (duration > 1 ? ' days' : ' day')
-                : (duration > 1 ? ' hours' : ' hour'));
-
-        document.getElementById('preview-base').textContent  = fmt(base);
-        document.getElementById('preview-tax').textContent   = fmt(tax);
-        document.getElementById('preview-total').textContent = fmt(total);
-
-        document.getElementById('pricePreview').classList.add('show');
-    }
-
-    // Trigger preview when destination changes
-    document.getElementById('destination_select').addEventListener('change', updatePreview);
-    document.getElementById('duration_input').addEventListener('input', updatePreview);
-
-    // Trigger on page load if destination pre-selected
-    window.addEventListener('DOMContentLoaded', updatePreview);
+  document.getElementById('destination_select').addEventListener('change', updatePreview);
+  document.getElementById('duration_input').addEventListener('input', updatePreview);
+  window.addEventListener('DOMContentLoaded', updatePreview);
 </script>
 </body>
 </html>
