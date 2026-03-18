@@ -2,146 +2,320 @@
 <html>
 <head>
 <title>New Booking</title>
-
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-body{
-font-family:'Montserrat',sans-serif;
-background:linear-gradient(135deg,#667eea,#764ba2);
-height:100vh;
-display:flex;
-justify-content:center;
-align-items:center;
-margin:0;
+body {
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 16px;
 }
 
-.booking-container{
-width:420px;
-background:white;
-padding:40px;
-border-radius:15px;
-box-shadow:0 15px 50px rgba(0,0,0,0.2);
+.booking-container {
+    width: 460px;
+    background: white;
+    padding: 40px;
+    border-radius: 18px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
 }
 
-.booking-container h2{
-text-align:center;
-margin-bottom:25px;
+.booking-container h2 {
+    text-align: center;
+    margin-bottom: 6px;
+    font-size: 1.5rem;
+    color: #1C2B3A;
+}
+.booking-container .subtitle {
+    text-align: center;
+    font-size: 0.82rem;
+    color: #999;
+    margin-bottom: 28px;
 }
 
-label{
-font-weight:600;
-display:block;
-margin-top:15px;
+label {
+    font-weight: 700;
+    font-size: 0.82rem;
+    display: block;
+    margin-top: 18px;
+    margin-bottom: 6px;
+    color: #444;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
 }
 
-select,input{
-width:100%;
-padding:12px;
-margin-top:6px;
-border-radius:8px;
-border:1px solid #ddd;
-font-size:14px;
+select, input[type="date"], input[type="number"] {
+    width: 100%;
+    padding: 11px 14px;
+    border-radius: 9px;
+    border: 1.5px solid #dde3eb;
+    font-size: 0.92rem;
+    font-family: inherit;
+    color: #1C2B3A;
+    background: #f8fafc;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+}
+select:focus, input:focus {
+    border-color: #764ba2;
+    background: #fff;
 }
 
-.book-btn{
-width:100%;
-margin-top:25px;
-padding:14px;
-border:none;
-border-radius:8px;
-background:#f05454;
-color:white;
-font-weight:600;
-cursor:pointer;
+/* ── Booking Type Toggle ── */
+.type-toggle {
+    display: flex;
+    gap: 10px;
+    margin-top: 6px;
+}
+.type-btn {
+    flex: 1;
+    padding: 11px;
+    border: 1.5px solid #dde3eb;
+    border-radius: 9px;
+    background: #f8fafc;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+}
+.type-btn.active {
+    background: #764ba2;
+    border-color: #764ba2;
+    color: #fff;
+}
+.type-btn:hover:not(.active) {
+    border-color: #764ba2;
+    color: #764ba2;
 }
 
-.book-btn:hover{
-background:#d84545;
+/* ── Price Preview Card ── */
+.price-preview {
+    margin-top: 22px;
+    background: linear-gradient(135deg, #f5f0ff, #ede8ff);
+    border: 1.5px solid #c4aff0;
+    border-radius: 12px;
+    padding: 16px 18px;
+    display: none;
 }
-
-.back-link{
-display:block;
-text-align:center;
-margin-top:15px;
-text-decoration:none;
-color:#666;
+.price-preview.show { display: block; }
+.price-preview .price-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #764ba2;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
 }
+.price-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.88rem;
+    color: #555;
+    margin-bottom: 6px;
+}
+.price-row.total {
+    border-top: 1.5px dashed #c4aff0;
+    margin-top: 8px;
+    padding-top: 8px;
+    font-weight: 800;
+    font-size: 1rem;
+    color: #1C2B3A;
+}
+.price-row.total span:last-child { color: #764ba2; }
 
+.book-btn {
+    width: 100%;
+    margin-top: 24px;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #f05454, #d84545);
+    color: white;
+    font-weight: 700;
+    font-size: 1rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+}
+.book-btn:hover  { opacity: 0.92; transform: translateY(-1px); }
+.book-btn:active { transform: translateY(0); }
+
+.back-link {
+    display: block;
+    text-align: center;
+    margin-top: 16px;
+    text-decoration: none;
+    color: #999;
+    font-size: 0.88rem;
+    font-weight: 600;
+}
+.back-link:hover { color: #764ba2; }
 </style>
-
 </head>
-
 <body>
-
 <div class="booking-container">
+    <h2>🏔️ Create Booking</h2>
+    <p class="subtitle">Choose destination, vehicle & duration</p>
 
-<h2>Create Booking</h2>
+    <form action="{{ url_for('booking.create_booking') }}" method="POST" id="bookingForm">
 
-<form action="{{ url_for('booking.create_booking') }}" method="POST">
+        <!-- Hidden inputs sent to backend -->
+        <input type="hidden" name="booking_type"   id="booking_type_input"   value="day">
+        <input type="hidden" name="duration_value" id="duration_value_hidden" value="1">
 
-<label>Destination</label>
+        <!-- Destination -->
+        <label>📍 Destination</label>
+        <select name="destination_id" id="destination_select" required>
+            <option value="">Select Destination</option>
+            {% for d in destinations %}
+            <option value="{{ d.destination_id }}"
+                    data-price-day="{{ d.price_per_day }}"
+                    data-price-hour="{{ d.price_per_hour }}"
+                {% if selected_destination_id and d.destination_id|string == selected_destination_id|string %}
+                    selected
+                {% endif %}>
+                {{ d.destination_name }}
+            </option>
+            {% endfor %}
+        </select>
 
-<select name="destination_id">
+        <!-- Vehicle -->
+        <label>🚗 Vehicle</label>
+        <select name="vehicle_id" required>
+            <option value="">Select Vehicle</option>
+            {% for v in vehicles %}
+            <option value="{{ v.vehicle_id }}">{{ v.vehicle_name }}</option>
+            {% endfor %}
+        </select>
 
-<option value="">Select Destination</option>
+        <!-- Travel Date -->
+        <label>📅 Travel Date</label>
+        <input type="date" name="travel_date" id="travel_date" required>
 
-{% for d in destinations %}
+        <!-- Booking Type -->
+        <label>⏱️ Booking Type</label>
+        <div class="type-toggle">
+            <button type="button" class="type-btn active" id="btn-day"  onclick="setType('day')">
+                🌙 Per Day
+            </button>
+            <button type="button" class="type-btn"        id="btn-hour" onclick="setType('hour')">
+                ⏰ Per Hour
+            </button>
+        </div>
 
-<option value="{{ d.destination_id }}"
-{% if selected_destination_id and d.destination_id|string == selected_destination_id|string %}
-selected
-{% endif %}
->
+        <!-- Duration -->
+        <label id="duration-label">🔢 Number of Days</label>
+        <input type="number" id="duration_input" min="1" max="30" value="1"
+               oninput="updatePreview()">
 
-{{ d.destination_name }}
+        <!-- Live Price Preview -->
+        <div class="price-preview" id="pricePreview">
+            <div class="price-title">💰 Price Estimate</div>
+            <div class="price-row">
+                <span id="preview-rate-label">Rate</span>
+                <span id="preview-rate">₹0</span>
+            </div>
+            <div class="price-row">
+                <span id="preview-duration-label">Duration</span>
+                <span id="preview-duration">1 day</span>
+            </div>
+            <div class="price-row">
+                <span>Base Amount</span>
+                <span id="preview-base">₹0</span>
+            </div>
+            <div class="price-row">
+                <span>Tax (10%)</span>
+                <span id="preview-tax">₹0</span>
+            </div>
+            <div class="price-row total">
+                <span>Total Payable</span>
+                <span id="preview-total">₹0</span>
+            </div>
+        </div>
 
-</option>
+        <button class="book-btn" type="submit">Book Now →</button>
+    </form>
 
-{% endfor %}
-
-</select>
-
-
-<label>Vehicle</label>
-
-<select name="vehicle_id" required>
-
-<option value="">Select Vehicle</option>
-
-{% for v in vehicles %}
-
-<option value="{{ v.vehicle_id }}">
-
-{{ v.vehicle_name }}
-
-</option>
-
-{% endfor %}
-
-</select>
-
-
-<label>Travel Date</label>
-
-<input type="date" name="travel_date" id="travel_date" required>
-<script>
-    // Set minimum date to tomorrow (today is almost over)
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const minDate = tomorrow.toISOString().split('T')[0];
-    document.getElementById('travel_date').min = minDate;
-</script>
-
-
-<button class="book-btn" type="submit">
-Book Now
-</button>
-
-</form>
-
-<a href="/dashboard" class="back-link">← Back to Dashboard</a>
-
+    <a href="/dashboard" class="back-link">← Back to Dashboard</a>
 </div>
 
+<script>
+    // Set minimum date to tomorrow
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    document.getElementById('travel_date').min = tomorrow.toISOString().split('T')[0];
+
+    let currentType = 'day';
+
+    function setType(type) {
+        currentType = type;
+        document.getElementById('booking_type_input').value = type;
+
+        document.getElementById('btn-day').classList.toggle('active',  type === 'day');
+        document.getElementById('btn-hour').classList.toggle('active', type === 'hour');
+
+        document.getElementById('duration-label').textContent =
+            type === 'day' ? '🔢 Number of Days' : '🔢 Number of Hours';
+
+        // Sensible max: 30 days or 24 hours
+        document.getElementById('duration_input').max = type === 'day' ? 30 : 24;
+        document.getElementById('duration_input').value = 1;
+
+        updatePreview();
+    }
+
+    function updatePreview() {
+        const destSelect = document.getElementById('destination_select');
+        const selected   = destSelect.options[destSelect.selectedIndex];
+        const duration   = parseInt(document.getElementById('duration_input').value) || 1;
+
+        // Sync hidden input
+        document.getElementById('duration_value_hidden').value = duration;
+
+        if (!selected || !selected.value) {
+            document.getElementById('pricePreview').classList.remove('show');
+            return;
+        }
+
+        const priceDay  = parseFloat(selected.dataset.priceDay)  || 0;
+        const priceHour = parseFloat(selected.dataset.priceHour) || 0;
+        const rate      = currentType === 'day' ? priceDay : priceHour;
+        const base      = rate * duration;
+        const tax       = base * 0.10;
+        const total     = base + tax;
+
+        const fmt = n => '₹' + n.toLocaleString('en-IN', {minimumFractionDigits: 2});
+
+        document.getElementById('preview-rate-label').textContent =
+            currentType === 'day' ? 'Rate (per day)' : 'Rate (per hour)';
+        document.getElementById('preview-rate').textContent = fmt(rate);
+
+        document.getElementById('preview-duration-label').textContent = 'Duration';
+        document.getElementById('preview-duration').textContent =
+            duration + (currentType === 'day'
+                ? (duration > 1 ? ' days' : ' day')
+                : (duration > 1 ? ' hours' : ' hour'));
+
+        document.getElementById('preview-base').textContent  = fmt(base);
+        document.getElementById('preview-tax').textContent   = fmt(tax);
+        document.getElementById('preview-total').textContent = fmt(total);
+
+        document.getElementById('pricePreview').classList.add('show');
+    }
+
+    // Trigger preview when destination changes
+    document.getElementById('destination_select').addEventListener('change', updatePreview);
+    document.getElementById('duration_input').addEventListener('input', updatePreview);
+
+    // Trigger on page load if destination pre-selected
+    window.addEventListener('DOMContentLoaded', updatePreview);
+</script>
 </body>
 </html>

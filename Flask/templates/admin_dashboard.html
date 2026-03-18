@@ -6,6 +6,46 @@
 
 {% block content %}
 
+<style>
+.bookings-link-wrapper { position: relative; display: inline-block; }
+.cancel-badge {
+    position: absolute;
+    top: -8px; right: -10px;
+    background: #e74c3c;
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 800;
+    border-radius: 50%;
+    min-width: 20px; height: 20px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 4px;
+    box-shadow: 0 2px 6px rgba(231,76,60,0.45);
+    animation: pulseBadge 1.5s ease-in-out infinite;
+}
+@keyframes pulseBadge {
+    0%,100% { transform: scale(1); }
+    50%      { transform: scale(1.15); }
+}
+.user-cancel-alert {
+    background: linear-gradient(135deg, #fff5e6, #fff8f0);
+    border: 1.5px solid #f5a623;
+    border-radius: 14px;
+    padding: 16px 22px;
+    margin-bottom: 22px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 0.92rem;
+    color: #1C2B3A;
+}
+.user-cancel-alert .alert-icon { font-size: 1.4rem; flex-shrink: 0; }
+.user-cancel-alert a {
+    font-weight: 800;
+    color: #e07b00;
+    text-decoration: underline;
+}
+</style>
+
 <!-- Page Heading -->
 <div class="page-heading">
     <div>
@@ -13,6 +53,18 @@
         <p>Here's what's happening on GoHigh Rentals today.</p>
     </div>
 </div>
+
+<!-- FIX 6: User cancellation alert banner on dashboard -->
+{% if user_cancelled_count > 0 %}
+<div class="user-cancel-alert">
+    <div class="alert-icon">🔔</div>
+    <div>
+        <strong>{{ user_cancelled_count }} booking{{ 's' if user_cancelled_count > 1 else '' }}</strong>
+        {{ 'were' if user_cancelled_count > 1 else 'was' }} cancelled by users.
+        <a href="{{ url_for('admin.admin_bookings') }}">View &amp; dismiss →</a>
+    </div>
+</div>
+{% endif %}
 
 <!-- ── STAT CARDS ── -->
 <div class="stats-grid">
@@ -79,9 +131,15 @@
 <div class="section-card">
     <div class="section-header">
         <h3><i class="fas fa-calendar-alt"></i> Recent Bookings</h3>
-        <a href="{{ url_for('admin.admin_bookings') }}" class="btn btn-primary">
-            View All
-        </a>
+        <!-- FIX 6: Badge on View All link if there are user-cancelled pending notices -->
+        <div class="bookings-link-wrapper">
+            <a href="{{ url_for('admin.admin_bookings') }}" class="btn btn-primary">
+                View All
+            </a>
+            {% if user_cancelled_count > 0 %}
+            <span class="cancel-badge">{{ user_cancelled_count }}</span>
+            {% endif %}
+        </div>
     </div>
 
     {% if recent_bookings %}

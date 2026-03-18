@@ -5,31 +5,230 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Profile — GoHigh Rentals</title>
   <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo.png') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #f0f5f8; font-family: 'Nunito', sans-serif; }
+    /* ══════════════════════════════════
+       RESET & BASE
+    ══════════════════════════════════ */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
 
-    /* ── NAVBAR ── */
-    .navbar { position: fixed; top: 0; width: 100%; z-index: 1000;
-      background: rgba(28,43,58,.95); backdrop-filter: blur(18px);
-      border-bottom: 1px solid rgba(74,155,142,.3);
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 5%; height: 68px; }
-    .navbar .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
-    .navbar .logo img { height: 38px; width: 38px; object-fit: contain; }
-    .navbar .brand { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; color: #fff; }
-    .navbar nav { display: flex; align-items: center; gap: 24px; }
-    .navbar nav a { color: rgba(255,255,255,.8); text-decoration: none; font-size: .88rem; font-weight: 600; transition: color .2s; }
-    .navbar nav a:hover, .navbar nav a.active { color: #4A9B8E; }
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: #eef2f7;
+      color: #1C2B3A;
+      min-height: 100vh;
+    }
 
-    /* ── COVER HERO ── */
+    /* ══════════════════════════════════
+       NAVBAR — FIXED, OVERFLOW VISIBLE
+    ══════════════════════════════════ */
+    .navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 68px;
+      background: rgba(28, 43, 58, 0.97);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(74, 155, 142, 0.3);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 5%;
+      z-index: 1000;
+      overflow: visible !important;  /* critical — allows dropdown to escape */
+    }
+
+    .navbar-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+    .navbar-logo img {
+      height: 38px;
+      width: 38px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 8px rgba(74,155,142,0.5));
+    }
+    .navbar-brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .navbar-nav {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      overflow: visible !important;
+    }
+    .navbar-nav a {
+      color: rgba(255,255,255,0.8);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 600;
+      transition: color 0.2s;
+      position: relative;
+      padding: 4px 0;
+    }
+    .navbar-nav a::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 0; height: 2px;
+      background: #4A9B8E;
+      border-radius: 2px;
+      transition: width 0.3s;
+    }
+    .navbar-nav a:hover { color: #4A9B8E; }
+    .navbar-nav a:hover::after,
+    .navbar-nav a.active::after { width: 100%; }
+    .navbar-nav a.active { color: #4A9B8E; }
+
+    /* ── Dropdown ── */
+    .user-dropdown { position: relative; }
+
+    .user-avatar-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.12);
+      border: 1.5px solid rgba(255,255,255,0.28);
+      border-radius: 50px;
+      padding: 5px 14px 5px 5px;
+      cursor: pointer;
+      color: #fff;
+      font-family: inherit;
+      outline: none;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .user-avatar-btn:hover {
+      background: rgba(255,255,255,0.22);
+      border-color: rgba(255,255,255,0.5);
+    }
+    .user-avatar-circle {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #E07B54, #c96940);
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(224,123,84,0.55);
+      text-transform: uppercase;
+    }
+    .user-name-short {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: #fff;
+      max-width: 100px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .user-chevron {
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.8);
+      transition: transform 0.3s;
+      margin-left: 2px;
+    }
+    .user-dropdown-menu {
+      display: none;
+      position: fixed !important;   /* fixed = never clipped by parent */
+      top: 72px !important;
+      right: 20px !important;
+      background: #fff;
+      border-radius: 18px;
+      min-width: 250px;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.22), 0 4px 16px rgba(0,0,0,0.1);
+      border: 1px solid rgba(0,0,0,0.07);
+      overflow: hidden;
+      z-index: 99999 !important;
+      animation: dropdownFade 0.2s ease;
+    }
+    .user-dropdown-menu.open { display: block; }
+    @keyframes dropdownFade {
+      from { opacity: 0; transform: translateY(-6px) scale(0.98); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .dropdown-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 18px 18px 14px;
+      background: linear-gradient(135deg, #f5f9fc, #fff);
+      border-bottom: 1px solid #eef2f6;
+    }
+    .dropdown-avatar {
+      width: 46px; height: 46px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #E07B54, #c96940);
+      color: #fff;
+      font-size: 1.2rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(224,123,84,0.45);
+      text-transform: uppercase;
+    }
+    .dropdown-name {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #1C2B3A;
+      margin: 0 0 3px;
+    }
+    .dropdown-role {
+      font-size: 0.78rem;
+      color: #E07B54;
+      font-weight: 700;
+      margin: 0;
+    }
+    .dropdown-divider { height: 1px; background: #eef2f6; margin: 4px 0; }
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 18px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #1C2B3A;
+      text-decoration: none;
+      transition: background 0.15s;
+      cursor: pointer;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      font-family: inherit;
+    }
+    .dropdown-item i { width: 18px; font-size: 0.9rem; color: #4A9B8E; text-align: center; flex-shrink: 0; }
+    .dropdown-item:hover { background: #f0f8f6; }
+    .review-item { color: #2D6A4F; }
+    .review-item i { color: #2D6A4F; }
+    .review-item:hover { background: #eaf6ef; }
+    .logout-item { color: #c0392b; }
+    .logout-item i { color: #e74c3c; }
+    .logout-item:hover { background: #fff5f5; }
+
+    /* ══════════════════════════════════
+       PAGE LAYOUT
+    ══════════════════════════════════ */
+    .page-wrapper {
+      padding-top: 68px;   /* navbar height */
+    }
+
+    /* Cover banner */
     .profile-cover {
-      margin-top: 68px;
-      height: 220px;
+      height: 200px;
       background: linear-gradient(-45deg, #1C2B3A, #2E4A5C, #1a3a2a, #2E4A5C);
       background-size: 400% 400%;
       animation: gradientShift 14s ease infinite;
@@ -37,62 +236,67 @@
       overflow: hidden;
     }
     @keyframes gradientShift {
-      0%,100% { background-position: 0% 50%; }
-      50%      { background-position: 100% 50%; }
+      0%, 100% { background-position: 0% 50%; }
+      50%       { background-position: 100% 50%; }
     }
     .profile-cover::before {
       content: "";
       position: absolute; inset: 0;
       background:
         radial-gradient(ellipse at 20% 80%, rgba(74,155,142,.25) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 20%, rgba(212,168,67,.12) 0%, transparent 45%),
-        url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        radial-gradient(ellipse at 80% 20%, rgba(212,168,67,.12) 0%, transparent 45%);
     }
-    /* Mountain silhouette */
     .profile-cover::after {
       content: "";
-      position: absolute; bottom: 0; left: 0; right: 0; height: 80px;
-      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 80'%3E%3Cpath fill='%23f0f5f8' fill-opacity='1' d='M0,80 L0,50 L120,20 L240,45 L360,10 L480,35 L600,5 L720,30 L840,8 L960,32 L1080,12 L1200,38 L1320,15 L1440,40 L1440,80 Z'/%3E%3C/svg%3E") no-repeat bottom;
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 70px;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 70'%3E%3Cpath fill='%23eef2f7' d='M0,70 L0,40 L120,15 L240,38 L360,8 L480,30 L600,4 L720,26 L840,6 L960,28 L1080,10 L1200,32 L1320,12 L1440,34 L1440,70 Z'/%3E%3C/svg%3E") no-repeat bottom;
       background-size: cover;
     }
 
-    /* ── PROFILE LAYOUT ── */
-    .profile-layout {
+    /* Main content grid */
+    .profile-grid {
       max-width: 1100px;
       margin: 0 auto;
       padding: 0 24px 60px;
       display: grid;
       grid-template-columns: 300px 1fr;
-      gap: 28px;
+      gap: 32px;
       position: relative;
     }
 
-    /* ── LEFT SIDEBAR ── */
+    /* ══════════════════════════════════
+       LEFT SIDEBAR
+    ══════════════════════════════════ */
     .profile-sidebar {
-      margin-top: -60px;
+      margin-top: -56px;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 20px;   /* gap between sidebar cards */
     }
 
-    /* Avatar Card */
-    .avatar-card {
+    /* ── Card base ── */
+    .card {
       background: #fff;
       border-radius: 20px;
-      box-shadow: 0 12px 40px rgba(28,43,58,.12);
-      padding: 32px 24px;
+      box-shadow: 0 4px 24px rgba(28,43,58,0.09);
+      overflow: hidden;
+    }
+
+    /* Avatar card */
+    .avatar-card {
+      padding: 32px 24px 24px;
       text-align: center;
-      position: relative;
     }
     .avatar-ring {
-      width: 100px;
-      height: 100px;
+      width: 96px; height: 96px;
       border-radius: 50%;
       background: linear-gradient(135deg, #E07B54, #D4A843);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2.6rem;
+      font-size: 2.4rem;
       font-weight: 900;
       color: #fff;
       margin: 0 auto 16px;
@@ -102,18 +306,18 @@
     .avatar-ring .online-dot {
       position: absolute;
       bottom: 4px; right: 4px;
-      width: 18px; height: 18px;
+      width: 16px; height: 16px;
       background: #2ecc71;
       border-radius: 50%;
       border: 3px solid #fff;
     }
-    .avatar-card h2 {
-      font-size: 1.25rem;
+    .avatar-name {
+      font-size: 1.2rem;
       font-weight: 800;
       color: #1C2B3A;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
-    .avatar-card .role-badge {
+    .role-badge {
       display: inline-flex;
       align-items: center;
       gap: 5px;
@@ -121,24 +325,24 @@
       color: #fff;
       padding: 4px 14px;
       border-radius: 20px;
-      font-size: .75rem;
+      font-size: 0.75rem;
       font-weight: 700;
-      margin-bottom: 20px;
+      margin-bottom: 6px;
     }
-    .avatar-card .member-since {
-      font-size: .78rem;
-      color: #999;
-      margin-top: 4px;
+    .member-since {
+      font-size: 0.76rem;
+      color: #aaa;
     }
+    .member-since i { color: #4A9B8E; }
 
-    /* Quick Stats in sidebar */
+    /* Stats inside avatar card */
     .sidebar-stats {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
-      margin-top: 4px;
-      border-top: 1px solid #f0f4f7;
+      margin-top: 20px;
       padding-top: 18px;
+      border-top: 1px solid #f0f4f7;
     }
     .sstat {
       text-align: center;
@@ -147,22 +351,16 @@
       background: #f8fbfd;
     }
     .sstat h4 { font-size: 1.3rem; font-weight: 900; color: #1C2B3A; margin-bottom: 2px; }
-    .sstat p  { font-size: .7rem; color: #999; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; }
+    .sstat p  { font-size: 0.68rem; color: #aaa; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; }
 
     /* Info strip card */
-    .info-strip {
-      background: #fff;
-      border-radius: 18px;
-      box-shadow: 0 8px 28px rgba(28,43,58,.08);
-      overflow: hidden;
-    }
     .info-strip-header {
       background: linear-gradient(90deg, #1C2B3A, #2E4A5C);
       color: #fff;
       padding: 14px 20px;
-      font-size: .82rem;
+      font-size: 0.8rem;
       font-weight: 700;
-      letter-spacing: .5px;
+      letter-spacing: 0.5px;
       text-transform: uppercase;
       display: flex;
       align-items: center;
@@ -174,45 +372,46 @@
       gap: 12px;
       padding: 13px 20px;
       border-bottom: 1px solid #f4f7fa;
-      font-size: .88rem;
+      font-size: 0.87rem;
     }
     .info-strip-row:last-child { border-bottom: none; }
-    .info-strip-row i { width: 18px; color: #4A9B8E; font-size: .9rem; }
-    .info-strip-row span { color: #888; min-width: 60px; font-size: .78rem; font-weight: 700; }
-    .info-strip-row strong { color: #1C2B3A; }
+    .info-strip-row i { width: 18px; color: #4A9B8E; font-size: 0.88rem; flex-shrink: 0; }
+    .info-strip-row .isr-label { color: #aaa; min-width: 56px; font-size: 0.75rem; font-weight: 700; }
+    .info-strip-row strong { color: #1C2B3A; font-size: 0.85rem; word-break: break-all; }
 
-    /* ── MAIN RIGHT PANEL ── */
+    /* ══════════════════════════════════
+       RIGHT MAIN PANEL
+    ══════════════════════════════════ */
     .profile-main {
-      margin-top: -20px;
+      margin-top: -16px;
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: 24px;   /* gap between every panel card */
     }
 
-    /* Flash */
+    /* Flash bar */
     .flash-bar {
-      padding: 14px 20px;
+      padding: 14px 18px;
       border-radius: 12px;
       font-weight: 700;
-      font-size: .9rem;
+      font-size: 0.9rem;
       display: flex;
       align-items: center;
       gap: 10px;
-      animation: slideIn .3s ease;
+      animation: slideIn 0.3s ease;
     }
-    @keyframes slideIn { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:none; } }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: none; }
+    }
     .flash-bar.success { background: #d5eee3; color: #1b5e35; border-left: 4px solid #4CAF50; }
     .flash-bar.error   { background: #fae3da; color: #b34a28; border-left: 4px solid #e74c3c; }
 
     /* Panel card */
-    .panel {
-      background: #fff;
-      border-radius: 20px;
-      box-shadow: 0 8px 32px rgba(28,43,58,.09);
-      overflow: hidden;
-    }
+    .panel { background: #fff; border-radius: 20px; box-shadow: 0 4px 24px rgba(28,43,58,0.09); overflow: hidden; }
+
     .panel-header {
-      padding: 22px 28px;
+      padding: 20px 26px;
       border-bottom: 1px solid #f0f5f8;
       display: flex;
       align-items: center;
@@ -220,17 +419,20 @@
     }
     .panel-header-left { display: flex; align-items: center; gap: 14px; }
     .panel-icon {
-      width: 44px; height: 44px;
+      width: 42px; height: 42px;
       border-radius: 12px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 1.1rem;
+      font-size: 1rem;
+      flex-shrink: 0;
     }
-    .panel-icon.teal  { background: #d1f0ed; color: #2D6A4F; }
-    .panel-icon.blue  { background: #ddeef8; color: #2E4A5C; }
-    .panel-icon.orange{ background: #fde8df; color: #E07B54; }
-    .panel-title { font-size: 1rem; font-weight: 800; color: #1C2B3A; margin-bottom: 2px; }
-    .panel-subtitle { font-size: .78rem; color: #999; }
-    .panel-body { padding: 28px; }
+    .panel-icon.teal   { background: #d1f0ed; color: #2D6A4F; }
+    .panel-icon.orange { background: #fde8df; color: #E07B54; }
+    .panel-icon.red    { background: #fae3da; color: #c0392b; }
+    .panel-icon.green  { background: #d5eee3; color: #2D6A4F; }
+    .panel-title    { font-size: 0.98rem; font-weight: 800; color: #1C2B3A; margin-bottom: 2px; }
+    .panel-subtitle { font-size: 0.76rem; color: #aaa; }
+
+    .panel-body { padding: 26px; }
 
     /* Form grid */
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
@@ -238,99 +440,113 @@
     .form-group.full { grid-column: 1 / -1; }
 
     label {
-      font-size: .78rem;
+      font-size: 0.76rem;
       font-weight: 800;
       color: #2E4A5C;
       text-transform: uppercase;
-      letter-spacing: .5px;
+      letter-spacing: 0.5px;
       display: flex;
       align-items: center;
       gap: 6px;
     }
-    label i { color: #4A9B8E; font-size: .8rem; }
+    label i { color: #4A9B8E; font-size: 0.78rem; }
 
     input[type="text"],
     input[type="email"],
     input[type="tel"],
     input[type="password"] {
       width: 100%;
-      padding: 13px 16px;
+      padding: 12px 16px;
       border: 2px solid #e8f0f5;
-      border-radius: 12px;
-      font-size: .92rem;
+      border-radius: 11px;
+      font-size: 0.91rem;
       font-family: 'Nunito', sans-serif;
       color: #1C2B3A;
       background: #fafcfd;
-      transition: border-color .2s, box-shadow .2s, background .2s;
       outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
     }
     input:focus {
       border-color: #4A9B8E;
       background: #fff;
-      box-shadow: 0 0 0 4px rgba(74,155,142,.1);
+      box-shadow: 0 0 0 4px rgba(74,155,142,0.1);
     }
     input[readonly] {
       background: #f4f8fa;
-      color: #aaa;
+      color: #bbb;
       cursor: not-allowed;
-      border-color: #e8f0f5;
     }
-
-    .input-hint { font-size: .73rem; color: #bbb; margin-top: 2px; }
+    .input-hint { font-size: 0.72rem; color: #bbb; margin-top: 2px; }
 
     /* Password strength */
-    .strength-bar {
-      height: 4px;
-      border-radius: 4px;
-      background: #eee;
-      margin-top: 6px;
-      overflow: hidden;
-    }
-    .strength-fill {
-      height: 100%;
-      width: 0;
-      border-radius: 4px;
-      transition: width .3s, background .3s;
-    }
-    .strength-label { font-size: .72rem; color: #bbb; margin-top: 4px; }
+    .strength-bar { height: 4px; border-radius: 4px; background: #eee; margin-top: 6px; overflow: hidden; }
+    .strength-fill { height: 100%; width: 0; border-radius: 4px; transition: width 0.3s, background 0.3s; }
+    .strength-label { font-size: 0.71rem; color: #bbb; margin-top: 4px; }
 
     /* Save button */
     .save-btn {
       display: inline-flex;
       align-items: center;
-      gap: 10px;
-      padding: 14px 36px;
+      gap: 9px;
+      padding: 13px 34px;
       background: linear-gradient(135deg, #1C2B3A, #2E4A5C);
       color: #fff;
       border: none;
-      border-radius: 14px;
-      font-size: .95rem;
+      border-radius: 13px;
+      font-size: 0.92rem;
       font-weight: 800;
       font-family: 'Nunito', sans-serif;
       cursor: pointer;
-      transition: transform .2s, box-shadow .2s, background .2s;
-      box-shadow: 0 6px 20px rgba(28,43,58,.3);
+      transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+      box-shadow: 0 6px 20px rgba(28,43,58,0.28);
     }
     .save-btn:hover {
       background: linear-gradient(135deg, #E07B54, #c96940);
       transform: translateY(-2px);
-      box-shadow: 0 12px 32px rgba(224,123,84,.4);
+      box-shadow: 0 12px 32px rgba(224,123,84,0.4);
     }
-    .save-btn i { font-size: 1rem; }
+
+    /* Review CTA inside panel */
+    .review-cta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .review-cta p { font-size: 0.87rem; color: #888; max-width: 420px; line-height: 1.6; }
+    .review-btn-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 12px 26px;
+      background: linear-gradient(135deg, #1a3a2a, #2D6A4F);
+      color: #fff;
+      border: none;
+      border-radius: 13px;
+      font-size: 0.9rem;
+      font-weight: 800;
+      font-family: 'Nunito', sans-serif;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 6px 20px rgba(45,106,79,0.3);
+      white-space: nowrap;
+    }
+    .review-btn-cta:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(45,106,79,0.4); }
 
     /* Danger zone */
     .danger-zone {
       border: 2px solid #fde8e8;
-      border-radius: 16px;
-      padding: 20px 24px;
+      border-radius: 14px;
+      padding: 18px 22px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 16px;
       flex-wrap: wrap;
     }
-    .danger-zone-text h4 { font-size: .95rem; font-weight: 800; color: #c0392b; margin-bottom: 4px; }
-    .danger-zone-text p  { font-size: .8rem; color: #999; }
+    .danger-zone-text h4 { font-size: 0.93rem; font-weight: 800; color: #c0392b; margin-bottom: 4px; }
+    .danger-zone-text p  { font-size: 0.79rem; color: #aaa; }
     .danger-btn {
       padding: 10px 22px;
       background: transparent;
@@ -338,38 +554,20 @@
       color: #e74c3c;
       border-radius: 10px;
       font-weight: 700;
-      font-size: .85rem;
+      font-size: 0.84rem;
       font-family: 'Nunito', sans-serif;
       cursor: pointer;
-      transition: all .2s;
+      transition: all 0.2s;
       white-space: nowrap;
     }
     .danger-btn:hover { background: #e74c3c; color: #fff; }
 
-    /* Review button */
-    .review-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 12px 28px;
-      background: linear-gradient(135deg, #1a3a2a, #2D6A4F);
-      color: #fff;
-      border: none;
-      border-radius: 14px;
-      font-size: .92rem;
-      font-weight: 800;
-      font-family: 'Nunito', sans-serif;
-      cursor: pointer;
-      transition: transform .2s, box-shadow .2s;
-      box-shadow: 0 6px 20px rgba(45,106,79,.3);
-    }
-    .review-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(45,106,79,.4); }
-
-    /* ── MODAL OVERLAY ── */
+    /* ══════════════════════════════════
+       MODALS
+    ══════════════════════════════════ */
     .modal-overlay {
       display: none;
-      position: fixed;
-      inset: 0;
+      position: fixed; inset: 0;
       background: rgba(0,0,0,.45);
       z-index: 2000;
       align-items: center;
@@ -389,7 +587,10 @@
       position: relative;
       animation: modalPop .25s ease;
     }
-    @keyframes modalPop { from { opacity:0; transform:scale(.94) translateY(12px); } to { opacity:1; transform:none; } }
+    @keyframes modalPop {
+      from { opacity: 0; transform: scale(.94) translateY(12px); }
+      to   { opacity: 1; transform: none; }
+    }
     .modal-close {
       position: absolute;
       top: 18px; right: 22px;
@@ -401,31 +602,31 @@
       cursor: pointer;
       color: #666;
       display: flex; align-items: center; justify-content: center;
-      transition: background .2s;
+      transition: background 0.2s;
     }
     .modal-close:hover { background: #e8edf2; }
-    .modal-title { font-size: 1.15rem; font-weight: 800; color: #1C2B3A; margin-bottom: 6px; }
-    .modal-sub   { font-size: .82rem; color: #999; margin-bottom: 22px; }
+    .modal-title { font-size: 1.1rem; font-weight: 800; color: #1C2B3A; margin-bottom: 6px; }
+    .modal-sub   { font-size: 0.81rem; color: #aaa; margin-bottom: 22px; }
 
-    /* Delete confirm modal */
+    /* Delete modal */
     .delete-confirm-box { border: 2px solid #fde8e8; border-radius: 14px; padding: 18px 20px; margin-bottom: 16px; }
-    .delete-confirm-box p { font-size: .85rem; color: #666; margin-bottom: 14px; }
-    .confirm-type-label { font-size: .78rem; font-weight: 800; color: #2E4A5C; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 8px; }
+    .delete-confirm-box p { font-size: 0.84rem; color: #666; margin-bottom: 14px; }
+    .confirm-type-label { font-size: 0.77rem; font-weight: 800; color: #2E4A5C; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 8px; }
     .confirm-input {
       width: 100%; padding: 11px 14px;
       border: 2px solid #e8f0f5; border-radius: 10px;
-      font-size: .92rem; font-family: 'Nunito', sans-serif;
+      font-size: 0.91rem; font-family: 'Nunito', sans-serif;
       color: #1C2B3A; outline: none; margin-bottom: 14px;
-      transition: border-color .2s;
+      transition: border-color 0.2s;
     }
     .confirm-input:focus { border-color: #e74c3c; box-shadow: 0 0 0 4px rgba(231,76,60,.08); }
     .delete-final-btn {
       width: 100%; padding: 12px;
       background: #e74c3c; color: #fff;
       border: none; border-radius: 10px;
-      font-size: .92rem; font-weight: 800;
+      font-size: 0.91rem; font-weight: 800;
       font-family: 'Nunito', sans-serif;
-      cursor: pointer; transition: background .2s;
+      cursor: pointer; transition: background 0.2s;
     }
     .delete-final-btn:disabled { background: #ccc; cursor: not-allowed; }
     .delete-final-btn:not(:disabled):hover { background: #c0392b; }
@@ -435,7 +636,6 @@
     .star-btn {
       font-size: 2rem; background: none; border: none;
       cursor: pointer; color: #ddd; transition: color .15s, transform .15s;
-      line-height: 1;
     }
     .star-btn.active { color: #f39c12; }
     .star-btn:hover  { transform: scale(1.15); }
@@ -443,48 +643,21 @@
       width: 100%; min-height: 100px;
       padding: 12px 14px;
       border: 2px solid #e8f0f5; border-radius: 12px;
-      font-size: .9rem; font-family: 'Nunito', sans-serif;
+      font-size: 0.9rem; font-family: 'Nunito', sans-serif;
       color: #1C2B3A; resize: vertical; outline: none;
-      transition: border-color .2s;
+      transition: border-color 0.2s;
       margin-bottom: 14px;
     }
-    .review-textarea:focus { border-color: #4A9B8E; box-shadow: 0 0 0 4px rgba(74,155,142,.08); }
-    .media-upload-area {
-      border: 2px dashed #d0dce6;
-      border-radius: 12px;
-      padding: 16px;
-      text-align: center;
-      cursor: pointer;
-      color: #999;
-      font-size: .85rem;
-      margin-bottom: 8px;
-      transition: border-color .2s, background .2s;
-    }
-    .media-upload-area:hover { border-color: #4A9B8E; background: #f5fbfa; }
-    .media-preview { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
-    .media-thumb {
-      width: 66px; height: 66px;
-      border-radius: 10px;
-      object-fit: cover;
-      border: 2px solid #e8f0f5;
-    }
-    .video-thumb {
-      width: 66px; height: 66px;
-      border-radius: 10px;
-      background: #1C2B3A;
-      display: flex; align-items: center; justify-content: center;
-      color: #fff; font-size: .7rem; font-weight: 700;
-      border: 2px solid #e8f0f5;
-    }
+    .review-textarea:focus { border-color: #4A9B8E; }
     .submit-review-btn {
       width: 100%; padding: 12px;
       background: linear-gradient(135deg, #1a3a2a, #2D6A4F);
       color: #fff; border: none; border-radius: 12px;
-      font-size: .95rem; font-weight: 800;
+      font-size: 0.94rem; font-weight: 800;
       font-family: 'Nunito', sans-serif;
-      cursor: pointer; transition: opacity .2s;
+      cursor: pointer; transition: opacity 0.2s;
     }
-    .submit-review-btn:hover { opacity: .88; }
+    .submit-review-btn:hover { opacity: 0.88; }
     .review-success { text-align: center; padding: 16px 0; }
     .review-success-icon {
       width: 64px; height: 64px; border-radius: 50%;
@@ -492,250 +665,311 @@
       margin: 0 auto 14px; font-size: 1.8rem;
     }
 
-    /* ── RESPONSIVE ── */
+    /* ══════════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════════ */
     @media (max-width: 860px) {
-      .profile-layout { grid-template-columns: 1fr; }
-      .profile-sidebar { margin-top: -40px; }
-      .profile-main { margin-top: 0; }
-      .form-grid { grid-template-columns: 1fr; }
+      .profile-grid {
+        grid-template-columns: 1fr;
+        padding: 0 16px 48px;
+      }
+      .profile-sidebar { margin-top: -36px; }
+      .profile-main    { margin-top: 0; }
+      .form-grid       { grid-template-columns: 1fr; }
     }
     @media (max-width: 500px) {
-      .profile-cover { height: 160px; }
-      .panel-body { padding: 18px; }
+      .navbar { padding: 0 4%; }
+      .user-name-short { display: none; }
+      .profile-cover   { height: 140px; }
+      .panel-body      { padding: 18px; }
+      .review-cta      { flex-direction: column; align-items: flex-start; }
     }
   </style>
 </head>
 <body>
 
-<!-- Navbar -->
+<!-- ══════════════════════════════════
+     NAVBAR
+══════════════════════════════════ -->
 <header class="navbar">
-  <a href="/dashboard" class="logo">
+  <a href="/dashboard" class="navbar-logo">
     <img src="{{ url_for('static', filename='images/logo.png') }}" alt="GoHigh">
-    <span class="brand">GoHigh <b>Rentals</b></span>
+    <span class="navbar-brand">GoHigh <b>Rentals</b></span>
   </a>
-  <nav>
+
+  <nav class="navbar-nav">
     <a href="/dashboard">Dashboard</a>
     <a href="{{ url_for('my_bookings') }}">My Bookings</a>
     <a href="{{ url_for('profile') }}" class="active">Profile</a>
-    <a href="{{ url_for('logout') }}" style="color:#E07B54; font-weight:800;">
-      <i class="fas fa-sign-out-alt"></i> Logout
-    </a>
+
+    <!-- Dropdown -->
+    <div class="user-dropdown">
+      <button class="user-avatar-btn" onclick="toggleDropdown()" type="button">
+        <div class="user-avatar-circle">{{ user.name[0].upper() }}</div>
+        <span class="user-name-short">{{ user.name.split()[0] }}</span>
+        <i class="fas fa-chevron-down user-chevron" id="chevronIcon"></i>
+      </button>
+      <div class="user-dropdown-menu" id="userDropdownMenu">
+        <div class="dropdown-header">
+          <div class="dropdown-avatar">{{ user.name[0].upper() }}</div>
+          <div>
+            <p class="dropdown-name">{{ user.name }}</p>
+            <p class="dropdown-role">Traveler</p>
+          </div>
+        </div>
+        <div class="dropdown-divider"></div>
+        <a href="{{ url_for('profile') }}" class="dropdown-item">
+          <i class="fas fa-user-edit"></i> Edit Profile
+        </a>
+        <a href="{{ url_for('my_bookings') }}" class="dropdown-item">
+          <i class="fas fa-calendar-check"></i> My Bookings
+        </a>
+        <button class="dropdown-item review-item" onclick="openReviewModal(); closeDropdown();" type="button">
+          <i class="fas fa-star"></i> Write a Review
+        </button>
+        <div class="dropdown-divider"></div>
+        <a href="{{ url_for('logout') }}" class="dropdown-item logout-item">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+      </div>
+    </div>
   </nav>
 </header>
 
-<!-- Cover -->
-<div class="profile-cover"></div>
+<!-- ══════════════════════════════════
+     PAGE BODY
+══════════════════════════════════ -->
+<div class="page-wrapper">
 
-<div class="profile-layout">
+  <!-- Cover banner -->
+  <div class="profile-cover"></div>
 
-  <!-- ── LEFT SIDEBAR ── -->
-  <aside class="profile-sidebar">
-
-    <!-- Avatar Card -->
-    <div class="avatar-card">
-      <div class="avatar-ring">
-        {{ user.name[0].upper() }}
-        <span class="online-dot"></span>
-      </div>
-      <h2>{{ user.name }}</h2>
-      <div class="role-badge"><i class="fas fa-mountain"></i> Himalayan Traveler</div>
-      <p class="member-since"><i class="fas fa-calendar" style="color:#4A9B8E"></i> Member since 2024</p>
-
-      <div class="sidebar-stats">
-        <div class="sstat">
-          <h4>{{ total_trips if total_trips is defined else '—' }}</h4>
-          <p>Trips</p>
-        </div>
-        <div class="sstat">
-          <h4>{{ completed if completed is defined else '—' }}</h4>
-          <p>Done</p>
-        </div>
-        <div class="sstat">
-          <h4>{{ confirmed if confirmed is defined else '—' }}</h4>
-          <p>Active</p>
-        </div>
-        <div class="sstat">
-          <h4>5★</h4>
-          <p>Rating</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Contact Info Strip -->
-    <div class="info-strip">
-      <div class="info-strip-header">
-        <i class="fas fa-address-card"></i> Contact Info
-      </div>
-      <div class="info-strip-row">
-        <i class="fas fa-user"></i>
-        <span>Name</span>
-        <strong>{{ user.name }}</strong>
-      </div>
-      <div class="info-strip-row">
-        <i class="fas fa-envelope"></i>
-        <span>Email</span>
-        <strong style="font-size:.82rem; word-break:break-all;">{{ user.email }}</strong>
-      </div>
-      <div class="info-strip-row">
-        <i class="fas fa-phone"></i>
-        <span>Phone</span>
-        <strong>{{ user.phone if user.phone else 'Not set' }}</strong>
-      </div>
-      <div class="info-strip-row">
-        <i class="fas fa-shield-alt"></i>
-        <span>Status</span>
-        <strong style="color:#2D6A4F;">✔ Verified</strong>
-      </div>
-    </div>
-
-  </aside>
-
-  <!-- ── RIGHT MAIN ── -->
-  <main class="profile-main">
-
-    <!-- Flash messages -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
+  <!-- Flash messages (outside grid so full width) -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div style="max-width:1100px; margin:16px auto 0; padding:0 24px;">
         {% for category, message in messages %}
           <div class="flash-bar {{ category }}">
             <i class="fas fa-{{ 'check-circle' if category == 'success' else 'exclamation-circle' }}"></i>
             {{ message }}
           </div>
         {% endfor %}
-      {% endif %}
-    {% endwith %}
-
-    <!-- Edit Profile Form -->
-    <form method="POST" action="{{ url_for('profile') }}" id="profileForm">
-
-      <!-- Personal Info -->
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-header-left">
-            <div class="panel-icon teal"><i class="fas fa-user"></i></div>
-            <div>
-              <div class="panel-title">Personal Information</div>
-              <div class="panel-subtitle">Update your name and contact details</div>
-            </div>
-          </div>
-        </div>
-        <div class="panel-body">
-          <div class="form-grid">
-
-            <div class="form-group">
-              <label><i class="fas fa-user"></i> Full Name</label>
-              <input type="text" name="name" value="{{ user.name }}" placeholder="Your full name" required>
-            </div>
-
-            <div class="form-group">
-              <label><i class="fas fa-phone"></i> Phone Number</label>
-              <input type="tel" name="phone_no" value="{{ user.phone_no if user.phone_no else '' }}" placeholder="+91 98765 43210">
-            </div>
-
-            <div class="form-group full">
-              <label><i class="fas fa-key"></i> Current Password</label>
-              <input type="password" name="current_password" placeholder="Enter your current password">
-              <p class="input-hint">Required only when changing password</p>
-            </div>
-
-          </div>
-        </div>
       </div>
+    {% endif %}
+  {% endwith %}
 
-      <!-- Password -->
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-header-left">
-            <div class="panel-icon orange"><i class="fas fa-lock"></i></div>
-            <div>
-              <div class="panel-title">Change Password</div>
-              <div class="panel-subtitle">Leave blank to keep your current password</div>
-            </div>
-          </div>
+  <!-- Grid -->
+  <div class="profile-grid">
+
+    <!-- ════════════════════════
+         LEFT SIDEBAR
+    ════════════════════════ -->
+    <aside class="profile-sidebar">
+
+      <!-- Avatar card -->
+      <div class="card avatar-card">
+        <div class="avatar-ring">
+          {{ user.name[0].upper() }}
+          <span class="online-dot"></span>
         </div>
-        <div class="panel-body">
-          <div class="form-grid">
+        <div class="avatar-name">{{ user.name }}</div>
+        <div class="role-badge"><i class="fas fa-mountain"></i> Himalayan Traveler</div>
+        <div class="member-since"><i class="fas fa-calendar"></i> Member since 2024</div>
 
-            <div class="form-group">
-              <label><i class="fas fa-lock"></i> New Password</label>
-              <input type="password" name="password" id="newPass" placeholder="Enter new password" oninput="checkStrength(this.value)">
-              <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
-              <p class="strength-label" id="strengthLabel">Enter a password</p>
-            </div>
-
-            <div class="form-group">
-              <label><i class="fas fa-lock"></i> Confirm Password</label>
-              <input type="password" id="confirmPass" placeholder="Confirm new password" oninput="checkMatch()">
-              <p class="input-hint" id="matchHint"></p>
-            </div>
-
+        <div class="sidebar-stats">
+          <div class="sstat">
+            <h4>{{ total_trips if total_trips is defined else '0' }}</h4>
+            <p>Trips</p>
+          </div>
+          <div class="sstat">
+            <h4>{{ completed if completed is defined else '0' }}</h4>
+            <p>Done</p>
+          </div>
+          <div class="sstat">
+            <h4>{{ confirmed if confirmed is defined else '0' }}</h4>
+            <p>Active</p>
+          </div>
+          <div class="sstat">
+            <h4>5★</h4>
+            <p>Rating</p>
           </div>
         </div>
       </div>
 
-      <!-- Save -->
-      <div style="display:flex; justify-content:flex-end; margin-top:4px;">
-        <button type="submit" class="save-btn" onclick="return validateForm()">
-          <i class="fas fa-save"></i> Save Changes
-        </button>
-      </div>
-
-    </form>
-
-    <!-- Write a Review -->
-    <div class="panel">
-      <div class="panel-header">
-        <div class="panel-header-left">
-          <div class="panel-icon teal"><i class="fas fa-star"></i></div>
-          <div>
-            <div class="panel-title">Write a Review</div>
-            <div class="panel-subtitle">Share your travel experience with the community</div>
-          </div>
+      <!-- Contact info strip -->
+      <div class="card">
+        <div class="info-strip-header">
+          <i class="fas fa-address-card"></i> Contact Info
+        </div>
+        <div class="info-strip-row">
+          <i class="fas fa-user"></i>
+          <span class="isr-label">Name</span>
+          <strong>{{ user.name }}</strong>
+        </div>
+        <div class="info-strip-row">
+          <i class="fas fa-envelope"></i>
+          <span class="isr-label">Email</span>
+          <strong>{{ user.email }}</strong>
+        </div>
+        <div class="info-strip-row">
+          <i class="fas fa-phone"></i>
+          <span class="isr-label">Phone</span>
+          <strong>{{ user.phone_no if user.phone_no else 'Not set' }}</strong>
+        </div>
+        <div class="info-strip-row">
+          <i class="fas fa-shield-alt"></i>
+          <span class="isr-label">Status</span>
+          <strong style="color:#2D6A4F;">✔ Verified</strong>
         </div>
       </div>
-      <div class="panel-body" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;">
-        <p style="font-size:.88rem; color:#888; max-width:420px;">
-          Loved your trip? Rate destinations, vehicles, and services to help other travelers make better choices.
-        </p>
-        <button class="review-btn" onclick="openReviewModal()">
-          <i class="fas fa-star"></i> Write a Review
-        </button>
-      </div>
-    </div>
 
-    <!-- Danger Zone -->
-    <div class="panel">
-      <div class="panel-header">
-        <div class="panel-header-left">
-          <div class="panel-icon orange"><i class="fas fa-exclamation-triangle"></i></div>
-          <div>
-            <div class="panel-title" style="color:#c0392b;">Danger Zone</div>
-            <div class="panel-subtitle">Irreversible actions — proceed with caution</div>
+    </aside>
+
+    <!-- ════════════════════════
+         RIGHT MAIN
+    ════════════════════════ -->
+    <main class="profile-main">
+
+      <form method="POST" action="{{ url_for('profile') }}" id="profileForm">
+
+        <!-- Personal Info panel -->
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-header-left">
+              <div class="panel-icon teal"><i class="fas fa-user"></i></div>
+              <div>
+                <div class="panel-title">Personal Information</div>
+                <div class="panel-subtitle">Update your name and contact details</div>
+              </div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="form-grid">
+
+              <div class="form-group">
+                <label><i class="fas fa-user"></i> Full Name</label>
+                <input type="text" name="name" value="{{ user.name }}" placeholder="Your full name" required>
+              </div>
+
+              <div class="form-group">
+                <label><i class="fas fa-phone"></i> Phone Number</label>
+                <input type="tel" name="phone_no" value="{{ user.phone_no if user.phone_no else '' }}" placeholder="+91 98765 43210">
+              </div>
+
+              <div class="form-group full">
+                <label><i class="fas fa-lock"></i> Current Password</label>
+                <input type="password" name="current_password" placeholder="Required only when changing password">
+                <p class="input-hint">Enter your current password only if you want to change it below</p>
+              </div>
+
+            </div>
           </div>
         </div>
-      </div>
-      <div class="panel-body">
-        <div class="danger-zone">
-          <div class="danger-zone-text">
-            <h4>Delete Account</h4>
-            <p>Permanently delete your account and all booking history. This cannot be undone.</p>
+
+        <!-- Change Password panel -->
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-header-left">
+              <div class="panel-icon orange"><i class="fas fa-lock"></i></div>
+              <div>
+                <div class="panel-title">Change Password</div>
+                <div class="panel-subtitle">Leave blank to keep your current password</div>
+              </div>
+            </div>
           </div>
-          <button class="danger-btn" onclick="openDeleteModal()">
-            <i class="fas fa-trash-alt"></i> Delete Account
+          <div class="panel-body">
+            <div class="form-grid">
+
+              <div class="form-group">
+                <label><i class="fas fa-key"></i> New Password</label>
+                <input type="password" name="password" id="newPass"
+                       placeholder="Enter new password"
+                       oninput="checkStrength(this.value)">
+                <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+                <p class="strength-label" id="strengthLabel">Enter a password</p>
+              </div>
+
+              <div class="form-group">
+                <label><i class="fas fa-lock"></i> Confirm Password</label>
+                <input type="password" id="confirmPass"
+                       placeholder="Confirm new password"
+                       oninput="checkMatch()">
+                <p class="input-hint" id="matchHint"></p>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Save button row -->
+        <div style="display:flex; justify-content:flex-end;">
+          <button type="submit" class="save-btn" onclick="return validateForm()">
+            <i class="fas fa-save"></i> Save Changes
           </button>
         </div>
-      </div>
-    </div>
 
-  </main>
+      </form>
+
+      <!-- Write a Review panel -->
+      <div class="panel" id="review">
+        <div class="panel-header">
+          <div class="panel-header-left">
+            <div class="panel-icon green"><i class="fas fa-star"></i></div>
+            <div>
+              <div class="panel-title">Write a Review</div>
+              <div class="panel-subtitle">Share your travel experience with the community</div>
+            </div>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="review-cta">
+            <p>Loved your trip? Rate destinations, vehicles, and services to help other travelers make better choices.</p>
+            <button class="review-btn-cta" onclick="openReviewModal()" type="button">
+              <i class="fas fa-star"></i> Write a Review
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Danger Zone panel -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-header-left">
+            <div class="panel-icon red"><i class="fas fa-exclamation-triangle"></i></div>
+            <div>
+              <div class="panel-title" style="color:#c0392b;">Danger Zone</div>
+              <div class="panel-subtitle">Irreversible actions — proceed with caution</div>
+            </div>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="danger-zone">
+            <div class="danger-zone-text">
+              <h4>Delete Account</h4>
+              <p>Permanently delete your account and all booking history. This cannot be undone.</p>
+            </div>
+            <button class="danger-btn" onclick="openDeleteModal()" type="button">
+              <i class="fas fa-trash-alt"></i> Delete Account
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
 </div>
 
-<!-- ── DELETE ACCOUNT MODAL ── -->
+
+<!-- ══════════════════════════════════
+     DELETE MODAL
+══════════════════════════════════ -->
 <div class="modal-overlay" id="deleteModal">
   <div class="modal-box">
-    <button class="modal-close" onclick="closeDeleteModal()"><i class="fas fa-times"></i></button>
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
-      <div style="width:46px;height:46px;border-radius:12px;background:#fde8df;display:flex;align-items:center;justify-content:center;">
+    <button class="modal-close" onclick="closeDeleteModal()" type="button">
+      <i class="fas fa-times"></i>
+    </button>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
+      <div style="width:46px;height:46px;border-radius:12px;background:#fde8df;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
         <i class="fas fa-exclamation-triangle" style="color:#E07B54;font-size:1.1rem;"></i>
       </div>
       <div>
@@ -746,65 +980,107 @@
     <div class="delete-confirm-box">
       <p>This will permanently erase your account, all booking history, and reviews. You will be logged out immediately.</p>
       <div class="confirm-type-label">Type <strong>DELETE</strong> to confirm</div>
-      <input class="confirm-input" id="deleteConfirmInput" placeholder="Type DELETE here" oninput="checkDeleteInput()" autocomplete="off">
+      <input class="confirm-input" id="deleteConfirmInput"
+             placeholder="Type DELETE here"
+             oninput="checkDeleteInput()"
+             autocomplete="off">
       <form method="POST" action="{{ url_for('delete_account') }}" id="deleteForm">
         <button type="submit" class="delete-final-btn" id="deleteFinalBtn" disabled>
           <i class="fas fa-trash-alt"></i> Yes, permanently delete my account
         </button>
       </form>
     </div>
-    <p style="font-size:.75rem;color:#bbb;text-align:center;">Changed your mind? <a href="#" onclick="closeDeleteModal();return false;" style="color:#4A9B8E;">Cancel and go back</a></p>
+    <p style="font-size:.75rem;color:#bbb;text-align:center;">
+      Changed your mind?
+      <a href="#" onclick="closeDeleteModal();return false;" style="color:#4A9B8E;">Cancel and go back</a>
+    </p>
   </div>
 </div>
 
-<!-- ── REVIEW MODAL ── -->
+
+<!-- ══════════════════════════════════
+     REVIEW MODAL
+══════════════════════════════════ -->
 <div class="modal-overlay" id="reviewModal">
   <div class="modal-box">
-    <button class="modal-close" onclick="closeReviewModal()"><i class="fas fa-times"></i></button>
+    <button class="modal-close" onclick="closeReviewModal()" type="button">
+      <i class="fas fa-times"></i>
+    </button>
+
     <div id="reviewFormContent">
-      <div class="modal-title">Write a Review</div>
+      <div class="modal-title">✍️ Write a Review</div>
       <div class="modal-sub">Your feedback helps other travelers</div>
-      <div style="font-size:.78rem;font-weight:800;color:#2E4A5C;text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px;">Your Rating</div>
-      <div class="star-row" id="starRow">
-        <button class="star-btn" onclick="setRating(1)" type="button">&#9733;</button>
-        <button class="star-btn" onclick="setRating(2)" type="button">&#9733;</button>
-        <button class="star-btn" onclick="setRating(3)" type="button">&#9733;</button>
-        <button class="star-btn" onclick="setRating(4)" type="button">&#9733;</button>
-        <button class="star-btn" onclick="setRating(5)" type="button">&#9733;</button>
+
+      <div style="font-size:.77rem;font-weight:800;color:#2E4A5C;text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px;">
+        Your Rating
       </div>
-      <form method="POST" action="{{ url_for('submit_review') }}" enctype="multipart/form-data" id="reviewForm" onsubmit="return validateReview()">
-        <div style="font-size:.78rem;font-weight:800;color:#2E4A5C;text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px;">Your Review</div>
-        <textarea class="review-textarea" name="review_text" id="reviewText" placeholder="Tell others about your experience — what made it special?"></textarea>
-        <input type="hidden" name="rating" id="ratingInput" value="0">
-        <div style="font-size:.78rem;font-weight:800;color:#2E4A5C;text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px;">Photos &amp; Videos <span style="font-weight:400;color:#bbb;">(optional, max 10)</span></div>
-        <div class="media-upload-area" onclick="document.getElementById('mediaFiles').click()">
-          <i class="fas fa-cloud-upload-alt" style="font-size:1.4rem;margin-bottom:6px;display:block;color:#4A9B8E;"></i>
-          Click to add photos or videos<br>
-          <span style="font-size:.75rem;">PNG, JPG, GIF, MP4 · Max 10 files</span>
+      <div class="star-row" id="starRow">
+        <button class="star-btn" onclick="setRating(1)" type="button">★</button>
+        <button class="star-btn" onclick="setRating(2)" type="button">★</button>
+        <button class="star-btn" onclick="setRating(3)" type="button">★</button>
+        <button class="star-btn" onclick="setRating(4)" type="button">★</button>
+        <button class="star-btn" onclick="setRating(5)" type="button">★</button>
+      </div>
+
+      <form method="POST" action="{{ url_for('submit_review') }}"
+            id="reviewForm" onsubmit="return validateReview()">
+        <div style="font-size:.77rem;font-weight:800;color:#2E4A5C;text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px;">
+          Your Review
         </div>
-        <input type="file" id="mediaFiles" name="media" multiple accept="image/*,video/*" style="display:none" onchange="previewMedia(this)">
-        <div class="media-preview" id="mediaPreview"></div>
-        <button type="submit" class="submit-review-btn"><i class="fas fa-paper-plane"></i> Submit Review</button>
+        <textarea class="review-textarea" name="review_text" id="reviewText"
+                  placeholder="Tell others about your experience — what made it special?"></textarea>
+        <input type="hidden" name="rating" id="ratingInput" value="0">
+        <button type="submit" class="submit-review-btn">
+          <i class="fas fa-paper-plane"></i> Submit Review
+        </button>
       </form>
     </div>
+
     <div class="review-success" id="reviewSuccess" style="display:none;">
-      <div class="review-success-icon">&#9733;</div>
+      <div class="review-success-icon">⭐</div>
       <div class="modal-title">Review Submitted!</div>
-      <p style="font-size:.88rem;color:#888;margin:8px 0 20px;">Thank you, {{ user.name }}. Your review helps other travelers make better decisions.</p>
-      <button onclick="closeReviewModal()" style="padding:10px 28px;border:2px solid #4A9B8E;border-radius:10px;background:none;color:#4A9B8E;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer;">Close</button>
+      <p style="font-size:.87rem;color:#888;margin:8px 0 20px;">
+        Thank you, {{ user.name }}. Your review helps other travelers make better decisions.
+      </p>
+      <button onclick="closeReviewModal()"
+              style="padding:10px 28px;border:2px solid #4A9B8E;border-radius:10px;background:none;color:#4A9B8E;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer;">
+        Close
+      </button>
     </div>
   </div>
 </div>
 
+
 <script>
-  // ── Password strength ──
+  /* ── Dropdown ── */
+  function toggleDropdown() {
+    const menu    = document.getElementById('userDropdownMenu');
+    const chevron = document.getElementById('chevronIcon');
+    const isOpen  = menu.classList.toggle('open');
+    chevron.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+  }
+  function closeDropdown() {
+    document.getElementById('userDropdownMenu').classList.remove('open');
+    document.getElementById('chevronIcon').style.transform = 'rotate(0deg)';
+  }
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.user-dropdown')) closeDropdown();
+  });
+
+  /* ── Auto-dismiss flash messages ── */
+  document.querySelectorAll('.flash-bar').forEach(el => {
+    setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity .4s'; }, 3500);
+    setTimeout(() => el.remove(), 3900);
+  });
+
+  /* ── Password strength ── */
   function checkStrength(val) {
     const fill  = document.getElementById('strengthFill');
     const label = document.getElementById('strengthLabel');
     let score = 0;
-    if (val.length >= 8) score++;
-    if (/[A-Z]/.test(val)) score++;
-    if (/[0-9]/.test(val)) score++;
+    if (val.length >= 8)        score++;
+    if (/[A-Z]/.test(val))      score++;
+    if (/[0-9]/.test(val))      score++;
     if (/[^A-Za-z0-9]/.test(val)) score++;
     const levels = [
       { w: '0%',   color: '#eee',    text: 'Enter a password' },
@@ -826,7 +1102,7 @@
     const hint = document.getElementById('matchHint');
     if (!p2) { hint.textContent = ''; return; }
     if (p1 === p2) { hint.textContent = '✔ Passwords match'; hint.style.color = '#2ecc71'; }
-    else           { hint.textContent = '✖ Passwords do not match'; hint.style.color = '#e74c3c'; }
+    else           { hint.textContent = '✖ Do not match';    hint.style.color = '#e74c3c'; }
   }
 
   function validateForm() {
@@ -838,13 +1114,7 @@
     return true;
   }
 
-  // Auto-dismiss flash messages
-  document.querySelectorAll('.flash-bar').forEach(el => {
-    setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity .4s'; }, 3500);
-    setTimeout(() => el.remove(), 3900);
-  });
-
-  // ── DELETE MODAL ──
+  /* ── Delete modal ── */
   function openDeleteModal() {
     document.getElementById('deleteModal').classList.add('active');
     document.getElementById('deleteConfirmInput').value = '';
@@ -857,12 +1127,11 @@
     const val = document.getElementById('deleteConfirmInput').value;
     document.getElementById('deleteFinalBtn').disabled = (val !== 'DELETE');
   }
-  // Close modal on overlay click
   document.getElementById('deleteModal').addEventListener('click', function(e) {
     if (e.target === this) closeDeleteModal();
   });
 
-  // ── REVIEW MODAL ──
+  /* ── Review modal ── */
   let currentRating = 0;
   function openReviewModal() {
     document.getElementById('reviewModal').classList.add('active');
@@ -871,7 +1140,6 @@
     currentRating = 0;
     updateStars();
     document.getElementById('reviewText').value = '';
-    document.getElementById('mediaPreview').innerHTML = '';
     document.getElementById('ratingInput').value = '0';
   }
   function closeReviewModal() {
@@ -890,28 +1158,9 @@
       s.classList.toggle('active', i < currentRating);
     });
   }
-  function previewMedia(input) {
-    const preview = document.getElementById('mediaPreview');
-    preview.innerHTML = '';
-    const files = Array.from(input.files).slice(0, 10);
-    files.forEach(f => {
-      if (f.type.startsWith('image/')) {
-        const img = document.createElement('img');
-        img.className = 'media-thumb';
-        img.src = URL.createObjectURL(f);
-        preview.appendChild(img);
-      } else {
-        const div = document.createElement('div');
-        div.className = 'video-thumb';
-        div.innerHTML = '<i class="fas fa-film"></i><br>Video';
-        preview.appendChild(div);
-      }
-    });
-  }
   function validateReview() {
     if (currentRating === 0) { alert('Please select a star rating.'); return false; }
     if (!document.getElementById('reviewText').value.trim()) { alert('Please write your review.'); return false; }
-    // Show success state instead of page redirect (form still submits)
     setTimeout(() => {
       document.getElementById('reviewFormContent').style.display = 'none';
       document.getElementById('reviewSuccess').style.display = 'block';

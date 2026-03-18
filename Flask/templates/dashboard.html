@@ -51,6 +51,10 @@
       letter-spacing: 0.3px;
     }
 
+    
+    .navbar { overflow: visible !important; }
+    nav     { overflow: visible !important; position: relative; }
+
     /* ── FIXED DROPDOWN ── */
     .user-dropdown { position: relative; }
     .user-avatar-btn {
@@ -88,13 +92,17 @@
       transition: transform 0.3s; margin-left: 2px;
     }
     .user-dropdown-menu {
-      display: none; position: absolute;
-      top: calc(100% + 10px); right: 0;
-      background: #fff; border-radius: 18px;
+      display: none;
+      position: fixed;        /* changed from absolute → won't get clipped by any parent */
+      top: 70px;              /* distance from top of screen */
+      right: 20px;            /* distance from right of screen */
+      background: #fff;
+      border-radius: 18px;
       min-width: 240px;
       box-shadow: 0 20px 60px rgba(0,0,0,0.22), 0 4px 16px rgba(0,0,0,0.1);
       border: 1px solid rgba(0,0,0,0.07);
-      overflow: hidden; z-index: 9999;
+      overflow: hidden;
+      z-index: 99999;         /* increased to always be on top */
       animation: dropdownFade 0.2s ease;
     }
     .user-dropdown-menu.open { display: block; }
@@ -102,6 +110,10 @@
       from { opacity:0; transform:translateY(-6px) scale(0.98); }
       to   { opacity:1; transform:translateY(0) scale(1); }
     }
+
+
+
+
     .dropdown-header {
       display: flex; align-items: center; gap: 13px;
       padding: 18px 18px 14px;
@@ -256,169 +268,156 @@
 
 
 <!-- Destinations Section -->
+<!--
+    HOW THIS WORKS (beginner explanation):
+    ─────────────────────────────────────
+    Before: prices were hardcoded in HTML (₹2,499 written by hand).
+            When you changed the DB price, the card still showed old price.
+
+    Now:    The dashboard route in __init__.py fetches all destinations
+            from the database and passes them here as destinations variable.
+            We loop through them with a for loop so
+            the price on the card ALWAYS matches the database.
+            No more mismatch!
+-->
 <section class="destinations" id="destinations">
     <h2>Popular Himalayan Destinations</h2>
+
     <div class="destination-container">
 
+        {% for d in destinations %}
+
+            <!-- Set image and badge based on destination name -->
+        {% if d.destination_name == 'Shimla' %}
+            {% set img = 'shimla.jpg' %}{% set badge = 'Family' %}{% set rating = '4.7' %}
+        {% elif d.destination_name == 'Manali' %}
+            {% set img = 'manali.jpg' %}{% set badge = 'Popular' %}{% set rating = '4.8' %}
+        {% elif d.destination_name == 'Dharamshala' %}
+            {% set img = 'dharamshala.jpg' %}{% set badge = 'Spiritual' %}{% set rating = '4.7' %}
+        {% elif d.destination_name == 'Dehradun' %}
+            {% set img = 'dehradun.jpg' %}{% set badge = 'Gateway' %}{% set rating = '4.5' %}
+        {% elif d.destination_name == 'Mussoorie' %}
+            {% set img = 'mussoorie.jpg' %}{% set badge = 'Hill Station' %}{% set rating = '4.6' %}
+        {% elif d.destination_name == 'Nainital' %}
+            {% set img = 'nainital.jpg' %}{% set badge = 'Lake City' %}{% set rating = '4.6' %}
+        {% elif d.destination_name == 'Srinagar' %}
+            {% set img = 'srinagar.jpg' %}{% set badge = 'Paradise' %}{% set rating = '4.8' %}
+        {% elif d.destination_name == 'Gulmarg' %}
+            {% set img = 'gulmarg.jpg' %}{% set badge = 'Skiing' %}{% set rating = '4.9' %}
+        {% elif d.destination_name == 'Gangtok' %}
+            {% set img = 'gangtok.jpg' %}{% set badge = 'Scenic' %}{% set rating = '4.7' %}
+        {% elif d.destination_name == 'Tawang' %}
+            {% set img = 'tawang.jpg' %}{% set badge = 'Offbeat' %}{% set rating = '4.8' %}
+        {% elif d.destination_name == 'Dalhousie' %}
+            {% set img = 'dalhousie.jpg' %}{% set badge = 'Mini Switzerland' %}{% set rating = '4.6' %}
+        {% elif d.destination_name == 'Rishikesh' %}
+            {% set img = 'rishikesh.jpg' %}{% set badge = 'Yoga Capital' %}{% set rating = '4.8' %}
+        {% elif d.destination_name == 'Spiti Valley' %}
+            {% set img = 'spiti.jpg' %}{% set badge = 'Offbeat' %}{% set rating = '4.9' %}
+        {% elif d.destination_name == 'Auli' %}
+            {% set img = 'auli.jpg' %}{% set badge = 'Skiing' %}{% set rating = '4.8' %}
+        {% elif d.destination_name == 'Leh Ladakh' %}
+            {% set img = 'leh.jpg' %}{% set badge = 'Adventure' %}{% set rating = '4.9' %}
+        {% else %}
+            {% set img = 'manali.jpg' %}{% set badge = 'Destination' %}{% set rating = '4.5' %}
+        {% endif %}
+
         <div class="destination-card">
-            <div class="rating"><i class="fas fa-star"></i> 4.8</div>
-            <div class="destination-badge">Popular</div>
-            <img src="{{ url_for('static', filename='images/manali.jpg') }}" alt="Manali Himalayas">
+            <div class="rating"><i class="fas fa-star"></i> {{ rating }}</div>
+            <div class="destination-badge">{{ badge }}</div>
+
+            <img src="{{ url_for('static', filename='images/' ~ img) }}"
+                 alt="{{ d.destination_name }}">
+
             <div class="card-content">
-                <h3>Manali</h3>
-                <p class="location"><i class="fas fa-map-pin"></i> Himachal Pradesh</p>
-                <div class="price"><i class="fas fa-tag"></i><span>₹2,499 <small>/day</small></span></div>
-                <div class="features">
-                    <span><i class="fas fa-mountain"></i> Rohtang Pass</span>
-                    <span><i class="fas fa-campground"></i> Solang Valley</span>
-                    <span><i class="fas fa-utensils"></i> Local Food</span>
+                <h3>{{ d.destination_name }}</h3>
+                <p class="location">
+                    <i class="fas fa-map-pin"></i> {{ d.state or 'India' }}
+                </p>
+
+                <!-- PRICE FROM DATABASE — always matches the booking form ✅ -->
+                <div class="price">
+                    <i class="fas fa-tag"></i>
+                    <span>₹{{ "{:,.0f}".format(d.price_per_day) }} <small>/day</small></span>
                 </div>
+
+                <!-- Features per destination -->
+                <div class="features">
+                    {% if d.destination_name == 'Shimla' %}
+                        <span><i class="fas fa-car"></i> Mall Road</span>
+                        <span><i class="fas fa-hotel"></i> The Ridge</span>
+                        <span><i class="fas fa-utensils"></i> Kufri</span>
+                    {% elif d.destination_name == 'Manali' %}
+                        <span><i class="fas fa-mountain"></i> Rohtang Pass</span>
+                        <span><i class="fas fa-campground"></i> Solang Valley</span>
+                        <span><i class="fas fa-utensils"></i> Local Food</span>
+                    {% elif d.destination_name == 'Dharamshala' %}
+                        <span><i class="fas fa-pray"></i> Dalai Lama</span>
+                        <span><i class="fas fa-mountain"></i> Triund</span>
+                        <span><i class="fas fa-utensils"></i> Tibetan Food</span>
+                    {% elif d.destination_name == 'Rishikesh' %}
+                        <span><i class="fas fa-water"></i> River Rafting</span>
+                        <span><i class="fas fa-campground"></i> Riverside Camp</span>
+                        <span><i class="fas fa-om"></i> Yoga Retreat</span>
+                    {% elif d.destination_name == 'Spiti Valley' %}
+                        <span><i class="fas fa-mountain"></i> Key Monastery</span>
+                        <span><i class="fas fa-campground"></i> Chandratal</span>
+                        <span><i class="fas fa-map"></i> Pin Valley</span>
+                    {% elif d.destination_name == 'Auli' %}
+                        <span><i class="fas fa-skiing"></i> Skiing</span>
+                        <span><i class="fas fa-campground"></i> Camping</span>
+                        <span><i class="fas fa-cable-car"></i> Cable Car</span>
+                    {% elif d.destination_name == 'Leh Ladakh' %}
+                        <span><i class="fas fa-mountain"></i> Khardung La</span>
+                        <span><i class="fas fa-campground"></i> Nubra Valley</span>
+                        <span><i class="fas fa-map"></i> Pangong Lake</span>
+                    {% elif d.destination_name == 'Dalhousie' %}
+                        <span><i class="fas fa-church"></i> St. John's</span>
+                        <span><i class="fas fa-mountain"></i> Khajjiar</span>
+                        <span><i class="fas fa-utensils"></i> Local Food</span>
+                    {% elif d.destination_name == 'Srinagar' %}
+                        <span><i class="fas fa-water"></i> Dal Lake</span>
+                        <span><i class="fas fa-mountain"></i> Gulmarg</span>
+                        <span><i class="fas fa-campground"></i> Pahalgam</span>
+                    {% elif d.destination_name == 'Gulmarg' %}
+                        <span><i class="fas fa-skiing"></i> Ski Resort</span>
+                        <span><i class="fas fa-cable-car"></i> Gondola</span>
+                        <span><i class="fas fa-snowflake"></i> Snow Fun</span>
+                    {% elif d.destination_name == 'Nainital' %}
+                        <span><i class="fas fa-water"></i> Naini Lake</span>
+                        <span><i class="fas fa-mountain"></i> Snow View</span>
+                        <span><i class="fas fa-campground"></i> Nainital Zoo</span>
+                    {% elif d.destination_name == 'Mussoorie' %}
+                        <span><i class="fas fa-mountain"></i> Gun Hill</span>
+                        <span><i class="fas fa-water"></i> Kempty Falls</span>
+                        <span><i class="fas fa-car"></i> Mall Road</span>
+                    {% elif d.destination_name == 'Gangtok' %}
+                        <span><i class="fas fa-mountain"></i> Nathu La</span>
+                        <span><i class="fas fa-campground"></i> Tsomgo Lake</span>
+                        <span><i class="fas fa-utensils"></i> Momos</span>
+                    {% elif d.destination_name == 'Tawang' %}
+                        <span><i class="fas fa-pray"></i> Tawang Monastery</span>
+                        <span><i class="fas fa-mountain"></i> Sela Pass</span>
+                        <span><i class="fas fa-map"></i> Madhuri Lake</span>
+                    {% elif d.destination_name == 'Dehradun' %}
+                        <span><i class="fas fa-mountain"></i> Mussoorie Road</span>
+                        <span><i class="fas fa-tree"></i> Rajaji Park</span>
+                        <span><i class="fas fa-utensils"></i> Local Food</span>
+                    {% else %}
+                        <span><i class="fas fa-mountain"></i> Scenic Views</span>
+                        <span><i class="fas fa-campground"></i> Camping</span>
+                        <span><i class="fas fa-utensils"></i> Local Food</span>
+                    {% endif %}
+                </div>
+
                 <form action="{{ url_for('booking.create_booking_page') }}" method="GET">
-                    <input type="hidden" name="destination_id" value="2">
+                    <input type="hidden" name="destination_id" value="{{ d.destination_id }}">
                     <button class="book-btn">Book Now</button>
                 </form>
             </div>
         </div>
 
-        <div class="destination-card">
-            <div class="rating"><i class="fas fa-star"></i> 4.9</div>
-            <div class="destination-badge">Adventure</div>
-            <img src="{{ url_for('static', filename='images/leh.jpg') }}" alt="Leh Ladakh Mountains">
-            <div class="card-content">
-                <h3>Leh Ladakh</h3>
-                <p class="location"><i class="fas fa-map-pin"></i> Ladakh</p>
-                <div class="price"><i class="fas fa-tag"></i><span>₹3,499 <small>/day</small></span></div>
-                <div class="features">
-                    <span><i class="fas fa-mountain"></i> Khardung La</span>
-                    <span><i class="fas fa-campground"></i> Nubra Valley</span>
-                    <span><i class="fas fa-map"></i> Pangong Lake</span>
-                </div>
-                <form action="{{ url_for('booking.create_booking_page') }}" method="GET">
-                    <input type="hidden" name="destination_id" value="15">
-                    <button class="book-btn">Book Now</button>
-                </form>
-            </div>
-        </div>
-
-        <div class="destination-card">
-            <div class="rating"><i class="fas fa-star"></i> 4.7</div>
-            <div class="destination-badge">Family</div>
-            <img src="{{ url_for('static', filename='images/shimla.jpg') }}" alt="Shimla Hills">
-            <div class="card-content">
-                <h3>Shimla</h3>
-                <p class="location"><i class="fas fa-map-pin"></i> Himachal Pradesh</p>
-                <div class="price"><i class="fas fa-tag"></i><span>₹1,999 <small>/day</small></span></div>
-                <div class="features">
-                    <span><i class="fas fa-car"></i> Mall Road</span>
-                    <span><i class="fas fa-hotel"></i> The Ridge</span>
-                    <span><i class="fas fa-utensils"></i> Kufri</span>
-                </div>
-                <form action="{{ url_for('booking.create_booking_page') }}" method="GET">
-                    <input type="hidden" name="destination_id" value="1">
-                    <button class="book-btn">Book Now</button>
-                </form>
-            </div>
-        </div>
-
-        <div class="destination-card">
-            <div class="rating"><i class="fas fa-star"></i> 4.8</div>
-            <div class="destination-badge">Skiing</div>
-            <img src="{{ url_for('static', filename='images/auli.jpg') }}" alt="Auli Ski Slopes">
-            <div class="card-content">
-                <h3>Auli</h3>
-                <p class="location"><i class="fas fa-map-pin"></i> Uttarakhand</p>
-                <div class="price"><i class="fas fa-tag"></i><span>₹2,799 <small>/day</small></span></div>
-                <div class="features">
-                    <span><i class="fas fa-skiing"></i> Skiing</span>
-                    <span><i class="fas fa-campground"></i> Camping</span>
-                    <span><i class="fa-solid fa-cable-car"></i> Cable Car</span>
-                </div>
-                <form action="{{ url_for('booking.create_booking_page') }}" method="GET">
-                    <input type="hidden" name="destination_id" value="14">
-                    <button class="book-btn">Book Now</button>
-                </form>
-            </div>
-        </div>
-
-        <div class="destination-card">
-            <div class="rating"><i class="fas fa-star"></i> 4.9</div>
-            <div class="destination-badge">Offbeat</div>
-            <img src="{{ url_for('static', filename='images/spiti.jpg') }}" alt="Spiti Valley">
-            <div class="card-content">
-                <h3>Spiti Valley</h3>
-                <p class="location"><i class="fas fa-map-pin"></i> Himachal Pradesh</p>
-                <div class="price"><i class="fas fa-tag"></i><span>₹3,999 <small>/day</small></span></div>
-                <div class="features">
-                    <span><i class="fas fa-mountain"></i> Key Monastery</span>
-                    <span><i class="fas fa-campground"></i> Chandratal</span>
-                    <span><i class="fas fa-map"></i> Pin Valley</span>
-                </div>
-                <form action="{{ url_for('booking.create_booking_page') }}" method="GET">
-                    <input type="hidden" name="destination_id" value="13">
-                    <button class="book-btn">Book Now</button>
-                </form>
-            </div>
-        </div>
-
-        <div class="destination-card">
-            <div class="rating"><i class="fas fa-star"></i> 4.8</div>
-            <div class="destination-badge">Yoga Capital of the World</div>
-            <img src="{{ url_for('static', filename='images/rishikesh.jpg') }}" alt="Rishikesh">
-            <div class="card-content">
-                <h3>Rishikesh</h3>
-                <p class="location"><i class="fas fa-map-pin"></i> Uttarakhand</p>
-                <div class="price"><i class="fas fa-tag"></i><span>₹3,299 <small>/day</small></span></div>
-                <div class="features">
-                    <span><i class="fas fa-water"></i> River Rafting</span>
-                    <span><i class="fas fa-campground"></i> Riverside Camp</span>
-                    <span><i class="fas fa-om"></i> Yoga Retreat</span>
-                </div>
-                <form action="{{ url_for('booking.create_booking_page') }}" method="GET">
-                    <input type="hidden" name="destination_id" value="12">
-                    <button class="book-btn">Book Now</button>
-                </form>
-            </div>
-        </div>
-
-        <div class="destination-card">
-            <div class="rating"><i class="fas fa-star"></i> 4.7</div>
-            <div class="destination-badge">Spiritual</div>
-            <img src="{{ url_for('static', filename='images/dharamshala.jpg') }}" alt="Dharamshala">
-            <div class="card-content">
-                <h3>Dharamshala</h3>
-                <p class="location"><i class="fas fa-map-pin"></i> Himachal Pradesh</p>
-                <div class="price"><i class="fas fa-tag"></i><span>₹2,199 <small>/day</small></span></div>
-                <div class="features">
-                    <span><i class="fas fa-pray"></i> Dalai Lama</span>
-                    <span><i class="fas fa-mountain"></i> Triund</span>
-                    <span><i class="fas fa-utensils"></i> Tibetan Food</span>
-                </div>
-                <form action="{{ url_for('booking.create_booking_page') }}" method="GET">
-                    <input type="hidden" name="destination_id" value="3">
-                    <button class="book-btn">Book Now</button>
-                </form>
-            </div>
-        </div>
-
-        <div class="destination-card">
-            <div class="rating"><i class="fas fa-star"></i> 4.6</div>
-            <div class="destination-badge">Mini Switzerland</div>
-            <img src="{{ url_for('static', filename='images/dalhousie.jpg') }}" alt="Dalhousie">
-            <div class="card-content">
-                <h3>Dalhousie</h3>
-                <p class="location"><i class="fas fa-map-pin"></i> Himachal Pradesh</p>
-                <div class="price"><i class="fas fa-tag"></i><span>₹2,099 <small>/day</small></span></div>
-                <div class="features">
-                    <span><i class="fas fa-church"></i> St. John's</span>
-                    <span><i class="fas fa-mountain"></i> Khajjiar</span>
-                    <span><i class="fas fa-utensils"></i> Local Food</span>
-                </div>
-                <form action="{{ url_for('booking.create_booking_page') }}" method="GET">
-                    <input type="hidden" name="destination_id" value="11">
-                    <button class="book-btn">Book Now</button>
-                </form>
-            </div>
-        </div>
+        {% endfor %}
 
     </div>
 </section>

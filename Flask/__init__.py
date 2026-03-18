@@ -66,16 +66,20 @@ def create_app():
     def register():
         if request.method == 'POST':
 
-            name     = request.form['name']
-            email    = request.form['email']
+            name = request.form['name']
+            print("Name: ", name)
+            email = request.form['email']
+            print("Email: ", email)
             phone_no = request.form['phone_no']
+            print("Phone number: ", phone_no)
             password = request.form['password']
+            print("Password: ", password)
 
             if not name or not email or not phone_no or not password:
                 return "All fields are required!"
 
             name_pattern     = r'^[A-Za-z]{2,}(?:\s[A-Za-z]{2,})+$'
-            email_pattern    = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,}$'
+            email_pattern    = r'^^[a-zA-Z][a-zA-Z0-9._%+-]*@gmail\.com$'
             phone_pattern    = r'^[6-9][0-9]{9}$'
             password_pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&-]).{8,}$'
 
@@ -130,7 +134,9 @@ def create_app():
     def login():
         if request.method == 'POST':
             email    = request.form['email']
+            print("Email: ", email)
             password = request.form['password']
+            print("Password: ", password)
 
             conn   = get_db_connection()
             cursor = conn.cursor(dictionary=True)
@@ -302,7 +308,18 @@ def create_app():
             user_reviews = cursor.fetchall()
         except Exception:
             user_reviews = []
-        
+
+        # Fetch destinations with REAL prices from database
+        # This fixes the price mismatch between cards and booking form
+        cursor.execute("""
+            SELECT destination_id, destination_name, state,
+                   price_per_day, price_per_hour
+            FROM destination
+            WHERE is_active = 1
+            ORDER BY destination_id
+        """)
+        destinations = cursor.fetchall()
+
         cursor.close()
         connection.close()
         
@@ -316,7 +333,8 @@ def create_app():
             completed     = completed,
             total_spent   = total_spent,
             user_reviews  = user_reviews,
-            notifications = notifications   # ← ADD THIS
+            notifications = notifications,
+            destinations  = destinations   # ← Real prices from DB
         )
 
     @app.route('/my_bookings')

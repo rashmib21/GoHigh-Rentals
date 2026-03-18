@@ -1624,7 +1624,7 @@ transform:scale(1.05);
 .review-btn {
   flex-shrink: 0;
   background: #2f4858;
-  color: white;
+  color: black;
   border: none;
   width: 46px;
   height: 46px;
