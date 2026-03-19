@@ -127,11 +127,8 @@
     .user-dropdown-menu {
       display: none;
       position: fixed;
-      /* changed from absolute → won't get clipped by any parent */
       top: 70px;
-      /* distance from top of screen */
       right: 20px;
-      /* distance from right of screen */
       background: #fff;
       border-radius: 18px;
       min-width: 240px;
@@ -139,7 +136,6 @@
       border: 1px solid rgba(0, 0, 0, 0.07);
       overflow: hidden;
       z-index: 99999;
-      /* increased to always be on top */
       animation: dropdownFade 0.2s ease;
     }
 
@@ -158,8 +154,6 @@
         transform: translateY(0) scale(1);
       }
     }
-
-
 
 
     .dropdown-header {
@@ -390,18 +384,7 @@
 
 
   <!-- Destinations Section -->
-  <!--
-    HOW THIS WORKS (beginner explanation):
-    ─────────────────────────────────────
-    Before: prices were hardcoded in HTML (₹2,499 written by hand).
-            When you changed the DB price, the card still showed old price.
 
-    Now:    The dashboard route in __init__.py fetches all destinations
-            from the database and passes them here as destinations variable.
-            We loop through them with a for loop so
-            the price on the card ALWAYS matches the database.
-            No more mismatch!
--->
   <section class="destinations" id="destinations">
     <h2>Popular Himalayan Destinations</h2>
 
@@ -456,7 +439,7 @@
             <i class="fas fa-map-pin"></i> {{ d.state or 'India' }}
           </p>
 
-          <!-- PRICE FROM DATABASE — always matches the booking form ✅ -->
+          <!-- PRICE FROM DATABASE — always matches the booking form  -->
           <div class="price">
             <i class="fas fa-tag"></i>
             <span>₹{{ "{:,.0f}".format(d.price_per_day) }} <small>/day</small></span>
@@ -1070,71 +1053,6 @@
     });
   </script>
 
-  <script>
-    /* ── User Notification Polling (every 5 s) ── */
-    (function () {
-      // Toast container — reuse existing fixed panel or create one
-      function getContainer() {
-        let c = document.getElementById('notif-poll-container');
-        if (!c) {
-          c = document.createElement('div');
-          c.id = 'notif-poll-container';
-          c.style.cssText = [
-            'position:fixed', 'top:80px', 'right:20px', 'z-index:9999',
-            'display:flex', 'flex-direction:column', 'gap:10px', 'max-width:320px'
-          ].join(';');
-          document.body.appendChild(c);
-        }
-        return c;
-      }
-
-      function showToast(n) {
-        const container = getContainer();
-        const isConfirmed = n.booking_status === 'Confirmed';
-        const toast = document.createElement('div');
-        toast.style.cssText = [
-          'padding:14px 18px', 'border-radius:10px', 'font-size:0.9rem',
-          'box-shadow:0 4px 16px rgba(0,0,0,0.12)', 'font-weight:600',
-          'animation:slideInRight 0.35s ease',
-          isConfirmed
-            ? 'background:#e6f9f0;border-left:4px solid #1a7a4a;color:#1a7a4a'
-            : 'background:#fff0f0;border-left:4px solid #c0392b;color:#c0392b'
-        ].join(';');
-        toast.innerHTML = isConfirmed
-          ? `&#127881; Booking to <strong>${n.destination_name}</strong> is <strong>Confirmed!</strong>`
-          : `&#10060; Booking to <strong>${n.destination_name}</strong> was <strong>Cancelled.</strong>`;
-        container.appendChild(toast);
-        setTimeout(() => {
-          toast.style.transition = 'opacity 0.5s';
-          toast.style.opacity = '0';
-          setTimeout(() => toast.remove(), 500);
-        }, 4000);
-      }
-
-      let polling = true;
-
-      function poll() {
-        if (!polling) return;
-        fetch('/api/user/notifications')
-          .then(r => { if (r.status === 403) { polling = false; return []; } return r.ok ? r.json() : []; })
-          .then(notices => {
-            if (!notices.length) return;
-            const ids = notices.map(n => n.booking_id);
-            notices.forEach(showToast);
-            // Mark as read so they don't reappear
-            fetch('/api/user/mark_notified', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ ids })
-            });
-          })
-          .catch(() => { });
-      }
-
-      setInterval(poll, 5000);
-    })();
-  </script>
-
 </body>
 
-</html>
+</html>
