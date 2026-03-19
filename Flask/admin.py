@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, session, flash, url_for
+from flask import Blueprint, render_template, request, redirect, session, flash, url_for, jsonify
 from .db import get_db_connection
 
 admin_bp = Blueprint('admin', __name__)
@@ -9,6 +9,36 @@ admin_password = "admin123"
 
 def admin_required():
     return session.get('admin_logged_in') == True
+
+
+@admin_bp.route("/admin/api/new_bookings")
+def admin_api_new_bookings():
+    """Polling endpoint: returns bookings with booking_id > since param (JSON)."""
+    if not admin_required():
+        return jsonify([]), 403
+    since = request.args.get("since", 0, type=int)
+    conn   = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("""
+        SELECT b.booking_id, b.travel_date, b.booking_status, b.booking_date,
+               u.name AS user_name, u.email AS user_email,
+               d.destination_name, v.vehicle_name,
+               p.total_amount, p.pricing_type,
+               p.duration_value, p.duration_unit
+        FROM booking b
+        JOIN users u       ON b.user_id       = u.user_id
+        JOIN destination d ON b.destination_id = d.destination_id
+        JOIN vehicle v     ON b.vehicle_id     = v.vehicle_id
+        JOIN pricing p     ON b.booking_id     = p.booking_id
+        WHERE b.booking_id > %s
+        ORDER BY b.booking_id DESC
+    """, (since,))
+    rows = cursor.fetchall()
+    cursor.close(); conn.close()
+    for r in rows:
+        r['travel_date']  = str(r['travel_date'])
+        r['booking_date'] = str(r['booking_date'])
+    return jsonify(rows)
 
 
 @admin_bp.route("/admin/login", methods=['GET', 'POST'])

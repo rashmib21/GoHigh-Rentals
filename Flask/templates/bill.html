@@ -274,18 +274,37 @@
       <div class="gst-note">* GST included as per Government regulations</div>
     </div>
 
-    <!-- Cancellation refund box (shown only if cancelled by user) -->
-    {% if bill.booking_status == 'Cancelled' and bill.cancellation_pct %}
+    <!-- Cancellation invoice section -->
+    {% if bill.booking_status == 'Cancelled' %}
     <div class="refund-box">
-      <h4>🔴 Cancellation Summary</h4>
-      <div class="refund-line deduction">
+      <h4>🔴 Cancellation Invoice</h4>
+      {% if bill.cancellation_pct %}
+      <div class="refund-line">
+        <span>Original Booking Amount</span>
+        <span>₹{{ "%.2f"|format(bill.total_amount) }}</span>
+      </div>
+      <div class="refund-line deduction" style="font-weight:700;">
         <span>Cancellation Fee ({{ bill.cancellation_pct }}%)</span>
         <span>— ₹{{ "%.2f"|format(bill.cancellation_deduction) }}</span>
       </div>
-      <div class="refund-line refund-total">
-        <span>Refund Amount</span>
+      <div class="refund-line" style="border-top:1.5px dashed #f5a623;margin-top:6px;
+                  padding-top:8px;font-weight:800;font-size:0.95rem;color:#b34a28;">
+        <span>💸 Amount Charged to You</span>
+        <span>₹{{ "%.2f"|format(bill.cancellation_deduction) }}</span>
+      </div>
+      <div class="refund-line refund-total" style="margin-top:4px;">
+        <span>✅ Refund to Your Account</span>
         <span>₹{{ "%.2f"|format(bill.refund_amount) }}</span>
       </div>
+      <p style="font-size:0.72rem;color:#999;margin-top:10px;line-height:1.6;">
+        Policy: 10% fee (3+ days before travel) · 25% fee (1–2 days) · 50% fee (same day).<br>
+        Your refund of <strong>₹{{ "%.2f"|format(bill.refund_amount) }}</strong> will be processed in 5–7 business days.
+      </p>
+      {% else %}
+      <div class="refund-line" style="color:#888;font-size:0.85rem;">
+        <span>This booking was cancelled. No deduction details on record.</span>
+      </div>
+      {% endif %}
     </div>
     {% endif %}
 

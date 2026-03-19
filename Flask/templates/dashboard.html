@@ -911,5 +911,70 @@ window.addEventListener('load',function(){
 });
 </script>
 
+<script>
+/* ── User Notification Polling (every 5 s) ── */
+(function() {
+  // Toast container — reuse existing fixed panel or create one
+  function getContainer() {
+    let c = document.getElementById('notif-poll-container');
+    if (!c) {
+      c = document.createElement('div');
+      c.id = 'notif-poll-container';
+      c.style.cssText = [
+        'position:fixed','top:80px','right:20px','z-index:9999',
+        'display:flex','flex-direction:column','gap:10px','max-width:320px'
+      ].join(';');
+      document.body.appendChild(c);
+    }
+    return c;
+  }
+
+  function showToast(n) {
+    const container = getContainer();
+    const isConfirmed = n.booking_status === 'Confirmed';
+    const toast = document.createElement('div');
+    toast.style.cssText = [
+      'padding:14px 18px','border-radius:10px','font-size:0.9rem',
+      'box-shadow:0 4px 16px rgba(0,0,0,0.12)','font-weight:600',
+      'animation:slideInRight 0.35s ease',
+      isConfirmed
+        ? 'background:#e6f9f0;border-left:4px solid #1a7a4a;color:#1a7a4a'
+        : 'background:#fff0f0;border-left:4px solid #c0392b;color:#c0392b'
+    ].join(';');
+    toast.innerHTML = isConfirmed
+      ? `&#127881; Booking to <strong>${n.destination_name}</strong> is <strong>Confirmed!</strong>`
+      : `&#10060; Booking to <strong>${n.destination_name}</strong> was <strong>Cancelled.</strong>`;
+    container.appendChild(toast);
+    setTimeout(() => {
+      toast.style.transition = 'opacity 0.5s';
+      toast.style.opacity = '0';
+      setTimeout(() => toast.remove(), 500);
+    }, 4000);
+  }
+
+  let polling = true;
+
+  function poll() {
+    if (!polling) return;
+    fetch('/api/user/notifications')
+      .then(r => { if (r.status === 403) { polling = false; return []; } return r.ok ? r.json() : []; })
+      .then(notices => {
+        if (!notices.length) return;
+        const ids = notices.map(n => n.booking_id);
+        notices.forEach(showToast);
+        // Mark as read so they don't reappear
+        fetch('/api/user/mark_notified', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ids })
+        });
+      })
+      .catch(() => {});
+  }
+
+  setInterval(poll, 5000);
+})();
+</script>
+
 </body>
-</html>
+</html>

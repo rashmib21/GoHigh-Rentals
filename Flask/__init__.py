@@ -1,6 +1,6 @@
 import os
 from datetime import date
-from flask import Flask, render_template, request, redirect, session, url_for, flash
+from flask import Flask, render_template, request, redirect, session, url_for, flash, jsonify
 from dotenv import load_dotenv
 import mysql.connector
 import re
@@ -76,7 +76,8 @@ def create_app():
             print("Password: ", password)
 
             if not name or not email or not phone_no or not password:
-                return "All fields are required!"
+                flash("All fields are required!", "error")
+                return render_template('register.html')
 
             name_pattern     = r'^[A-Za-z]{2,}(?:\s[A-Za-z]{2,})+$'
             email_pattern    = r'^^[a-zA-Z][a-zA-Z0-9._%+-]*@gmail\.com$'
@@ -84,13 +85,17 @@ def create_app():
             password_pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&-]).{8,}$'
 
             if not re.match(name_pattern, name):
-                return "Invalid name format"
+                flash("Invalid name format. Please enter your full name (first and last name).", "error")
+                return render_template('register.html')
             if not re.match(email_pattern, email):
-                return "Invalid email format"
+                flash("Invalid email format. Only @gmail.com addresses are accepted.", "error")
+                return render_template('register.html')
             if not re.match(phone_pattern, phone_no):
-                return "Invalid phone number"
+                flash("Invalid phone number. Must be a 10-digit number starting with 6-9.", "error")
+                return render_template('register.html')
             if not re.match(password_pattern, password):
-                return "Password must contain uppercase, lowercase, number and special character"
+                flash("Password must be at least 8 characters with uppercase, lowercase, number and special character.", "error")
+                return render_template('register.html')
 
             conn   = get_db_connection()
             cursor = conn.cursor(dictionary=True)
@@ -110,7 +115,8 @@ def create_app():
                 if existing_user['phone_no'] == phone_no:
                     cursor.close()
                     conn.close()
-                    return "Phone number already registered!"
+                    flash("Phone number already registered!", "error")
+                    return render_template('register.html')
 
             hashed_password = generate_password_hash(password)
             session.clear()
@@ -511,6 +517,46 @@ def create_app():
 
         return redirect(url_for('index'))
 
+
+    # ── USER NOTIFICATION POLLING API ──────────────────────────────────────
+    @app.route('/api/user/notifications')
+    def api_user_notifications():
+        """Returns unread booking status notifications for the logged-in user."""
+        if 'user_id' not in session:
+            return jsonify([]), 403
+        conn   = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("""
+            SELECT b.booking_id, b.booking_status, d.destination_name
+            FROM booking b
+            JOIN destination d ON b.destination_id = d.destination_id
+            WHERE b.user_id = %s
+              AND b.booking_status IN ('Confirmed', 'Cancelled')
+              AND b.notified = 0
+        """, (session['user_id'],))
+        rows = cursor.fetchall()
+        cursor.close(); conn.close()
+        return jsonify(rows)
+
+    @app.route('/api/user/mark_notified', methods=['POST'])
+    def api_mark_notified():
+        """Marks given booking_ids as notified=1 so they won't appear again."""
+        if 'user_id' not in session:
+            return jsonify({'ok': False}), 403
+        data = request.get_json(silent=True) or {}
+        ids  = data.get('ids', [])
+        if ids:
+            conn   = get_db_connection()
+            cursor = conn.cursor()
+            fmt    = ','.join(['%s'] * len(ids))
+            cursor.execute(
+                f"UPDATE booking SET notified=1 WHERE user_id=%s AND booking_id IN ({fmt})",
+                [session['user_id']] + ids
+            )
+            conn.commit()
+            cursor.close(); conn.close()
+        return jsonify({'ok': True})
+    # ────────────────────────────────────────────────────────────────────────
 
     return app
 
