@@ -1,32 +1,36 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>GoHigh Rentals - Himalayan Dashboard</title>
-    <link rel="icon" type="image/png" 
-          href="{{ url_for('static', filename='images/logo.png') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<head>
+  <title>GoHigh Rentals - Himalayan Dashboard</title>
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo.png') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
   <style>
     /* ── USER REVIEW CARDS in slider ── */
     .review-card.user-submitted {
-      border: 2px solid rgba(74,155,142,0.35);
+      border: 2px solid rgba(74, 155, 142, 0.35);
       position: relative;
     }
+
     .review-card.user-submitted::before {
       content: "✦ Verified Traveler";
       position: absolute;
-      top: 10px; right: 12px;
+      top: 10px;
+      right: 12px;
       font-size: 0.68rem;
       font-weight: 700;
       color: #4A9B8E;
-      background: rgba(74,155,142,0.1);
+      background: rgba(74, 155, 142, 0.1);
       padding: 3px 8px;
       border-radius: 20px;
       letter-spacing: 0.3px;
     }
+
     .review-card .review-date {
       font-size: 0.72rem;
       color: #bbb;
@@ -37,6 +41,7 @@
     .text-review.user-submitted {
       border-left: 3px solid #4A9B8E;
     }
+
     .user-badge {
       display: inline-flex;
       align-items: center;
@@ -44,23 +49,34 @@
       font-size: 0.7rem;
       font-weight: 700;
       color: #4A9B8E;
-      background: rgba(74,155,142,0.1);
+      background: rgba(74, 155, 142, 0.1);
       padding: 3px 10px;
       border-radius: 20px;
       margin-bottom: 10px;
       letter-spacing: 0.3px;
     }
 
-    
-    .navbar { overflow: visible !important; }
-    nav     { overflow: visible !important; position: relative; }
+
+    .navbar {
+      overflow: visible !important;
+    }
+
+    nav {
+      overflow: visible !important;
+      position: relative;
+    }
 
     /* ── FIXED DROPDOWN ── */
-    .user-dropdown { position: relative; }
+    .user-dropdown {
+      position: relative;
+    }
+
     .user-avatar-btn {
-      display: flex; align-items: center; gap: 8px;
-      background: rgba(255,255,255,0.12);
-      border: 1.5px solid rgba(255,255,255,0.28);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1.5px solid rgba(255, 255, 255, 0.28);
       border-radius: 50px;
       padding: 5px 14px 5px 5px;
       cursor: pointer;
@@ -69,206 +85,312 @@
       outline: none;
       transition: background 0.2s, border-color 0.2s;
     }
+
     .user-avatar-btn:hover {
-      background: rgba(255,255,255,0.22);
-      border-color: rgba(255,255,255,0.5);
+      background: rgba(255, 255, 255, 0.22);
+      border-color: rgba(255, 255, 255, 0.5);
     }
+
     .user-avatar-circle {
-      width: 34px; height: 34px; border-radius: 50%;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
       background: linear-gradient(135deg, #E07B54, #c96940);
-      color: #fff; font-size: 0.95rem; font-weight: 800;
-      display: flex; align-items: center; justify-content: center;
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       flex-shrink: 0;
-      box-shadow: 0 2px 8px rgba(224,123,84,0.55);
+      box-shadow: 0 2px 8px rgba(224, 123, 84, 0.55);
       text-transform: uppercase;
     }
+
     .user-name-short {
-      font-size: 0.875rem; font-weight: 700; color: #fff;
-      max-width: 100px; overflow: hidden;
-      text-overflow: ellipsis; white-space: nowrap;
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: #fff;
+      max-width: 100px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
+
     .user-chevron {
-      font-size: 0.72rem; color: rgba(255,255,255,0.8);
-      transition: transform 0.3s; margin-left: 2px;
+      font-size: 0.72rem;
+      color: rgba(255, 255, 255, 0.8);
+      transition: transform 0.3s;
+      margin-left: 2px;
     }
+
     .user-dropdown-menu {
       display: none;
-      position: fixed;        /* changed from absolute → won't get clipped by any parent */
-      top: 70px;              /* distance from top of screen */
-      right: 20px;            /* distance from right of screen */
+      position: fixed;
+      /* changed from absolute → won't get clipped by any parent */
+      top: 70px;
+      /* distance from top of screen */
+      right: 20px;
+      /* distance from right of screen */
       background: #fff;
       border-radius: 18px;
       min-width: 240px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.22), 0 4px 16px rgba(0,0,0,0.1);
-      border: 1px solid rgba(0,0,0,0.07);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.22), 0 4px 16px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(0, 0, 0, 0.07);
       overflow: hidden;
-      z-index: 99999;         /* increased to always be on top */
+      z-index: 99999;
+      /* increased to always be on top */
       animation: dropdownFade 0.2s ease;
     }
-    .user-dropdown-menu.open { display: block; }
+
+    .user-dropdown-menu.open {
+      display: block;
+    }
+
     @keyframes dropdownFade {
-      from { opacity:0; transform:translateY(-6px) scale(0.98); }
-      to   { opacity:1; transform:translateY(0) scale(1); }
+      from {
+        opacity: 0;
+        transform: translateY(-6px) scale(0.98);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
     }
 
 
 
 
     .dropdown-header {
-      display: flex; align-items: center; gap: 13px;
+      display: flex;
+      align-items: center;
+      gap: 13px;
       padding: 18px 18px 14px;
       background: linear-gradient(135deg, #f5f9fc, #fff);
       border-bottom: 1px solid #eef2f6;
     }
+
     .dropdown-avatar {
-      width: 46px; height: 46px; border-radius: 50%;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
       background: linear-gradient(135deg, #E07B54, #c96940);
-      color: #fff; font-size: 1.2rem; font-weight: 800;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0; box-shadow: 0 4px 12px rgba(224,123,84,0.45);
+      color: #fff;
+      font-size: 1.2rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(224, 123, 84, 0.45);
       text-transform: uppercase;
     }
+
     .dropdown-name {
-      font-size: 0.95rem; font-weight: 800; color: #1C2B3A;
-      margin: 0 0 3px; line-height: 1.2;
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #1C2B3A;
+      margin: 0 0 3px;
+      line-height: 1.2;
     }
+
     .dropdown-role {
-      font-size: 0.78rem; color: #E07B54; font-weight: 700; margin: 0;
+      font-size: 0.78rem;
+      color: #E07B54;
+      font-weight: 700;
+      margin: 0;
     }
-    .dropdown-divider { height: 1px; background: #eef2f6; margin: 4px 0; }
+
+    .dropdown-divider {
+      height: 1px;
+      background: #eef2f6;
+      margin: 4px 0;
+    }
+
     .dropdown-item {
-      display: flex; align-items: center; gap: 12px;
-      padding: 12px 18px; font-size: 0.9rem; font-weight: 700;
-      color: #1C2B3A; text-decoration: none;
-      transition: background 0.15s; cursor: pointer;
-      border: none; background: none; width: 100%;
-      text-align: left; font-family: inherit;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 18px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #1C2B3A;
+      text-decoration: none;
+      transition: background 0.15s;
+      cursor: pointer;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      font-family: inherit;
     }
+
     .dropdown-item i {
-      width: 18px; font-size: 0.9rem; color: #4A9B8E;
-      text-align: center; flex-shrink: 0; transition: color 0.15s;
+      width: 18px;
+      font-size: 0.9rem;
+      color: #4A9B8E;
+      text-align: center;
+      flex-shrink: 0;
+      transition: color 0.15s;
     }
-    .dropdown-item:hover { background: #f0f8f6; }
-    .dropdown-item:hover i { color: #1C2B3A; }
-    .review-item { color: #2D6A4F; }
-    .review-item i { color: #2D6A4F; }
-    .review-item:hover { background: #eaf6ef; }
-    .logout-item { color: #c0392b; }
-    .logout-item i { color: #e74c3c; }
-    .logout-item:hover { background: #fff5f5; }
+
+    .dropdown-item:hover {
+      background: #f0f8f6;
+    }
+
+    .dropdown-item:hover i {
+      color: #1C2B3A;
+    }
+
+    .review-item {
+      color: #2D6A4F;
+    }
+
+    .review-item i {
+      color: #2D6A4F;
+    }
+
+    .review-item:hover {
+      background: #eaf6ef;
+    }
+
+    .logout-item {
+      color: #c0392b;
+    }
+
+    .logout-item i {
+      color: #e74c3c;
+    }
+
+    .logout-item:hover {
+      background: #fff5f5;
+    }
+
     @media (max-width: 640px) {
-      .user-name-short { display: none; }
-      .user-avatar-btn { padding: 5px; border-radius: 50%; }
-      .user-dropdown-menu { right: -10px; min-width: 220px; }
+      .user-name-short {
+        display: none;
+      }
+
+      .user-avatar-btn {
+        padding: 5px;
+        border-radius: 50%;
+      }
+
+      .user-dropdown-menu {
+        right: -10px;
+        min-width: 220px;
+      }
     }
   </style>
 </head>
+
 <body class="dashboard-page">
 
-<header class="navbar">
-  <div class="logo">
-    <img src="{{ url_for('static', filename='images/logo.png') }}">
-    <span class="brand">GoHigh <b>Rentals</b></span>
-  </div>
-
-  <nav>
-    <a href="/dashboard">Dashboard</a>
-    <a href="{{ url_for('my_bookings') }}">My Bookings</a>
-    <a href="#destinations">Destinations</a>
-
-    <!-- User Profile Dropdown -->
-    <div class="user-dropdown">
-      <button class="user-avatar-btn" onclick="toggleDropdown()">
-        <div class="user-avatar-circle">{{ session['user_name'][0].upper() }}</div>
-        <span class="user-name-short">{{ session['user_name'].split()[0] }}</span>
-        <i class="fas fa-chevron-down user-chevron"></i>
-      </button>
-      <div class="user-dropdown-menu" id="userDropdownMenu">
-        <div class="dropdown-header">
-          <div class="dropdown-avatar">{{ session['user_name'][0].upper() }}</div>
-          <div>
-            <p class="dropdown-name">{{ session['user_name'] }}</p>
-            <p class="dropdown-role">Traveler</p>
-          </div>
-        </div>
-        <div class="dropdown-divider"></div>
-        <a href="{{ url_for('profile') }}" class="dropdown-item">
-          <i class="fas fa-user-edit"></i> Edit Profile
-        </a>
-        <a href="{{ url_for('my_bookings') }}" class="dropdown-item">
-          <i class="fas fa-calendar-check"></i> My Bookings
-        </a>
-        <a href="{{ url_for('profile') }}#review" class="dropdown-item review-item">
-          <i class="fas fa-star"></i> Write a Review
-        </a>
-        <div class="dropdown-divider"></div>
-        <a href="{{ url_for('logout') }}" class="dropdown-item logout-item">
-          <i class="fas fa-sign-out-alt"></i> Logout
-        </a>
-      </div>
+  <header class="navbar">
+    <div class="logo">
+      <img src="{{ url_for('static', filename='images/logo.png') }}">
+      <span class="brand">GoHigh <b>Rentals</b></span>
     </div>
-  </nav>
-</header>
 
-<!-- FLASH MESSAGE -->
-{% with messages = get_flashed_messages(with_categories=true) %}
+    <nav>
+      <a href="/dashboard">Dashboard</a>
+      <a href="{{ url_for('my_bookings') }}">My Bookings</a>
+      <a href="#destinations">Destinations</a>
+
+      <!-- User Profile Dropdown -->
+      <div class="user-dropdown">
+        <button class="user-avatar-btn" onclick="toggleDropdown()">
+          <div class="user-avatar-circle">{{ session['user_name'][0].upper() }}</div>
+          <span class="user-name-short">{{ session['user_name'].split()[0] }}</span>
+          <i class="fas fa-chevron-down user-chevron"></i>
+        </button>
+        <div class="user-dropdown-menu" id="userDropdownMenu">
+          <div class="dropdown-header">
+            <div class="dropdown-avatar">{{ session['user_name'][0].upper() }}</div>
+            <div>
+              <p class="dropdown-name">{{ session['user_name'] }}</p>
+              <p class="dropdown-role">Traveler</p>
+            </div>
+          </div>
+          <div class="dropdown-divider"></div>
+          <a href="{{ url_for('profile') }}" class="dropdown-item">
+            <i class="fas fa-user-edit"></i> Edit Profile
+          </a>
+          <a href="{{ url_for('my_bookings') }}" class="dropdown-item">
+            <i class="fas fa-calendar-check"></i> My Bookings
+          </a>
+          <a href="{{ url_for('profile') }}#review" class="dropdown-item review-item">
+            <i class="fas fa-star"></i> Write a Review
+          </a>
+          <div class="dropdown-divider"></div>
+          <a href="{{ url_for('logout') }}" class="dropdown-item logout-item">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </a>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- FLASH MESSAGE -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
-    {% for category, message in messages %}
-      <div class="flash-message {{ category }}">{{ message }}</div>
-    {% endfor %}
+  {% for category, message in messages %}
+  <div class="flash-message {{ category }}">{{ message }}</div>
+  {% endfor %}
   {% endif %}
-{% endwith %}
+  {% endwith %}
 
-<!-- ── BOOKING NOTIFICATIONS ── -->
-{% if notifications %}
-<div style="position: fixed; top: 80px; right: 20px; z-index: 9999; 
+  <!-- ── BOOKING NOTIFICATIONS ── -->
+  {% if notifications %}
+  <div style="position: fixed; top: 80px; right: 20px; z-index: 9999; 
             display: flex; flex-direction: column; gap: 10px; max-width: 320px;">
-  {% for n in notifications %}
+    {% for n in notifications %}
     {% if n.booking_status == 'Confirmed' %}
-      <div class="notif-toast" style="background:#e6f9f0; border-left: 4px solid #1a7a4a; 
+    <div class="notif-toast" style="background:#e6f9f0; border-left: 4px solid #1a7a4a; 
            color:#1a7a4a; padding: 14px 18px; border-radius: 10px; font-size:0.9rem;
            box-shadow: 0 4px 16px rgba(0,0,0,0.12); font-weight:600;">
-        🎉 Booking to <strong>{{ n.destination_name }}</strong> is <strong>Confirmed!</strong>
-      </div>
+      🎉 Booking to <strong>{{ n.destination_name }}</strong> is <strong>Confirmed!</strong>
+    </div>
     {% elif n.booking_status == 'Cancelled' %}
-      <div class="notif-toast" style="background:#fff0f0; border-left: 4px solid #c0392b; 
+    <div class="notif-toast" style="background:#fff0f0; border-left: 4px solid #c0392b; 
            color:#c0392b; padding: 14px 18px; border-radius: 10px; font-size:0.9rem;
            box-shadow: 0 4px 16px rgba(0,0,0,0.12); font-weight:600;">
-        ❌ Booking to <strong>{{ n.destination_name }}</strong> was <strong>Cancelled.</strong>
-      </div>
-    {% endif %}
-  {% endfor %}
-</div>
-
-<!-- Auto dismiss after 4 seconds -->
-<script>
-  setTimeout(() => {
-    document.querySelectorAll('.notif-toast').forEach(t => {
-      t.style.transition = 'opacity 0.5s';
-      t.style.opacity = '0';
-      setTimeout(() => t.remove(), 500);
-    });
-  }, 4000);
-</script>
-{% endif %}
-
-<section class="dashboard-hero">
-  <div class="hero-inner">
-    <div class="hero-text">
-      <h1>Welcome back, {{ user_name }}!</h1>
-      <p>Ready for your next Himalayan adventure? 🏔️</p>
+      ❌ Booking to <strong>{{ n.destination_name }}</strong> was <strong>Cancelled.</strong>
     </div>
-    <a href="{{ url_for('booking.create_booking_page') }}" class="new-booking-btn">
-      <i class="fas fa-plus"></i> New Booking
-    </a>
+    {% endif %}
+    {% endfor %}
   </div>
-</section>
+
+  <!-- Auto dismiss after 4 seconds -->
+  <script>
+    setTimeout(() => {
+      document.querySelectorAll('.notif-toast').forEach(t => {
+        t.style.transition = 'opacity 0.5s';
+        t.style.opacity = '0';
+        setTimeout(() => t.remove(), 500);
+      });
+    }, 4000);
+  </script>
+  {% endif %}
+
+  <section class="dashboard-hero">
+    <div class="hero-inner">
+      <div class="hero-text">
+        <h1>Welcome back, {{ user_name }}!</h1>
+        <p>Ready for your next Himalayan adventure? 🏔️</p>
+      </div>
+      <a href="{{ url_for('booking.create_booking_page') }}" class="new-booking-btn">
+        <i class="fas fa-plus"></i> New Booking
+      </a>
+    </div>
+  </section>
 
 
 
 
-<!-- Destinations Section -->
-<!--
+  <!-- Destinations Section -->
+  <!--
     HOW THIS WORKS (beginner explanation):
     ─────────────────────────────────────
     Before: prices were hardcoded in HTML (₹2,499 written by hand).
@@ -280,227 +402,234 @@
             the price on the card ALWAYS matches the database.
             No more mismatch!
 -->
-<section class="destinations" id="destinations">
+  <section class="destinations" id="destinations">
     <h2>Popular Himalayan Destinations</h2>
 
     <div class="destination-container">
 
-        {% for d in destinations %}
+      {% for d in destinations %}
 
-            <!-- Set image and badge based on destination name -->
-        {% if d.destination_name == 'Shimla' %}
-            {% set img = 'shimla.jpg' %}{% set badge = 'Family' %}{% set rating = '4.7' %}
-        {% elif d.destination_name == 'Manali' %}
-            {% set img = 'manali.jpg' %}{% set badge = 'Popular' %}{% set rating = '4.8' %}
-        {% elif d.destination_name == 'Dharamshala' %}
-            {% set img = 'dharamshala.jpg' %}{% set badge = 'Spiritual' %}{% set rating = '4.7' %}
-        {% elif d.destination_name == 'Dehradun' %}
-            {% set img = 'dehradun.jpg' %}{% set badge = 'Gateway' %}{% set rating = '4.5' %}
-        {% elif d.destination_name == 'Mussoorie' %}
-            {% set img = 'mussoorie.jpg' %}{% set badge = 'Hill Station' %}{% set rating = '4.6' %}
-        {% elif d.destination_name == 'Nainital' %}
-            {% set img = 'nainital.jpg' %}{% set badge = 'Lake City' %}{% set rating = '4.6' %}
-        {% elif d.destination_name == 'Srinagar' %}
-            {% set img = 'srinagar.jpg' %}{% set badge = 'Paradise' %}{% set rating = '4.8' %}
-        {% elif d.destination_name == 'Gulmarg' %}
-            {% set img = 'gulmarg.jpg' %}{% set badge = 'Skiing' %}{% set rating = '4.9' %}
-        {% elif d.destination_name == 'Gangtok' %}
-            {% set img = 'gangtok.jpg' %}{% set badge = 'Scenic' %}{% set rating = '4.7' %}
-        {% elif d.destination_name == 'Tawang' %}
-            {% set img = 'tawang.jpg' %}{% set badge = 'Offbeat' %}{% set rating = '4.8' %}
-        {% elif d.destination_name == 'Dalhousie' %}
-            {% set img = 'dalhousie.jpg' %}{% set badge = 'Mini Switzerland' %}{% set rating = '4.6' %}
-        {% elif d.destination_name == 'Rishikesh' %}
-            {% set img = 'rishikesh.jpg' %}{% set badge = 'Yoga Capital' %}{% set rating = '4.8' %}
-        {% elif d.destination_name == 'Spiti Valley' %}
-            {% set img = 'spiti.jpg' %}{% set badge = 'Offbeat' %}{% set rating = '4.9' %}
-        {% elif d.destination_name == 'Auli' %}
-            {% set img = 'auli.jpg' %}{% set badge = 'Skiing' %}{% set rating = '4.8' %}
-        {% elif d.destination_name == 'Leh Ladakh' %}
-            {% set img = 'leh.jpg' %}{% set badge = 'Adventure' %}{% set rating = '4.9' %}
-        {% else %}
-            {% set img = 'manali.jpg' %}{% set badge = 'Destination' %}{% set rating = '4.5' %}
-        {% endif %}
+      <!-- Set image and badge based on destination name -->
+      {% if d.destination_name == 'Shimla' %}
+      {% set img = 'shimla.jpg' %}{% set badge = 'Family' %}{% set rating = '4.7' %}
+      {% elif d.destination_name == 'Manali' %}
+      {% set img = 'manali.jpg' %}{% set badge = 'Popular' %}{% set rating = '4.8' %}
+      {% elif d.destination_name == 'Dharamshala' %}
+      {% set img = 'dharamshala.jpg' %}{% set badge = 'Spiritual' %}{% set rating = '4.7' %}
+      {% elif d.destination_name == 'Dehradun' %}
+      {% set img = 'dehradun.jpg' %}{% set badge = 'Gateway' %}{% set rating = '4.5' %}
+      {% elif d.destination_name == 'Mussoorie' %}
+      {% set img = 'mussoorie.jpg' %}{% set badge = 'Hill Station' %}{% set rating = '4.6' %}
+      {% elif d.destination_name == 'Nainital' %}
+      {% set img = 'nainital.jpeg' %}{% set badge = 'Lake City' %}{% set rating = '4.6' %}
+      {% elif d.destination_name == 'Srinagar' %}
+      {% set img = 'srinagar.jpg' %}{% set badge = 'Paradise' %}{% set rating = '4.8' %}
+      {% elif d.destination_name == 'Gulmarg' %}
+      {% set img = 'gulmarg.jfif' %}{% set badge = 'Skiing' %}{% set rating = '4.9' %}
+      {% elif d.destination_name == 'Gangtok' %}
+      {% set img = 'gangtok.jpg' %}{% set badge = 'Scenic' %}{% set rating = '4.7' %}
+      {% elif d.destination_name == 'Tawang' %}
+      {% set img = 'tawang.jpg' %}{% set badge = 'Offbeat' %}{% set rating = '4.8' %}
+      {% elif d.destination_name == 'Dalhousie' %}
+      {% set img = 'dalhousie.jpg' %}{% set badge = 'Mini Switzerland' %}{% set rating = '4.6' %}
+      {% elif d.destination_name == 'Rishikesh' %}
+      {% set img = 'rishikesh.jpg' %}{% set badge = 'Yoga Capital' %}{% set rating = '4.8' %}
+      {% elif d.destination_name == 'Spiti Valley' %}
+      {% set img = 'spiti.jpg' %}{% set badge = 'Offbeat' %}{% set rating = '4.9' %}
+      {% elif d.destination_name == 'Auli' %}
+      {% set img = 'auli.jpg' %}{% set badge = 'Skiing' %}{% set rating = '4.8' %}
+      {% elif d.destination_name == 'Leh Ladakh' %}
+      {% set img = 'leh.jpg' %}{% set badge = 'Adventure' %}{% set rating = '4.9' %}
+      {% else %}
+      {% set img = 'manali.jpg' %}{% set badge = 'Destination' %}{% set rating = '4.5' %}
+      {% endif %}
 
-        <div class="destination-card">
-            <div class="rating"><i class="fas fa-star"></i> {{ rating }}</div>
-            <div class="destination-badge">{{ badge }}</div>
+      <div class="destination-card">
+        <div class="rating"><i class="fas fa-star"></i> {{ rating }}</div>
+        <div class="destination-badge">{{ badge }}</div>
 
-            <img src="{{ url_for('static', filename='images/' ~ img) }}"
-                 alt="{{ d.destination_name }}">
+        <img src="{{ url_for('static', filename='images/' ~ img) }}" alt="{{ d.destination_name }}">
 
-            <div class="card-content">
-                <h3>{{ d.destination_name }}</h3>
-                <p class="location">
-                    <i class="fas fa-map-pin"></i> {{ d.state or 'India' }}
-                </p>
+        <div class="card-content">
+          <h3>{{ d.destination_name }}</h3>
+          <p class="location">
+            <i class="fas fa-map-pin"></i> {{ d.state or 'India' }}
+          </p>
 
-                <!-- PRICE FROM DATABASE — always matches the booking form ✅ -->
-                <div class="price">
-                    <i class="fas fa-tag"></i>
-                    <span>₹{{ "{:,.0f}".format(d.price_per_day) }} <small>/day</small></span>
-                </div>
+          <!-- PRICE FROM DATABASE — always matches the booking form ✅ -->
+          <div class="price">
+            <i class="fas fa-tag"></i>
+            <span>₹{{ "{:,.0f}".format(d.price_per_day) }} <small>/day</small></span>
+          </div>
 
-                <!-- Features per destination -->
-                <div class="features">
-                    {% if d.destination_name == 'Shimla' %}
-                        <span><i class="fas fa-car"></i> Mall Road</span>
-                        <span><i class="fas fa-hotel"></i> The Ridge</span>
-                        <span><i class="fas fa-utensils"></i> Kufri</span>
-                    {% elif d.destination_name == 'Manali' %}
-                        <span><i class="fas fa-mountain"></i> Rohtang Pass</span>
-                        <span><i class="fas fa-campground"></i> Solang Valley</span>
-                        <span><i class="fas fa-utensils"></i> Local Food</span>
-                    {% elif d.destination_name == 'Dharamshala' %}
-                        <span><i class="fas fa-pray"></i> Dalai Lama</span>
-                        <span><i class="fas fa-mountain"></i> Triund</span>
-                        <span><i class="fas fa-utensils"></i> Tibetan Food</span>
-                    {% elif d.destination_name == 'Rishikesh' %}
-                        <span><i class="fas fa-water"></i> River Rafting</span>
-                        <span><i class="fas fa-campground"></i> Riverside Camp</span>
-                        <span><i class="fas fa-om"></i> Yoga Retreat</span>
-                    {% elif d.destination_name == 'Spiti Valley' %}
-                        <span><i class="fas fa-mountain"></i> Key Monastery</span>
-                        <span><i class="fas fa-campground"></i> Chandratal</span>
-                        <span><i class="fas fa-map"></i> Pin Valley</span>
-                    {% elif d.destination_name == 'Auli' %}
-                        <span><i class="fas fa-skiing"></i> Skiing</span>
-                        <span><i class="fas fa-campground"></i> Camping</span>
-                        <span><i class="fas fa-cable-car"></i> Cable Car</span>
-                    {% elif d.destination_name == 'Leh Ladakh' %}
-                        <span><i class="fas fa-mountain"></i> Khardung La</span>
-                        <span><i class="fas fa-campground"></i> Nubra Valley</span>
-                        <span><i class="fas fa-map"></i> Pangong Lake</span>
-                    {% elif d.destination_name == 'Dalhousie' %}
-                        <span><i class="fas fa-church"></i> St. John's</span>
-                        <span><i class="fas fa-mountain"></i> Khajjiar</span>
-                        <span><i class="fas fa-utensils"></i> Local Food</span>
-                    {% elif d.destination_name == 'Srinagar' %}
-                        <span><i class="fas fa-water"></i> Dal Lake</span>
-                        <span><i class="fas fa-mountain"></i> Gulmarg</span>
-                        <span><i class="fas fa-campground"></i> Pahalgam</span>
-                    {% elif d.destination_name == 'Gulmarg' %}
-                        <span><i class="fas fa-skiing"></i> Ski Resort</span>
-                        <span><i class="fas fa-cable-car"></i> Gondola</span>
-                        <span><i class="fas fa-snowflake"></i> Snow Fun</span>
-                    {% elif d.destination_name == 'Nainital' %}
-                        <span><i class="fas fa-water"></i> Naini Lake</span>
-                        <span><i class="fas fa-mountain"></i> Snow View</span>
-                        <span><i class="fas fa-campground"></i> Nainital Zoo</span>
-                    {% elif d.destination_name == 'Mussoorie' %}
-                        <span><i class="fas fa-mountain"></i> Gun Hill</span>
-                        <span><i class="fas fa-water"></i> Kempty Falls</span>
-                        <span><i class="fas fa-car"></i> Mall Road</span>
-                    {% elif d.destination_name == 'Gangtok' %}
-                        <span><i class="fas fa-mountain"></i> Nathu La</span>
-                        <span><i class="fas fa-campground"></i> Tsomgo Lake</span>
-                        <span><i class="fas fa-utensils"></i> Momos</span>
-                    {% elif d.destination_name == 'Tawang' %}
-                        <span><i class="fas fa-pray"></i> Tawang Monastery</span>
-                        <span><i class="fas fa-mountain"></i> Sela Pass</span>
-                        <span><i class="fas fa-map"></i> Madhuri Lake</span>
-                    {% elif d.destination_name == 'Dehradun' %}
-                        <span><i class="fas fa-mountain"></i> Mussoorie Road</span>
-                        <span><i class="fas fa-tree"></i> Rajaji Park</span>
-                        <span><i class="fas fa-utensils"></i> Local Food</span>
-                    {% else %}
-                        <span><i class="fas fa-mountain"></i> Scenic Views</span>
-                        <span><i class="fas fa-campground"></i> Camping</span>
-                        <span><i class="fas fa-utensils"></i> Local Food</span>
-                    {% endif %}
-                </div>
+          <!-- Features per destination -->
+          <div class="features">
+            {% if d.destination_name == 'Shimla' %}
+            <span><i class="fas fa-car"></i> Mall Road</span>
+            <span><i class="fas fa-hotel"></i> The Ridge</span>
+            <span><i class="fas fa-utensils"></i> Kufri</span>
+            {% elif d.destination_name == 'Manali' %}
+            <span><i class="fas fa-mountain"></i> Rohtang Pass</span>
+            <span><i class="fas fa-campground"></i> Solang Valley</span>
+            <span><i class="fas fa-utensils"></i> Local Food</span>
+            {% elif d.destination_name == 'Dharamshala' %}
+            <span><i class="fas fa-pray"></i> Dalai Lama</span>
+            <span><i class="fas fa-mountain"></i> Triund</span>
+            <span><i class="fas fa-utensils"></i> Tibetan Food</span>
+            {% elif d.destination_name == 'Rishikesh' %}
+            <span><i class="fas fa-water"></i> River Rafting</span>
+            <span><i class="fas fa-campground"></i> Riverside Camp</span>
+            <span><i class="fas fa-om"></i> Yoga Retreat</span>
+            {% elif d.destination_name == 'Spiti Valley' %}
+            <span><i class="fas fa-mountain"></i> Key Monastery</span>
+            <span><i class="fas fa-campground"></i> Chandratal</span>
+            <span><i class="fas fa-map"></i> Pin Valley</span>
+            {% elif d.destination_name == 'Auli' %}
+            <span><i class="fas fa-skiing"></i> Skiing</span>
+            <span><i class="fas fa-campground"></i> Camping</span>
+            <span><i class="fas fa-cable-car"></i> Cable Car</span>
+            {% elif d.destination_name == 'Leh Ladakh' %}
+            <span><i class="fas fa-mountain"></i> Khardung La</span>
+            <span><i class="fas fa-campground"></i> Nubra Valley</span>
+            <span><i class="fas fa-map"></i> Pangong Lake</span>
+            {% elif d.destination_name == 'Dalhousie' %}
+            <span><i class="fas fa-church"></i> St. John's</span>
+            <span><i class="fas fa-mountain"></i> Khajjiar</span>
+            <span><i class="fas fa-utensils"></i> Local Food</span>
+            {% elif d.destination_name == 'Srinagar' %}
+            <span><i class="fas fa-water"></i> Dal Lake</span>
+            <span><i class="fas fa-mountain"></i> Gulmarg</span>
+            <span><i class="fas fa-campground"></i> Pahalgam</span>
+            {% elif d.destination_name == 'Gulmarg' %}
+            <span><i class="fas fa-skiing"></i> Ski Resort</span>
+            <span><i class="fas fa-cable-car"></i> Gondola</span>
+            <span><i class="fas fa-snowflake"></i> Snow Fun</span>
+            {% elif d.destination_name == 'Nainital' %}
+            <span><i class="fas fa-water"></i> Naini Lake</span>
+            <span><i class="fas fa-mountain"></i> Snow View</span>
+            <span><i class="fas fa-campground"></i> Nainital Zoo</span>
+            {% elif d.destination_name == 'Mussoorie' %}
+            <span><i class="fas fa-mountain"></i> Gun Hill</span>
+            <span><i class="fas fa-water"></i> Kempty Falls</span>
+            <span><i class="fas fa-car"></i> Mall Road</span>
+            {% elif d.destination_name == 'Gangtok' %}
+            <span><i class="fas fa-mountain"></i> Nathu La</span>
+            <span><i class="fas fa-campground"></i> Tsomgo Lake</span>
+            <span><i class="fas fa-utensils"></i> Momos</span>
+            {% elif d.destination_name == 'Tawang' %}
+            <span><i class="fas fa-pray"></i> Tawang Monastery</span>
+            <span><i class="fas fa-mountain"></i> Sela Pass</span>
+            <span><i class="fas fa-map"></i> Madhuri Lake</span>
+            {% elif d.destination_name == 'Dehradun' %}
+            <span><i class="fas fa-mountain"></i> Mussoorie Road</span>
+            <span><i class="fas fa-tree"></i> Rajaji Park</span>
+            <span><i class="fas fa-utensils"></i> Local Food</span>
+            {% else %}
+            <span><i class="fas fa-mountain"></i> Scenic Views</span>
+            <span><i class="fas fa-campground"></i> Camping</span>
+            <span><i class="fas fa-utensils"></i> Local Food</span>
+            {% endif %}
+          </div>
 
-                <form action="{{ url_for('booking.create_booking_page') }}" method="GET">
-                    <input type="hidden" name="destination_id" value="{{ d.destination_id }}">
-                    <button class="book-btn">Book Now</button>
-                </form>
-            </div>
+          <form action="{{ url_for('booking.create_booking_page') }}" method="GET">
+            <input type="hidden" name="destination_id" value="{{ d.destination_id }}">
+            <button class="book-btn">Book Now</button>
+          </form>
         </div>
+      </div>
 
-        {% endfor %}
+      {% endfor %}
 
     </div>
-</section>
+  </section>
 
-<!-- ── REVIEW SLIDER ── -->
-<section class="user-reviews">
-  <h2>⭐ Traveler Reviews</h2>
+  <!-- ── REVIEW SLIDER ── -->
+  <section class="user-reviews">
+    <h2>⭐ Traveler Reviews</h2>
 
-  <div class="review-slider">
-    <button class="review-btn prev" onclick="slideReviews(-1)" aria-label="Previous">
-      <i class="fas fa-chevron-left"></i>
-    </button>
+    <div class="review-slider">
+      <button class="review-btn prev" onclick="slideReviews(-1)" aria-label="Previous">
+        <i class="fas fa-chevron-left"></i>
+      </button>
 
-    <div class="review-viewport">
-      <div class="review-wrapper" id="reviewWrapper">
+      <div class="review-viewport">
+        <div class="review-wrapper" id="reviewWrapper">
 
-        <!-- Static curated reviews -->
-        <div class="review-card">
-          <img src="{{ url_for('static', filename='images/review1.jpg') }}" alt="Rahul Sharma">
-          <div class="review-stars">★★★★★</div>
-          <h4>Rahul Sharma</h4>
-          <p class="location"><i class="fas fa-map-pin"></i> Manali Trip</p>
-          <p class="review-text">"Amazing road trip to Manali. The vehicle was perfect for mountain roads and the booking was super smooth!"</p>
-        </div>
+          <!-- Static curated reviews -->
+          <div class="review-card">
+            <img src="{{ url_for('static', filename='images/review1.jpg') }}" alt="Rahul Sharma">
+            <div class="review-stars">★★★★★</div>
+            <h4>Rahul Sharma</h4>
+            <p class="location"><i class="fas fa-map-pin"></i> Manali Trip</p>
+            <p class="review-text">"Amazing road trip to Manali. The vehicle was perfect for mountain roads and the
+              booking was super smooth!"</p>
+          </div>
 
-        <div class="review-card">
-          <img src="{{ url_for('static', filename='images/review2.jpg') }}" alt="Priya Mehta">
-          <div class="review-stars">★★★★★</div>
-          <h4>Priya Mehta</h4>
-          <p class="location"><i class="fas fa-map-pin"></i> Shimla Trip</p>
-          <p class="review-text">"Beautiful journey through Shimla hills. Highly recommended! The car was well-maintained and comfortable."</p>
-        </div>
+          <div class="review-card">
+            <img src="{{ url_for('static', filename='images/review2.jpg') }}" alt="Priya Mehta">
+            <div class="review-stars">★★★★★</div>
+            <h4>Priya Mehta</h4>
+            <p class="location"><i class="fas fa-map-pin"></i> Shimla Trip</p>
+            <p class="review-text">"Beautiful journey through Shimla hills. Highly recommended! The car was
+              well-maintained and comfortable."</p>
+          </div>
 
-        <div class="review-card">
-          <img src="{{ url_for('static', filename='images/review3.jpg') }}" alt="Shekhawat Singh">
-          <div class="review-stars">★★★★★</div>
-          <h4>Shekhawat Singh</h4>
-          <p class="location"><i class="fas fa-map-pin"></i> Leh Ladakh Bike Ride</p>
-          <p class="review-text">"Royal Enfield trip to Ladakh was the best experience ever. GoHigh made it truly unforgettable!"</p>
-        </div>
+          <div class="review-card">
+            <img src="{{ url_for('static', filename='images/review3.jpg') }}" alt="Shekhawat Singh">
+            <div class="review-stars">★★★★★</div>
+            <h4>Shekhawat Singh</h4>
+            <p class="location"><i class="fas fa-map-pin"></i> Leh Ladakh Bike Ride</p>
+            <p class="review-text">"Royal Enfield trip to Ladakh was the best experience ever. GoHigh made it truly
+              unforgettable!"</p>
+          </div>
 
-        <div class="review-card">
-          <img src="{{ url_for('static', filename='images/review4.jpg') }}" alt="Anita Verma">
-          <div class="review-stars">★★★★☆</div>
-          <h4>Anita Verma</h4>
-          <p class="location"><i class="fas fa-map-pin"></i> Spiti Valley Trek</p>
-          <p class="review-text">"Spiti was breathtaking! Everything was smooth and well-organised. Will definitely book again."</p>
-        </div>
+          <div class="review-card">
+            <img src="{{ url_for('static', filename='images/review4.jpg') }}" alt="Anita Verma">
+            <div class="review-stars">★★★★☆</div>
+            <h4>Anita Verma</h4>
+            <p class="location"><i class="fas fa-map-pin"></i> Spiti Valley Trek</p>
+            <p class="review-text">"Spiti was breathtaking! Everything was smooth and well-organised. Will definitely
+              book again."</p>
+          </div>
 
-        <div class="review-card">
-          <img src="{{ url_for('static', filename='images/review5.jpg') }}" alt="Arjun Kapoor">
-          <div class="review-stars">★★★★★</div>
-          <h4>Arjun Kapoor</h4>
-          <p class="location"><i class="fas fa-map-pin"></i> Leh Ladakh Road Trip</p>
-          <p class="review-text">"Perfect for adventure lovers. Our Ladakh road trip was smooth and the support team was excellent!"</p>
-        </div>
+          <div class="review-card">
+            <img src="{{ url_for('static', filename='images/review5.jpg') }}" alt="Arjun Kapoor">
+            <div class="review-stars">★★★★★</div>
+            <h4>Arjun Kapoor</h4>
+            <p class="location"><i class="fas fa-map-pin"></i> Leh Ladakh Road Trip</p>
+            <p class="review-text">"Perfect for adventure lovers. Our Ladakh road trip was smooth and the support team
+              was excellent!"</p>
+          </div>
 
-        <div class="review-card">
-          <img src="{{ url_for('static', filename='images/review6.jpg') }}" alt="Sneha Joshi">
-          <div class="review-stars">★★★★★</div>
-          <h4>Sneha Joshi</h4>
-          <p class="location"><i class="fas fa-map-pin"></i> Rishikesh Adventure</p>
-          <p class="review-text">"Customer support was great and the journey was amazing. Loved every bit of the Rishikesh experience!"</p>
-        </div>
+          <div class="review-card">
+            <img src="{{ url_for('static', filename='images/review6.jpg') }}" alt="Sneha Joshi">
+            <div class="review-stars">★★★★★</div>
+            <h4>Sneha Joshi</h4>
+            <p class="location"><i class="fas fa-map-pin"></i> Rishikesh Adventure</p>
+            <p class="review-text">"Customer support was great and the journey was amazing. Loved every bit of the
+              Rishikesh experience!"</p>
+          </div>
 
-        <div class="review-card">
-          <img src="{{ url_for('static', filename='images/review7.jpg') }}" alt="Vikram Rathore">
-          <div class="review-stars">★★★★★</div>
-          <h4>Vikram Rathore</h4>
-          <p class="location"><i class="fas fa-map-pin"></i> Dharamshala Retreat</p>
-          <p class="review-text">"Peaceful and spiritual journey to Dharamshala. The vehicle was clean and the driver was very helpful."</p>
-        </div>
+          <div class="review-card">
+            <img src="{{ url_for('static', filename='images/review7.jpg') }}" alt="Vikram Rathore">
+            <div class="review-stars">★★★★★</div>
+            <h4>Vikram Rathore</h4>
+            <p class="location"><i class="fas fa-map-pin"></i> Dharamshala Retreat</p>
+            <p class="review-text">"Peaceful and spiritual journey to Dharamshala. The vehicle was clean and the driver
+              was very helpful."</p>
+          </div>
 
-        <div class="review-card">
-          <img src="{{ url_for('static', filename='images/review8.jpg') }}" alt="Kavya Sharma">
-          <div class="review-stars">★★★★☆</div>
-          <h4>Kavya Sharma</h4>
-          <p class="location"><i class="fas fa-map-pin"></i> Auli Skiing Trip</p>
-          <p class="review-text">"Auli skiing trip was a dream come true! GoHigh's SUV handled the snow roads perfectly. 10/10 experience."</p>
-        </div>
+          <div class="review-card">
+            <img src="{{ url_for('static', filename='images/review8.jpg') }}" alt="Kavya Sharma">
+            <div class="review-stars">★★★★☆</div>
+            <h4>Kavya Sharma</h4>
+            <p class="location"><i class="fas fa-map-pin"></i> Auli Skiing Trip</p>
+            <p class="review-text">"Auli skiing trip was a dream come true! GoHigh's SUV handled the snow roads
+              perfectly. 10/10 experience."</p>
+          </div>
 
-        <!-- ── USER-SUBMITTED REVIEWS (from DB) ── -->
-        {% if user_reviews %}
+          <!-- ── USER-SUBMITTED REVIEWS (from DB) ── -->
+          {% if user_reviews %}
           {% for rev in user_reviews %}
           <div class="review-card user-submitted">
             <div class="review-stars">
@@ -512,122 +641,150 @@
             <p class="review-date">{{ rev.created_at.strftime('%d %b %Y') if rev.created_at else '' }}</p>
           </div>
           {% endfor %}
-        {% endif %}
+          {% endif %}
 
+        </div>
+      </div>
+
+      <button class="review-btn next" onclick="slideReviews(1)" aria-label="Next">
+        <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
+
+    <div class="review-dots" id="reviewDots"></div>
+  </section>
+
+
+  <!-- Travel Gallery -->
+  <section class="gallery-section">
+    <h2>📸 Travel Gallery</h2>
+    <div class="gallery-viewport">
+      <div class="gallery-container" id="galleryContainer">
+        <img src="{{ url_for('static', filename='images/gallery1.jpg') }}">
+        <img src="{{ url_for('static', filename='images/gallery2.jpg') }}">
+        <img src="{{ url_for('static', filename='images/gallery3.jpg') }}">
+        <img src="{{ url_for('static', filename='images/gallery4.jpg') }}">
+        <img src="{{ url_for('static', filename='images/gallery5.jpg') }}">
+        <img src="{{ url_for('static', filename='images/gallery6.jpg') }}">
       </div>
     </div>
-
-    <button class="review-btn next" onclick="slideReviews(1)" aria-label="Next">
-      <i class="fas fa-chevron-right"></i>
-    </button>
-  </div>
-
-  <div class="review-dots" id="reviewDots"></div>
-</section>
+  </section>
 
 
-<!-- Travel Gallery -->
-<section class="gallery-section">
-  <h2>📸 Travel Gallery</h2>
-  <div class="gallery-viewport">
-    <div class="gallery-container" id="galleryContainer">
-      <img src="{{ url_for('static', filename='images/gallery1.jpg') }}">
-      <img src="{{ url_for('static', filename='images/gallery2.jpg') }}">
-      <img src="{{ url_for('static', filename='images/gallery3.jpg') }}">
-      <img src="{{ url_for('static', filename='images/gallery4.jpg') }}">
-      <img src="{{ url_for('static', filename='images/gallery5.jpg') }}">
-      <img src="{{ url_for('static', filename='images/gallery6.jpg') }}">
+  <!-- ── TEXT REVIEWS ── -->
+  <section class="text-reviews">
+    <h2>💬 What Travelers Say</h2>
+
+    <div class="review-filter-tabs">
+      <button class="filter-tab active" data-filter="all">All</button>
+      <button class="filter-tab" data-filter="shimla">Shimla</button>
+      <button class="filter-tab" data-filter="manali">Manali</button>
+      <button class="filter-tab" data-filter="ladakh">Leh Ladakh</button>
+      <button class="filter-tab" data-filter="spiti">Spiti Valley</button>
+      <button class="filter-tab" data-filter="rishikesh">Rishikesh</button>
+      <button class="filter-tab" data-filter="dharamshala">Dharamshala</button>
+      {% if user_reviews %}<button class="filter-tab" data-filter="user">✦ Community</button>{% endif %}
     </div>
-  </div>
-</section>
 
+    <div class="text-review-container" id="textReviewContainer">
 
-<!-- ── TEXT REVIEWS ── -->
-<section class="text-reviews">
-  <h2>💬 What Travelers Say</h2>
-
-  <div class="review-filter-tabs">
-    <button class="filter-tab active" data-filter="all">All</button>
-    <button class="filter-tab" data-filter="shimla">Shimla</button>
-    <button class="filter-tab" data-filter="manali">Manali</button>
-    <button class="filter-tab" data-filter="ladakh">Leh Ladakh</button>
-    <button class="filter-tab" data-filter="spiti">Spiti Valley</button>
-    <button class="filter-tab" data-filter="rishikesh">Rishikesh</button>
-    <button class="filter-tab" data-filter="dharamshala">Dharamshala</button>
-    {% if user_reviews %}<button class="filter-tab" data-filter="user">✦ Community</button>{% endif %}
-  </div>
-
-  <div class="text-review-container" id="textReviewContainer">
-
-    <!-- Static reviews -->
-    <div class="text-review" data-dest="shimla">
-      <div class="quote-icon">&ldquo;</div>
-      <p class="review-short">Best Himalayan travel experience! Booking was simple and the vehicles were excellent.</p>
-      <p class="review-full hidden">Best Himalayan travel experience! Booking was simple and the vehicles were excellent. Will come back for sure! The roads to Shimla were scenic and our driver was very knowledgeable about all the local spots. 10/10 would recommend GoHigh to everyone!</p>
-      <button class="read-more-btn" onclick="toggleReview(this)">Read more <i class="fas fa-chevron-down"></i></button>
-      <div class="text-review-footer">
-        <img src="{{ url_for('static', filename='images/review2.jpg') }}" alt="Priya Mehta">
-        <div><h4>Priya Mehta</h4><span>Shimla Trip</span></div>
+      <!-- Static reviews -->
+      <div class="text-review" data-dest="shimla">
+        <div class="quote-icon">&ldquo;</div>
+        <p class="review-short">Best Himalayan travel experience! Booking was simple and the vehicles were excellent.
+        </p>
+        <p class="review-full hidden">Best Himalayan travel experience! Booking was simple and the vehicles were
+          excellent. Will come back for sure! The roads to Shimla were scenic and our driver was very knowledgeable
+          about all the local spots. 10/10 would recommend GoHigh to everyone!</p>
+        <button class="read-more-btn" onclick="toggleReview(this)">Read more <i
+            class="fas fa-chevron-down"></i></button>
+        <div class="text-review-footer">
+          <img src="{{ url_for('static', filename='images/review2.jpg') }}" alt="Priya Mehta">
+          <div>
+            <h4>Priya Mehta</h4><span>Shimla Trip</span>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <div class="text-review" data-dest="ladakh">
-      <div class="quote-icon">&ldquo;</div>
-      <p class="review-short">Perfect for adventure lovers. Our Ladakh road trip was smooth and memorable.</p>
-      <p class="review-full hidden">Perfect for adventure lovers. Our Ladakh road trip was smooth and memorable. GoHigh is the best! The vehicle handled every mountain pass with ease — from Rohtang to Khardung La. The team was always reachable and helped us plan our route perfectly. Truly an unforgettable journey!</p>
-      <button class="read-more-btn" onclick="toggleReview(this)">Read more <i class="fas fa-chevron-down"></i></button>
-      <div class="text-review-footer">
-        <img src="{{ url_for('static', filename='images/review5.jpg') }}" alt="Arjun Kapoor">
-        <div><h4>Arjun Kapoor</h4><span>Leh Ladakh Road Trip</span></div>
+      <div class="text-review" data-dest="ladakh">
+        <div class="quote-icon">&ldquo;</div>
+        <p class="review-short">Perfect for adventure lovers. Our Ladakh road trip was smooth and memorable.</p>
+        <p class="review-full hidden">Perfect for adventure lovers. Our Ladakh road trip was smooth and memorable.
+          GoHigh is the best! The vehicle handled every mountain pass with ease — from Rohtang to Khardung La. The team
+          was always reachable and helped us plan our route perfectly. Truly an unforgettable journey!</p>
+        <button class="read-more-btn" onclick="toggleReview(this)">Read more <i
+            class="fas fa-chevron-down"></i></button>
+        <div class="text-review-footer">
+          <img src="{{ url_for('static', filename='images/review5.jpg') }}" alt="Arjun Kapoor">
+          <div>
+            <h4>Arjun Kapoor</h4><span>Leh Ladakh Road Trip</span>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <div class="text-review" data-dest="rishikesh">
-      <div class="quote-icon">&ldquo;</div>
-      <p class="review-short">Customer support was great and the journey was amazing.</p>
-      <p class="review-full hidden">Customer support was great and the journey was amazing. Loved every moment of the Rishikesh trip. We did river rafting, bungee jumping and a yoga retreat — all in one weekend!</p>
-      <button class="read-more-btn" onclick="toggleReview(this)">Read more <i class="fas fa-chevron-down"></i></button>
-      <div class="text-review-footer">
-        <img src="{{ url_for('static', filename='images/review6.jpg') }}" alt="Sneha Joshi">
-        <div><h4>Sneha Joshi</h4><span>Rishikesh Adventure</span></div>
+      <div class="text-review" data-dest="rishikesh">
+        <div class="quote-icon">&ldquo;</div>
+        <p class="review-short">Customer support was great and the journey was amazing.</p>
+        <p class="review-full hidden">Customer support was great and the journey was amazing. Loved every moment of the
+          Rishikesh trip. We did river rafting, bungee jumping and a yoga retreat — all in one weekend!</p>
+        <button class="read-more-btn" onclick="toggleReview(this)">Read more <i
+            class="fas fa-chevron-down"></i></button>
+        <div class="text-review-footer">
+          <img src="{{ url_for('static', filename='images/review6.jpg') }}" alt="Sneha Joshi">
+          <div>
+            <h4>Sneha Joshi</h4><span>Rishikesh Adventure</span>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <div class="text-review" data-dest="manali">
-      <div class="quote-icon">&ldquo;</div>
-      <p class="review-short">Amazing road trip to Manali. The vehicle was perfect for mountain roads.</p>
-      <p class="review-full hidden">Amazing road trip to Manali. The vehicle was perfect for mountain roads and the booking was super smooth! We drove through Rohtang Pass and Solang Valley without any issues. GoHigh exceeded all our expectations!</p>
-      <button class="read-more-btn" onclick="toggleReview(this)">Read more <i class="fas fa-chevron-down"></i></button>
-      <div class="text-review-footer">
-        <img src="{{ url_for('static', filename='images/review1.jpg') }}" alt="Rahul Sharma">
-        <div><h4>Rahul Sharma</h4><span>Manali Trip</span></div>
+      <div class="text-review" data-dest="manali">
+        <div class="quote-icon">&ldquo;</div>
+        <p class="review-short">Amazing road trip to Manali. The vehicle was perfect for mountain roads.</p>
+        <p class="review-full hidden">Amazing road trip to Manali. The vehicle was perfect for mountain roads and the
+          booking was super smooth! We drove through Rohtang Pass and Solang Valley without any issues. GoHigh exceeded
+          all our expectations!</p>
+        <button class="read-more-btn" onclick="toggleReview(this)">Read more <i
+            class="fas fa-chevron-down"></i></button>
+        <div class="text-review-footer">
+          <img src="{{ url_for('static', filename='images/review1.jpg') }}" alt="Rahul Sharma">
+          <div>
+            <h4>Rahul Sharma</h4><span>Manali Trip</span>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <div class="text-review" data-dest="spiti">
-      <div class="quote-icon">&ldquo;</div>
-      <p class="review-short">Spiti was breathtaking! Everything was smooth and well-organised.</p>
-      <p class="review-full hidden">Spiti was breathtaking! Everything was smooth and well-organised. Will definitely book again. The remote roads of Spiti can be challenging but our GoHigh vehicle was fully equipped for it.</p>
-      <button class="read-more-btn" onclick="toggleReview(this)">Read more <i class="fas fa-chevron-down"></i></button>
-      <div class="text-review-footer">
-        <img src="{{ url_for('static', filename='images/review4.jpg') }}" alt="Anita Verma">
-        <div><h4>Anita Verma</h4><span>Spiti Valley Trek</span></div>
+      <div class="text-review" data-dest="spiti">
+        <div class="quote-icon">&ldquo;</div>
+        <p class="review-short">Spiti was breathtaking! Everything was smooth and well-organised.</p>
+        <p class="review-full hidden">Spiti was breathtaking! Everything was smooth and well-organised. Will definitely
+          book again. The remote roads of Spiti can be challenging but our GoHigh vehicle was fully equipped for it.</p>
+        <button class="read-more-btn" onclick="toggleReview(this)">Read more <i
+            class="fas fa-chevron-down"></i></button>
+        <div class="text-review-footer">
+          <img src="{{ url_for('static', filename='images/review4.jpg') }}" alt="Anita Verma">
+          <div>
+            <h4>Anita Verma</h4><span>Spiti Valley Trek</span>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <div class="text-review" data-dest="dharamshala">
-      <div class="quote-icon">&ldquo;</div>
-      <p class="review-short">Peaceful and spiritual journey to Dharamshala. Truly a soul-refreshing trip.</p>
-      <p class="review-full hidden">Peaceful and spiritual journey to Dharamshala. Truly a soul-refreshing trip. The vehicle was clean and the driver was very helpful, pointing out all the best local cafes and viewpoints.</p>
-      <button class="read-more-btn" onclick="toggleReview(this)">Read more <i class="fas fa-chevron-down"></i></button>
-      <div class="text-review-footer">
-        <img src="{{ url_for('static', filename='images/review7.jpg') }}" alt="Vikram Rathore">
-        <div><h4>Vikram Rathore</h4><span>Dharamshala Retreat</span></div>
+      <div class="text-review" data-dest="dharamshala">
+        <div class="quote-icon">&ldquo;</div>
+        <p class="review-short">Peaceful and spiritual journey to Dharamshala. Truly a soul-refreshing trip.</p>
+        <p class="review-full hidden">Peaceful and spiritual journey to Dharamshala. Truly a soul-refreshing trip. The
+          vehicle was clean and the driver was very helpful, pointing out all the best local cafes and viewpoints.</p>
+        <button class="read-more-btn" onclick="toggleReview(this)">Read more <i
+            class="fas fa-chevron-down"></i></button>
+        <div class="text-review-footer">
+          <img src="{{ url_for('static', filename='images/review7.jpg') }}" alt="Vikram Rathore">
+          <div>
+            <h4>Vikram Rathore</h4><span>Dharamshala Retreat</span>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <!-- ── USER-SUBMITTED REVIEWS in text section ── -->
-    {% if user_reviews %}
+      <!-- ── USER-SUBMITTED REVIEWS in text section ── -->
+      {% if user_reviews %}
       {% for rev in user_reviews %}
       <div class="text-review user-submitted" data-dest="user">
         <span class="user-badge"><i class="fas fa-check-circle"></i> Verified Community Review</span>
@@ -635,10 +792,12 @@
         <p class="review-short">{{ rev.review_text[:120] }}{% if rev.review_text|length > 120 %}…{% endif %}</p>
         {% if rev.review_text|length > 120 %}
         <p class="review-full hidden">{{ rev.review_text }}</p>
-        <button class="read-more-btn" onclick="toggleReview(this)">Read more <i class="fas fa-chevron-down"></i></button>
+        <button class="read-more-btn" onclick="toggleReview(this)">Read more <i
+            class="fas fa-chevron-down"></i></button>
         {% endif %}
         <div class="text-review-footer">
-          <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#E07B54,#c96940);display:flex;align-items:center;justify-content:center;color:#fff;font-size:1rem;font-weight:800;flex-shrink:0;">
+          <div
+            style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#E07B54,#c96940);display:flex;align-items:center;justify-content:center;color:#fff;font-size:1rem;font-weight:800;flex-shrink:0;">
             {{ rev.reviewer_name[0].upper() }}
           </div>
           <div>
@@ -651,330 +810,331 @@
         </div>
       </div>
       {% endfor %}
-    {% endif %}
+      {% endif %}
 
-  </div>
-
-  <p class="no-reviews-msg hidden" id="noReviewsMsg">No reviews found for this destination yet. Be the first! 🏔️</p>
-</section>
-
-
-<!-- Quick Booking -->
-<section class="quick-booking">
-  <h2>📅 Quick Booking</h2>
-  <p class="booking-subtitle">Check real-time vehicle availability for your dream destination</p>
-
-  <div class="booking-form">
-    <select id="destination-select">
-      <option value="">🏔 Select Destination</option>
-      <option value="manali">Manali - Himachal Pradesh</option>
-      <option value="leh">Leh Ladakh - Ladakh</option>
-      <option value="shimla">Shimla - Himachal Pradesh</option>
-      <option value="auli">Auli - Uttarakhand</option>
-      <option value="spiti">Spiti Valley - Himachal Pradesh</option>
-      <option value="kashmir">Kashmir Valley - J&K</option>
-      <option value="dharamshala">Dharamshala - Himachal Pradesh</option>
-      <option value="dalhousie">Dalhousie - Himachal Pradesh</option>
-    </select>
-    <input type="date" id="check-in">
-    <input type="date" id="check-out">
-    <button onclick="checkAvailability()">
-      <i class="fas fa-search"></i> Check Availability
-    </button>
-    <button onclick="resetBooking()" class="reset-btn">
-      <i class="fas fa-rotate-left"></i> Reset
-    </button>
-  </div>
-
-  <div class="availability-result" id="availabilityResult" style="display:none;">
-    <div class="result-header" id="resultHeader"></div>
-    <div class="vehicle-grid" id="vehicleGrid"></div>
-    <div class="booking-summary" id="bookingSummary" style="display:none;">
-      <h4>📋 Booking Summary</h4>
-      <div class="summary-details" id="summaryDetails"></div>
-      <a href="{{ url_for('booking.create_booking_page') }}" class="confirm-booking-btn" id="confirmBtn">
-        <i class="fas fa-check-circle"></i> Proceed to Book
-      </a>
     </div>
-  </div>
-</section>
 
-<div class="scroll-top" id="scrollTop">
+    <p class="no-reviews-msg hidden" id="noReviewsMsg">No reviews found for this destination yet. Be the first! 🏔️</p>
+  </section>
+
+
+  <!-- Quick Booking -->
+  <section class="quick-booking">
+    <h2>📅 Quick Booking</h2>
+    <p class="booking-subtitle">Check real-time vehicle availability for your dream destination</p>
+
+    <div class="booking-form">
+      <select id="destination-select">
+        <option value="">🏔 Select Destination</option>
+        <option value="manali">Manali - Himachal Pradesh</option>
+        <option value="leh">Leh Ladakh - Ladakh</option>
+        <option value="shimla">Shimla - Himachal Pradesh</option>
+        <option value="auli">Auli - Uttarakhand</option>
+        <option value="spiti">Spiti Valley - Himachal Pradesh</option>
+        <option value="kashmir">Kashmir Valley - J&K</option>
+        <option value="dharamshala">Dharamshala - Himachal Pradesh</option>
+        <option value="dalhousie">Dalhousie - Himachal Pradesh</option>
+      </select>
+      <input type="date" id="check-in">
+      <input type="date" id="check-out">
+      <button onclick="checkAvailability()">
+        <i class="fas fa-search"></i> Check Availability
+      </button>
+      <button onclick="resetBooking()" class="reset-btn">
+        <i class="fas fa-rotate-left"></i> Reset
+      </button>
+    </div>
+
+    <div class="availability-result" id="availabilityResult" style="display:none;">
+      <div class="result-header" id="resultHeader"></div>
+      <div class="vehicle-grid" id="vehicleGrid"></div>
+      <div class="booking-summary" id="bookingSummary" style="display:none;">
+        <h4>📋 Booking Summary</h4>
+        <div class="summary-details" id="summaryDetails"></div>
+        <a href="{{ url_for('booking.create_booking_page') }}" class="confirm-booking-btn" id="confirmBtn">
+          <i class="fas fa-check-circle"></i> Proceed to Book
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <div class="scroll-top" id="scrollTop">
     <i class="fas fa-arrow-up"></i>
-</div>
+  </div>
 
-<script>
-// ── Dropdown ──
-function toggleDropdown() {
-  document.getElementById('userDropdownMenu').classList.toggle('open');
-}
-document.addEventListener('click', function(e) {
-  if (!e.target.closest('.user-dropdown')) {
-    document.getElementById('userDropdownMenu')?.classList.remove('open');
-  }
-});
+  <script>
+    // ── Dropdown ──
+    function toggleDropdown() {
+      document.getElementById('userDropdownMenu').classList.toggle('open');
+    }
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('.user-dropdown')) {
+        document.getElementById('userDropdownMenu')?.classList.remove('open');
+      }
+    });
 
-// Auto-remove flash messages
-document.querySelectorAll('.flash-message').forEach(msg => {
-    setTimeout(() => msg.remove(), 2000);
-});
+    // Auto-remove flash messages
+    document.querySelectorAll('.flash-message').forEach(msg => {
+      setTimeout(() => msg.remove(), 2000);
+    });
 
-// Smooth scroll
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
         e.preventDefault();
         const target = document.querySelector(this.getAttribute('href'));
         if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
     });
-});
 
-// Scroll to top
-const scrollTop = document.getElementById('scrollTop');
-window.addEventListener('scroll', () => {
-    scrollTop.classList.toggle('show', window.pageYOffset > 300);
-});
-scrollTop.addEventListener('click', () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-});
-
-// ── Availability Checker ──
-const vehicleInventory = {
-  manali:      [
-    { name: 'Mahindra Thar',    type: 'SUV',      seats: 4, price: 2499, fuel: 'Diesel', available: true  },
-    { name: 'Toyota Innova',    type: 'MUV',      seats: 7, price: 3199, fuel: 'Diesel', available: true  },
-    { name: 'Royal Enfield 350',type: 'Bike',     seats: 2, price: 1299, fuel: 'Petrol', available: false },
-  ],
-  leh:         [
-    { name: 'Mahindra Scorpio', type: 'SUV',      seats: 7, price: 3499, fuel: 'Diesel', available: true  },
-    { name: 'Royal Enfield 500',type: 'Bike',     seats: 2, price: 1599, fuel: 'Petrol', available: true  },
-    { name: 'Toyota Fortuner',  type: 'SUV',      seats: 7, price: 4299, fuel: 'Diesel', available: false },
-  ],
-  shimla:      [
-    { name: 'Maruti Swift Dzire',type:'Sedan',    seats: 5, price: 1499, fuel: 'Petrol', available: true  },
-    { name: 'Toyota Innova',    type: 'MUV',      seats: 7, price: 2799, fuel: 'Diesel', available: true  },
-    { name: 'Hyundai Creta',    type: 'SUV',      seats: 5, price: 1999, fuel: 'Petrol', available: true  },
-  ],
-  auli:        [
-    { name: 'Mahindra Thar',    type: 'SUV',      seats: 4, price: 2799, fuel: 'Diesel', available: true  },
-    { name: 'Toyota Fortuner',  type: 'SUV',      seats: 7, price: 4499, fuel: 'Diesel', available: false },
-  ],
-  spiti:       [
-    { name: 'Mahindra Bolero',  type: 'SUV',      seats: 7, price: 2999, fuel: 'Diesel', available: true  },
-    { name: 'Royal Enfield 500',type: 'Bike',     seats: 2, price: 1499, fuel: 'Petrol', available: true  },
-  ],
-  kashmir:     [
-    { name: 'Toyota Innova',    type: 'MUV',      seats: 7, price: 3299, fuel: 'Diesel', available: true  },
-    { name: 'Mahindra Scorpio', type: 'SUV',      seats: 7, price: 3799, fuel: 'Diesel', available: false },
-  ],
-  dharamshala: [
-    { name: 'Hyundai Creta',    type: 'SUV',      seats: 5, price: 2199, fuel: 'Petrol', available: true  },
-    { name: 'Maruti Ertiga',    type: 'MUV',      seats: 6, price: 1899, fuel: 'Petrol', available: true  },
-  ],
-  dalhousie:   [
-    { name: 'Maruti Swift',     type: 'Hatchback',seats: 5, price: 1499, fuel: 'Petrol', available: true  },
-    { name: 'Hyundai Creta',    type: 'SUV',      seats: 5, price: 2099, fuel: 'Diesel', available: true  },
-  ],
-};
-const vehicleIcons = { 'SUV':'fa-truck-monster','MUV':'fa-van-shuttle','Bike':'fa-motorcycle','Sedan':'fa-car','Hatchback':'fa-car-side' };
-let selectedVehicle = null, bookingDest='', bookingIn='', bookingOut='', bookingDays=0;
-
-function checkAvailability() {
-  const dest=document.getElementById('destination-select').value;
-  const checkIn=document.getElementById('check-in').value;
-  const checkOut=document.getElementById('check-out').value;
-  if (!dest||!checkIn||!checkOut){shakeForm();return;}
-  const inDate=new Date(checkIn),outDate=new Date(checkOut);
-  if(outDate<=inDate){alert('⚠️ Check-out date must be after check-in date.');return;}
-  bookingDays=Math.ceil((outDate-inDate)/(1000*60*60*24));
-  bookingDest=dest;bookingIn=checkIn;bookingOut=checkOut;selectedVehicle=null;
-  const resultPanel=document.getElementById('availabilityResult');
-  const header=document.getElementById('resultHeader');
-  const grid=document.getElementById('vehicleGrid');
-  const summary=document.getElementById('bookingSummary');
-  summary.style.display='none';
-  resultPanel.style.display='block';
-  resultPanel.scrollIntoView({behavior:'smooth',block:'start'});
-  const vehicles=vehicleInventory[dest]||[];
-  const available=vehicles.filter(v=>v.available);
-  const destLabel=document.querySelector(`#destination-select option[value="${dest}"]`).text;
-  header.innerHTML=`<div class="result-info"><span class="result-badge ${available.length>0?'badge-green':'badge-red'}">${available.length>0?'✅ '+available.length+' Vehicles Available':'❌ No Vehicles Available'}</span><p>📍 <strong>${destLabel}</strong> &nbsp;|&nbsp; 📅 ${formatDate(checkIn)} → ${formatDate(checkOut)} &nbsp;|&nbsp; 🌙 ${bookingDays} night${bookingDays>1?'s':''}</p></div>`;
-  if(vehicles.length===0){grid.innerHTML='<p class="no-vehicle-msg">No vehicles listed for this destination yet.</p>';return;}
-  grid.innerHTML=vehicles.map((v,i)=>`<div class="vehicle-card ${!v.available?'unavailable':''}" onclick="${v.available?'selectVehicle('+i+', \''+dest+'\')':''}"><div class="vehicle-status-badge ${v.available?'status-available':'status-booked'}">${v.available?'Available':'Booked'}</div><div class="vehicle-icon"><i class="fas ${vehicleIcons[v.type]||'fa-car'}"></i></div><h4>${v.name}</h4><div class="vehicle-meta"><span><i class="fas fa-tag"></i> ${v.type}</span><span><i class="fas fa-users"></i> ${v.seats} seats</span><span><i class="fas fa-gas-pump"></i> ${v.fuel}</span></div><div class="vehicle-price">₹${v.price.toLocaleString()} <small>/day</small>${bookingDays>0?'<div class="vehicle-total">Total: ₹'+(v.price*bookingDays).toLocaleString()+'</div>':''}</div>${v.available?'<button class="select-vehicle-btn">Select Vehicle</button>':'<button class="select-vehicle-btn disabled" disabled>Not Available</button>'}</div>`).join('');
-}
-function selectVehicle(index,dest){
-  const vehicle=vehicleInventory[dest][index];
-  if(!vehicle.available)return;
-  selectedVehicle=vehicle;
-  document.querySelectorAll('.vehicle-card').forEach((c,i)=>c.classList.toggle('selected',i===index));
-  const total=vehicle.price*bookingDays;
-  const destLabel=document.querySelector(`#destination-select option[value="${dest}"]`).text;
-  const summary=document.getElementById('bookingSummary');
-  document.getElementById('summaryDetails').innerHTML=`<div class="summary-row"><span>Destination</span><strong>${destLabel}</strong></div><div class="summary-row"><span>Vehicle</span><strong>${vehicle.name} (${vehicle.type})</strong></div><div class="summary-row"><span>Check-in</span><strong>${formatDate(bookingIn)}</strong></div><div class="summary-row"><span>Check-out</span><strong>${formatDate(bookingOut)}</strong></div><div class="summary-row"><span>Duration</span><strong>${bookingDays} night${bookingDays>1?'s':''}</strong></div><div class="summary-row"><span>Rate</span><strong>₹${vehicle.price.toLocaleString()}/day</strong></div><div class="summary-row total-row"><span>Total Estimate</span><strong>₹${total.toLocaleString()}</strong></div>`;
-  summary.style.display='block';
-  summary.scrollIntoView({behavior:'smooth',block:'nearest'});
-}
-function resetBooking(){
-  document.getElementById('destination-select').value='';
-  document.getElementById('check-in').value='';
-  document.getElementById('check-out').value='';
-  document.getElementById('availabilityResult').style.display='none';
-  document.getElementById('bookingSummary').style.display='none';
-  selectedVehicle=null;
-}
-function formatDate(str){const d=new Date(str);return d.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});}
-function shakeForm(){const form=document.querySelector('.booking-form');form.classList.add('shake');setTimeout(()=>form.classList.remove('shake'),600);}
-window.addEventListener('DOMContentLoaded',()=>{
-  const today=new Date().toISOString().split('T')[0];
-  document.getElementById('check-in').min=today;
-  document.getElementById('check-out').min=today;
-  document.getElementById('check-in').addEventListener('change',function(){
-    const checkOut=document.getElementById('check-out');
-    checkOut.min=this.value;
-    if(checkOut.value&&checkOut.value<=this.value)checkOut.value='';
-  });
-});
-
-// Image fallback
-document.querySelectorAll('.destination-card img').forEach(img=>{
-    img.addEventListener('load',function(){this.classList.add('loaded');});
-    img.onerror=function(){this.src="https://via.placeholder.com/600x400?text=Himalayan+Destination";};
-});
-
-// ── Review Slider ──
-window.addEventListener('load', function () {
-  const wrapper=document.getElementById('reviewWrapper');
-  const dotsEl=document.getElementById('reviewDots');
-  let current=0,busy=false,autoTimer;
-  const origCards=Array.from(wrapper.querySelectorAll('.review-card'));
-  const total=origCards.length;
-  origCards.forEach(c=>wrapper.appendChild(c.cloneNode(true)));
-  function step(){const card=wrapper.querySelector('.review-card');return card.getBoundingClientRect().width+24;}
-  function go(animated){wrapper.style.transition=animated?'transform 0.5s cubic-bezier(.4,0,.2,1)':'none';wrapper.style.transform=`translateX(-${current*step()}px)`;}
-  function dots(){dotsEl.innerHTML='';origCards.forEach((_,i)=>{const d=document.createElement('button');d.className='review-dot'+(i===current?' active':'');d.onclick=()=>{if(!busy){clearInterval(autoTimer);jump(i);startAuto();}};dotsEl.appendChild(d);});}
-  function syncDots(){const idx=((current%total)+total)%total;dotsEl.querySelectorAll('.review-dot').forEach((d,i)=>d.classList.toggle('active',i===idx));}
-  function jump(i){current=i;go(true);syncDots();}
-  window.slideReviews=function(dir){
-    if(busy)return;busy=true;clearInterval(autoTimer);current+=dir;go(true);syncDots();
-    setTimeout(()=>{
-      if(current>=total){current-=total;go(false);}
-      else if(current<0){current+=total;go(false);}
-      requestAnimationFrame(()=>requestAnimationFrame(()=>{wrapper.style.transition='transform 0.5s cubic-bezier(.4,0,.2,1)';busy=false;syncDots();startAuto();}));
-    },520);
-  };
-  function startAuto(){clearInterval(autoTimer);autoTimer=setInterval(()=>slideReviews(1),3500);}
-  dots();go(false);startAuto();
-  window.addEventListener('resize',()=>{go(false);});
-});
-
-// ── Review Filter ──
-document.querySelectorAll('.filter-tab').forEach(tab=>{
-  tab.addEventListener('click',function(){
-    document.querySelectorAll('.filter-tab').forEach(t=>t.classList.remove('active'));
-    this.classList.add('active');
-    const filter=this.dataset.filter;
-    let visible=0;
-    document.querySelectorAll('#textReviewContainer .text-review').forEach(card=>{
-      const match=filter==='all'||card.dataset.dest===filter;
-      card.style.display=match?'':'none';
-      if(match)visible++;
+    // Scroll to top
+    const scrollTop = document.getElementById('scrollTop');
+    window.addEventListener('scroll', () => {
+      scrollTop.classList.toggle('show', window.pageYOffset > 300);
     });
-    document.getElementById('noReviewsMsg').classList.toggle('hidden',visible>0);
-  });
-});
+    scrollTop.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
 
-// ── Expand/Collapse Review ──
-function toggleReview(btn){
-  const card=btn.closest('.text-review');
-  const short=card.querySelector('.review-short');
-  const full=card.querySelector('.review-full');
-  const expanded=full.classList.contains('hidden');
-  short.classList.toggle('hidden',expanded);
-  full.classList.toggle('hidden',!expanded);
-  btn.innerHTML=expanded?'Read less <i class="fas fa-chevron-up"></i>':'Read more <i class="fas fa-chevron-down"></i>';
-}
+    // ── Availability Checker ──
+    const vehicleInventory = {
+      manali: [
+        { name: 'Mahindra Thar', type: 'SUV', seats: 4, price: 2499, fuel: 'Diesel', available: true },
+        { name: 'Toyota Innova', type: 'MUV', seats: 7, price: 3199, fuel: 'Diesel', available: true },
+        { name: 'Royal Enfield 350', type: 'Bike', seats: 2, price: 1299, fuel: 'Petrol', available: false },
+      ],
+      leh: [
+        { name: 'Mahindra Scorpio', type: 'SUV', seats: 7, price: 3499, fuel: 'Diesel', available: true },
+        { name: 'Royal Enfield 500', type: 'Bike', seats: 2, price: 1599, fuel: 'Petrol', available: true },
+        { name: 'Toyota Fortuner', type: 'SUV', seats: 7, price: 4299, fuel: 'Diesel', available: false },
+      ],
+      shimla: [
+        { name: 'Maruti Swift Dzire', type: 'Sedan', seats: 5, price: 1499, fuel: 'Petrol', available: true },
+        { name: 'Toyota Innova', type: 'MUV', seats: 7, price: 2799, fuel: 'Diesel', available: true },
+        { name: 'Hyundai Creta', type: 'SUV', seats: 5, price: 1999, fuel: 'Petrol', available: true },
+      ],
+      auli: [
+        { name: 'Mahindra Thar', type: 'SUV', seats: 4, price: 2799, fuel: 'Diesel', available: true },
+        { name: 'Toyota Fortuner', type: 'SUV', seats: 7, price: 4499, fuel: 'Diesel', available: false },
+      ],
+      spiti: [
+        { name: 'Mahindra Bolero', type: 'SUV', seats: 7, price: 2999, fuel: 'Diesel', available: true },
+        { name: 'Royal Enfield 500', type: 'Bike', seats: 2, price: 1499, fuel: 'Petrol', available: true },
+      ],
+      kashmir: [
+        { name: 'Toyota Innova', type: 'MUV', seats: 7, price: 3299, fuel: 'Diesel', available: true },
+        { name: 'Mahindra Scorpio', type: 'SUV', seats: 7, price: 3799, fuel: 'Diesel', available: false },
+      ],
+      dharamshala: [
+        { name: 'Hyundai Creta', type: 'SUV', seats: 5, price: 2199, fuel: 'Petrol', available: true },
+        { name: 'Maruti Ertiga', type: 'MUV', seats: 6, price: 1899, fuel: 'Petrol', available: true },
+      ],
+      dalhousie: [
+        { name: 'Maruti Swift', type: 'Hatchback', seats: 5, price: 1499, fuel: 'Petrol', available: true },
+        { name: 'Hyundai Creta', type: 'SUV', seats: 5, price: 2099, fuel: 'Diesel', available: true },
+      ],
+    };
+    const vehicleIcons = { 'SUV': 'fa-truck-monster', 'MUV': 'fa-van-shuttle', 'Bike': 'fa-motorcycle', 'Sedan': 'fa-car', 'Hatchback': 'fa-car-side' };
+    let selectedVehicle = null, bookingDest = '', bookingIn = '', bookingOut = '', bookingDays = 0;
 
-// ── Gallery ──
-window.addEventListener('load',function(){
-  const gallery=document.getElementById('galleryContainer');
-  const origImgs=Array.from(gallery.querySelectorAll('img'));
-  const total=origImgs.length;
-  origImgs.forEach(img=>gallery.appendChild(img.cloneNode(true)));
-  let offset=0,looping=false;
-  function imgStep(){const img=gallery.querySelector('img');const w=img.offsetWidth||img.getBoundingClientRect().width||260;const gap=parseInt(getComputedStyle(gallery).gap)||20;return w+gap;}
-  function slideGallery(){
-    if(looping)return;const w=imgStep();if(w<=20)return;
-    const loopPoint=total*w;offset+=w;
-    gallery.style.transition='transform 0.6s ease';gallery.style.transform=`translateX(-${offset}px)`;
-    if(offset>=loopPoint){looping=true;setTimeout(()=>{offset=0;gallery.style.transition='none';gallery.style.transform='translateX(0)';requestAnimationFrame(()=>requestAnimationFrame(()=>{gallery.style.transition='transform 0.6s ease';looping=false;}));},650);}
-  }
-  setTimeout(()=>{setInterval(slideGallery,3000);},300);
-});
-</script>
-
-<script>
-/* ── User Notification Polling (every 5 s) ── */
-(function() {
-  // Toast container — reuse existing fixed panel or create one
-  function getContainer() {
-    let c = document.getElementById('notif-poll-container');
-    if (!c) {
-      c = document.createElement('div');
-      c.id = 'notif-poll-container';
-      c.style.cssText = [
-        'position:fixed','top:80px','right:20px','z-index:9999',
-        'display:flex','flex-direction:column','gap:10px','max-width:320px'
-      ].join(';');
-      document.body.appendChild(c);
+    function checkAvailability() {
+      const dest = document.getElementById('destination-select').value;
+      const checkIn = document.getElementById('check-in').value;
+      const checkOut = document.getElementById('check-out').value;
+      if (!dest || !checkIn || !checkOut) { shakeForm(); return; }
+      const inDate = new Date(checkIn), outDate = new Date(checkOut);
+      if (outDate <= inDate) { alert('⚠️ Check-out date must be after check-in date.'); return; }
+      bookingDays = Math.ceil((outDate - inDate) / (1000 * 60 * 60 * 24));
+      bookingDest = dest; bookingIn = checkIn; bookingOut = checkOut; selectedVehicle = null;
+      const resultPanel = document.getElementById('availabilityResult');
+      const header = document.getElementById('resultHeader');
+      const grid = document.getElementById('vehicleGrid');
+      const summary = document.getElementById('bookingSummary');
+      summary.style.display = 'none';
+      resultPanel.style.display = 'block';
+      resultPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const vehicles = vehicleInventory[dest] || [];
+      const available = vehicles.filter(v => v.available);
+      const destLabel = document.querySelector(`#destination-select option[value="${dest}"]`).text;
+      header.innerHTML = `<div class="result-info"><span class="result-badge ${available.length > 0 ? 'badge-green' : 'badge-red'}">${available.length > 0 ? '✅ ' + available.length + ' Vehicles Available' : '❌ No Vehicles Available'}</span><p>📍 <strong>${destLabel}</strong> &nbsp;|&nbsp; 📅 ${formatDate(checkIn)} → ${formatDate(checkOut)} &nbsp;|&nbsp; 🌙 ${bookingDays} night${bookingDays > 1 ? 's' : ''}</p></div>`;
+      if (vehicles.length === 0) { grid.innerHTML = '<p class="no-vehicle-msg">No vehicles listed for this destination yet.</p>'; return; }
+      grid.innerHTML = vehicles.map((v, i) => `<div class="vehicle-card ${!v.available ? 'unavailable' : ''}" onclick="${v.available ? 'selectVehicle(' + i + ', \'' + dest + '\')' : ''}"><div class="vehicle-status-badge ${v.available ? 'status-available' : 'status-booked'}">${v.available ? 'Available' : 'Booked'}</div><div class="vehicle-icon"><i class="fas ${vehicleIcons[v.type] || 'fa-car'}"></i></div><h4>${v.name}</h4><div class="vehicle-meta"><span><i class="fas fa-tag"></i> ${v.type}</span><span><i class="fas fa-users"></i> ${v.seats} seats</span><span><i class="fas fa-gas-pump"></i> ${v.fuel}</span></div><div class="vehicle-price">₹${v.price.toLocaleString()} <small>/day</small>${bookingDays > 0 ? '<div class="vehicle-total">Total: ₹' + (v.price * bookingDays).toLocaleString() + '</div>' : ''}</div>${v.available ? '<button class="select-vehicle-btn">Select Vehicle</button>' : '<button class="select-vehicle-btn disabled" disabled>Not Available</button>'}</div>`).join('');
     }
-    return c;
-  }
+    function selectVehicle(index, dest) {
+      const vehicle = vehicleInventory[dest][index];
+      if (!vehicle.available) return;
+      selectedVehicle = vehicle;
+      document.querySelectorAll('.vehicle-card').forEach((c, i) => c.classList.toggle('selected', i === index));
+      const total = vehicle.price * bookingDays;
+      const destLabel = document.querySelector(`#destination-select option[value="${dest}"]`).text;
+      const summary = document.getElementById('bookingSummary');
+      document.getElementById('summaryDetails').innerHTML = `<div class="summary-row"><span>Destination</span><strong>${destLabel}</strong></div><div class="summary-row"><span>Vehicle</span><strong>${vehicle.name} (${vehicle.type})</strong></div><div class="summary-row"><span>Check-in</span><strong>${formatDate(bookingIn)}</strong></div><div class="summary-row"><span>Check-out</span><strong>${formatDate(bookingOut)}</strong></div><div class="summary-row"><span>Duration</span><strong>${bookingDays} night${bookingDays > 1 ? 's' : ''}</strong></div><div class="summary-row"><span>Rate</span><strong>₹${vehicle.price.toLocaleString()}/day</strong></div><div class="summary-row total-row"><span>Total Estimate</span><strong>₹${total.toLocaleString()}</strong></div>`;
+      summary.style.display = 'block';
+      summary.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    function resetBooking() {
+      document.getElementById('destination-select').value = '';
+      document.getElementById('check-in').value = '';
+      document.getElementById('check-out').value = '';
+      document.getElementById('availabilityResult').style.display = 'none';
+      document.getElementById('bookingSummary').style.display = 'none';
+      selectedVehicle = null;
+    }
+    function formatDate(str) { const d = new Date(str); return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }); }
+    function shakeForm() { const form = document.querySelector('.booking-form'); form.classList.add('shake'); setTimeout(() => form.classList.remove('shake'), 600); }
+    window.addEventListener('DOMContentLoaded', () => {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('check-in').min = today;
+      document.getElementById('check-out').min = today;
+      document.getElementById('check-in').addEventListener('change', function () {
+        const checkOut = document.getElementById('check-out');
+        checkOut.min = this.value;
+        if (checkOut.value && checkOut.value <= this.value) checkOut.value = '';
+      });
+    });
 
-  function showToast(n) {
-    const container = getContainer();
-    const isConfirmed = n.booking_status === 'Confirmed';
-    const toast = document.createElement('div');
-    toast.style.cssText = [
-      'padding:14px 18px','border-radius:10px','font-size:0.9rem',
-      'box-shadow:0 4px 16px rgba(0,0,0,0.12)','font-weight:600',
-      'animation:slideInRight 0.35s ease',
-      isConfirmed
-        ? 'background:#e6f9f0;border-left:4px solid #1a7a4a;color:#1a7a4a'
-        : 'background:#fff0f0;border-left:4px solid #c0392b;color:#c0392b'
-    ].join(';');
-    toast.innerHTML = isConfirmed
-      ? `&#127881; Booking to <strong>${n.destination_name}</strong> is <strong>Confirmed!</strong>`
-      : `&#10060; Booking to <strong>${n.destination_name}</strong> was <strong>Cancelled.</strong>`;
-    container.appendChild(toast);
-    setTimeout(() => {
-      toast.style.transition = 'opacity 0.5s';
-      toast.style.opacity = '0';
-      setTimeout(() => toast.remove(), 500);
-    }, 4000);
-  }
+    // Image fallback
+    document.querySelectorAll('.destination-card img').forEach(img => {
+      img.addEventListener('load', function () { this.classList.add('loaded'); });
+      img.onerror = function () { this.src = "https://via.placeholder.com/600x400?text=Himalayan+Destination"; };
+    });
 
-  let polling = true;
+    // ── Review Slider ──
+    window.addEventListener('load', function () {
+      const wrapper = document.getElementById('reviewWrapper');
+      const dotsEl = document.getElementById('reviewDots');
+      let current = 0, busy = false, autoTimer;
+      const origCards = Array.from(wrapper.querySelectorAll('.review-card'));
+      const total = origCards.length;
+      origCards.forEach(c => wrapper.appendChild(c.cloneNode(true)));
+      function step() { const card = wrapper.querySelector('.review-card'); return card.getBoundingClientRect().width + 24; }
+      function go(animated) { wrapper.style.transition = animated ? 'transform 0.5s cubic-bezier(.4,0,.2,1)' : 'none'; wrapper.style.transform = `translateX(-${current * step()}px)`; }
+      function dots() { dotsEl.innerHTML = ''; origCards.forEach((_, i) => { const d = document.createElement('button'); d.className = 'review-dot' + (i === current ? ' active' : ''); d.onclick = () => { if (!busy) { clearInterval(autoTimer); jump(i); startAuto(); } }; dotsEl.appendChild(d); }); }
+      function syncDots() { const idx = ((current % total) + total) % total; dotsEl.querySelectorAll('.review-dot').forEach((d, i) => d.classList.toggle('active', i === idx)); }
+      function jump(i) { current = i; go(true); syncDots(); }
+      window.slideReviews = function (dir) {
+        if (busy) return; busy = true; clearInterval(autoTimer); current += dir; go(true); syncDots();
+        setTimeout(() => {
+          if (current >= total) { current -= total; go(false); }
+          else if (current < 0) { current += total; go(false); }
+          requestAnimationFrame(() => requestAnimationFrame(() => { wrapper.style.transition = 'transform 0.5s cubic-bezier(.4,0,.2,1)'; busy = false; syncDots(); startAuto(); }));
+        }, 520);
+      };
+      function startAuto() { clearInterval(autoTimer); autoTimer = setInterval(() => slideReviews(1), 3500); }
+      dots(); go(false); startAuto();
+      window.addEventListener('resize', () => { go(false); });
+    });
 
-  function poll() {
-    if (!polling) return;
-    fetch('/api/user/notifications')
-      .then(r => { if (r.status === 403) { polling = false; return []; } return r.ok ? r.json() : []; })
-      .then(notices => {
-        if (!notices.length) return;
-        const ids = notices.map(n => n.booking_id);
-        notices.forEach(showToast);
-        // Mark as read so they don't reappear
-        fetch('/api/user/mark_notified', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ids })
+    // ── Review Filter ──
+    document.querySelectorAll('.filter-tab').forEach(tab => {
+      tab.addEventListener('click', function () {
+        document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        const filter = this.dataset.filter;
+        let visible = 0;
+        document.querySelectorAll('#textReviewContainer .text-review').forEach(card => {
+          const match = filter === 'all' || card.dataset.dest === filter;
+          card.style.display = match ? '' : 'none';
+          if (match) visible++;
         });
-      })
-      .catch(() => {});
-  }
+        document.getElementById('noReviewsMsg').classList.toggle('hidden', visible > 0);
+      });
+    });
 
-  setInterval(poll, 5000);
-})();
-</script>
+    // ── Expand/Collapse Review ──
+    function toggleReview(btn) {
+      const card = btn.closest('.text-review');
+      const short = card.querySelector('.review-short');
+      const full = card.querySelector('.review-full');
+      const expanded = full.classList.contains('hidden');
+      short.classList.toggle('hidden', expanded);
+      full.classList.toggle('hidden', !expanded);
+      btn.innerHTML = expanded ? 'Read less <i class="fas fa-chevron-up"></i>' : 'Read more <i class="fas fa-chevron-down"></i>';
+    }
+
+    // ── Gallery ──
+    window.addEventListener('load', function () {
+      const gallery = document.getElementById('galleryContainer');
+      const origImgs = Array.from(gallery.querySelectorAll('img'));
+      const total = origImgs.length;
+      origImgs.forEach(img => gallery.appendChild(img.cloneNode(true)));
+      let offset = 0, looping = false;
+      function imgStep() { const img = gallery.querySelector('img'); const w = img.offsetWidth || img.getBoundingClientRect().width || 260; const gap = parseInt(getComputedStyle(gallery).gap) || 20; return w + gap; }
+      function slideGallery() {
+        if (looping) return; const w = imgStep(); if (w <= 20) return;
+        const loopPoint = total * w; offset += w;
+        gallery.style.transition = 'transform 0.6s ease'; gallery.style.transform = `translateX(-${offset}px)`;
+        if (offset >= loopPoint) { looping = true; setTimeout(() => { offset = 0; gallery.style.transition = 'none'; gallery.style.transform = 'translateX(0)'; requestAnimationFrame(() => requestAnimationFrame(() => { gallery.style.transition = 'transform 0.6s ease'; looping = false; })); }, 650); }
+      }
+      setTimeout(() => { setInterval(slideGallery, 3000); }, 300);
+    });
+  </script>
+
+  <script>
+    /* ── User Notification Polling (every 5 s) ── */
+    (function () {
+      // Toast container — reuse existing fixed panel or create one
+      function getContainer() {
+        let c = document.getElementById('notif-poll-container');
+        if (!c) {
+          c = document.createElement('div');
+          c.id = 'notif-poll-container';
+          c.style.cssText = [
+            'position:fixed', 'top:80px', 'right:20px', 'z-index:9999',
+            'display:flex', 'flex-direction:column', 'gap:10px', 'max-width:320px'
+          ].join(';');
+          document.body.appendChild(c);
+        }
+        return c;
+      }
+
+      function showToast(n) {
+        const container = getContainer();
+        const isConfirmed = n.booking_status === 'Confirmed';
+        const toast = document.createElement('div');
+        toast.style.cssText = [
+          'padding:14px 18px', 'border-radius:10px', 'font-size:0.9rem',
+          'box-shadow:0 4px 16px rgba(0,0,0,0.12)', 'font-weight:600',
+          'animation:slideInRight 0.35s ease',
+          isConfirmed
+            ? 'background:#e6f9f0;border-left:4px solid #1a7a4a;color:#1a7a4a'
+            : 'background:#fff0f0;border-left:4px solid #c0392b;color:#c0392b'
+        ].join(';');
+        toast.innerHTML = isConfirmed
+          ? `&#127881; Booking to <strong>${n.destination_name}</strong> is <strong>Confirmed!</strong>`
+          : `&#10060; Booking to <strong>${n.destination_name}</strong> was <strong>Cancelled.</strong>`;
+        container.appendChild(toast);
+        setTimeout(() => {
+          toast.style.transition = 'opacity 0.5s';
+          toast.style.opacity = '0';
+          setTimeout(() => toast.remove(), 500);
+        }, 4000);
+      }
+
+      let polling = true;
+
+      function poll() {
+        if (!polling) return;
+        fetch('/api/user/notifications')
+          .then(r => { if (r.status === 403) { polling = false; return []; } return r.ok ? r.json() : []; })
+          .then(notices => {
+            if (!notices.length) return;
+            const ids = notices.map(n => n.booking_id);
+            notices.forEach(showToast);
+            // Mark as read so they don't reappear
+            fetch('/api/user/mark_notified', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ ids })
+            });
+          })
+          .catch(() => { });
+      }
+
+      setInterval(poll, 5000);
+    })();
+  </script>
 
 </body>
-</html>
+
+</html>
