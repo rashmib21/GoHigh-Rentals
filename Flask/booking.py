@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, session, flash, url_for
 from .db import get_db_connection
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 import re
 
 booking_bp = Blueprint("booking", __name__)
@@ -43,9 +43,11 @@ def create_booking():
     travel_date    = request.form.get("travel_date")
     booking_type   = request.form.get("booking_type", "day")
     duration_value = request.form.get("duration_value", 1, type=int)
+    start_time     = request.form.get("start_time") or None
+    end_time       = request.form.get("end_time")   or None
     terms_accepted = request.form.get("terms_accepted")
 
-    # FIX 5: Terms must be accepted
+    # Terms must be accepted
     if not terms_accepted:
         flash("Please accept the Terms & Conditions to proceed.", "error")
         return redirect(url_for("booking.create_booking_page",
@@ -57,11 +59,25 @@ def create_booking():
         flash("Invalid date! Please select a future date.", "error")
         return redirect(url_for("booking.create_booking_page"))
 
+    # ── Auto-convert 24 hours → 1 day ──
+    if booking_type == "hour" and duration_value >= 24:
+        days         = duration_value // 24
+        duration_value = days
+        booking_type = "day"
+        start_time   = None
+        end_time     = None
+
+    # ── Clamp limits ──
+    if booking_type == "hour":
+        duration_value = max(1, min(duration_value, 24))
+    else:
+        duration_value = max(1, min(duration_value, 30))
+
     user_id = session["user_id"]
     conn    = get_db_connection()
     cursor  = conn.cursor(dictionary=True)
 
-    # FIX 1: Real price from destination
+    # Real price from destination
     cursor.execute("""
         SELECT price_per_day, price_per_hour
         FROM destination WHERE destination_id = %s
@@ -77,7 +93,7 @@ def create_booking():
     pricing_type = "Hourly" if booking_type == "hour" else "Daily"
     base_amount  = round(rate * duration_value, 2)
 
-    # FIX 1: Proper GST 18%
+    # GST 18%
     gst_rate     = 18
     gst_amount   = round(base_amount * gst_rate / 100, 2)
     discount     = 0.00
@@ -87,13 +103,14 @@ def create_booking():
     cursor.execute("""
         INSERT INTO booking
             (destination_id, vehicle_id, travel_date, booking_status,
-             user_id, booking_date, cancelled_by, admin_notified, notified)
-        VALUES (%s,%s,%s,'Pending',%s,%s,NULL,0,0)
-    """, (destination_id, vehicle_id, travel_date, user_id, date.today()))
+             user_id, booking_date, cancelled_by, admin_notified, notified,
+             start_time, end_time)
+        VALUES (%s,%s,%s,'Pending',%s,%s,NULL,0,0,%s,%s)
+    """, (destination_id, vehicle_id, travel_date, user_id, date.today(),
+          start_time, end_time))
     conn.commit()
     booking_id = cursor.lastrowid
 
-    # FIX 1: Store gst_rate, gst_amount, base, total separately
     cursor.execute("""
         INSERT INTO pricing
             (base_amount, tax_amount, discount, total_amount,
@@ -142,11 +159,14 @@ def show_bill(booking_id):
     cursor = conn.cursor(dictionary=True)
     cursor.execute("""
         SELECT p.*, b.travel_date, b.booking_status, b.booking_date,
-               b.booking_id, d.destination_name, v.vehicle_name
+               b.booking_id, b.start_time, b.end_time,
+               d.destination_name, v.vehicle_name,
+               u.name AS user_name, u.phone_no
         FROM pricing p
         JOIN booking b     ON p.booking_id     = b.booking_id
         JOIN destination d ON b.destination_id = d.destination_id
         JOIN vehicle v     ON b.vehicle_id     = v.vehicle_id
+        JOIN users u       ON b.user_id         = u.user_id
         WHERE p.booking_id = %s
     """, (booking_id,))
     bill = cursor.fetchone()
@@ -154,8 +174,29 @@ def show_bill(booking_id):
     conn.close()
 
     if bill:
-        gst_rate       = bill.get('gst_rate') or 18
+        gst_rate          = bill.get('gst_rate') or 18
         bill['gst_label'] = f"GST ({int(gst_rate)}%)"
+        # Format times as HH:MM strings if they exist (MySQL returns timedelta)
+        for tf in ('start_time', 'end_time'):
+            val = bill.get(tf)
+            if val is not None:
+                total_seconds = int(val.total_seconds())
+                h, m = divmod(total_seconds // 60, 60)
+                bill[tf] = f"{h:02d}:{m:02d}"
+        # Compute end_date for display
+        travel_date   = bill.get('travel_date')
+        duration_val  = bill.get('duration_value') or 1
+        duration_unit = bill.get('duration_unit') or 'day'
+        if travel_date:
+            if isinstance(travel_date, str):
+                travel_date_obj = date.fromisoformat(travel_date)
+            else:
+                travel_date_obj = travel_date
+            if duration_unit == 'day':
+                bill['end_date'] = (travel_date_obj + timedelta(days=int(duration_val))).strftime('%Y-%m-%d')
+            else:
+                # hourly: end on the same date
+                bill['end_date'] = travel_date_obj.strftime('%Y-%m-%d')
 
     return render_template("bill.html", bill=bill)
 

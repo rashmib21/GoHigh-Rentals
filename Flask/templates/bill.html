@@ -216,6 +216,16 @@
   <div class="inv-body">
 
     <div class="inv-row">
+      <span class="label">Traveller Name</span>
+      <span class="value">{{ bill.user_name or 'N/A' }}</span>
+    </div>
+
+    <div class="inv-row">
+      <span class="label">Contact Number</span>
+      <span class="value">{{ bill.phone_no or 'N/A' }}</span>
+    </div>
+
+    <div class="inv-row">
       <span class="label">Destination</span>
       <span class="value">{{ bill.destination_name }}</span>
     </div>
@@ -226,8 +236,19 @@
     </div>
 
     <div class="inv-row">
-      <span class="label">Travel Date</span>
-      <span class="value">{{ bill.travel_date }}</span>
+      <span class="label">Travel Start</span>
+      <span class="value">
+        {{ bill.travel_date }}
+        {% if bill.start_time %} &nbsp;⏰ {{ bill.start_time }}{% endif %}
+      </span>
+    </div>
+
+    <div class="inv-row">
+      <span class="label">Travel End</span>
+      <span class="value">
+        {{ bill.end_date or bill.travel_date }}
+        {% if bill.end_time %} &nbsp;⏰ {{ bill.end_time }}{% endif %}
+      </span>
     </div>
 
     <div class="inv-row">
