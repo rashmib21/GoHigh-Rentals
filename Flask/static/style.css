@@ -189,6 +189,8 @@ header, header.navbar {
 }
 
 .hero-button {
+  display:inline-block;
+  text-decoration:none;
   padding:17px 58px; border-radius:50px;
   background:var(--sunset); color:#fff;
   font-weight:800; font-size:1.05rem; border:none; cursor:pointer;
@@ -455,7 +457,8 @@ header, header.navbar {
 .stat-card:nth-child(5) { animation-delay: .33s; }
 .stat-card:hover { transform:translateY(-7px) scale(1.02); box-shadow:var(--shadow-lg); }
 .stat-card p { font-size:.76rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:.6px; }
-.stat-card h3 { font-size:1.9rem; font-weight:800; color:var(--peak); margin-top:3px; }
+.stat-card h3 { font-size:clamp(1rem, 1.8vw, 1.7rem); font-weight:800; color:var(--peak); margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.stat-card > div:last-child { min-width:0; flex:1; overflow:hidden; }
 
 .stat-icon {
   width:54px; height:54px; border-radius:15px;
