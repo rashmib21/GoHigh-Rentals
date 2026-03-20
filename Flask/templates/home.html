@@ -30,12 +30,171 @@
 </header>
 
 <section class="hero-section" id="home">
-    <div class="hero-content">
-        <h1>Conquer the Himalayas</h1>
-        <p>Where every mile tells a story ✨</p>
-        <a href="{{ url_for('register') }}" class="hero-button">Start Your Journey →</a>
+
+  <!-- Floating particles layer -->
+  <div id="heroParticles" style="position:absolute;inset:0;pointer-events:none;z-index:1;overflow:hidden;"></div>
+
+  <div class="hero-content" style="position:relative;z-index:3;max-width:900px;padding:0 16px;">
+
+    <!-- Animated badge -->
+    <div style="
+      display:inline-flex; align-items:center; gap:8px;
+      background:rgba(74,155,142,0.18);
+      border:1px solid rgba(74,155,142,0.4);
+      border-radius:30px; padding:8px 20px;
+      font-size:0.78rem; font-weight:800; color:#a8d5c2;
+      letter-spacing:1.5px; text-transform:uppercase;
+      margin-bottom:28px;
+      animation:heroReveal 1s 0s cubic-bezier(.16,1,.3,1) both;
+      backdrop-filter:blur(8px);
+    ">
+      <span style="width:7px;height:7px;border-radius:50%;background:#4A9B8E;display:inline-block;
+                   animation:badgePulse 1.6s ease-in-out infinite;"></span>
+      Premium Himalayan Expeditions
     </div>
+
+    <!-- Main heading with gradient shimmer -->
+    <h1 style="
+      font-family:'Playfair Display',serif;
+      font-size:clamp(2.4rem,7vw,4.8rem);
+      font-weight:800;
+      line-height:1.08;
+      letter-spacing:-0.5px;
+      margin-bottom:24px;
+      animation:heroReveal 1.1s 0.1s cubic-bezier(.16,1,.3,1) both;
+    ">
+      Conquer the<br>
+      <span class="shimmer-text">Himalayas</span>
+    </h1>
+
+    <!-- Subheading -->
+    <p style="
+      font-size:clamp(1rem,2.5vw,1.35rem);
+      color:rgba(168,213,194,0.9);
+      margin:0 0 18px;
+      line-height:1.6;
+      animation:heroReveal 1.1s 0.22s cubic-bezier(.16,1,.3,1) both;
+    ">
+      Where every mile tells a story ✨<br>
+      <span style="font-size:0.88em;color:rgba(168,213,194,0.65);">
+        Premium vehicles · Expert guides · Seamless bookings
+      </span>
+    </p>
+
+    <!-- CTA buttons -->
+    <div style="
+      display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-top:40px;
+      animation:heroReveal 1.1s 0.35s cubic-bezier(.16,1,.3,1) both;
+    ">
+      <a href="{{ url_for('register') }}" class="hero-button">🏔️ Start Your Journey →</a>
+      <a href="{{ url_for('login') }}" style="
+        padding:17px 40px; border-radius:50px;
+        background:rgba(255,255,255,0.1);
+        color:#fff; font-weight:800; font-size:1.05rem;
+        text-decoration:none;
+        border:2px solid rgba(255,255,255,0.25);
+        backdrop-filter:blur(8px);
+        transition:background 0.3s, border-color 0.3s, transform 0.3s;
+      " onmouseover="this.style.background='rgba(255,255,255,0.18)';this.style.transform='translateY(-4px)'"
+         onmouseout="this.style.background='rgba(255,255,255,0.1)';this.style.transform='translateY(0)'">
+        Login
+      </a>
+    </div>
+
+  </div>
+
+  <!-- Scroll-down indicator -->
+  <div style="
+    position:absolute; bottom:56px; left:50%; transform:translateX(-50%);
+    display:flex; flex-direction:column; align-items:center; gap:6px;
+    color:rgba(168,213,194,0.6); font-size:0.72rem; font-weight:700;
+    letter-spacing:1.5px; text-transform:uppercase; z-index:4;
+    animation:fadeInUp 1.4s 1s both;
+  ">
+    <span>Scroll</span>
+    <div style="
+      width:22px; height:34px; border:2px solid rgba(168,213,194,0.4);
+      border-radius:11px; position:relative;
+    ">
+      <div style="
+        width:4px; height:8px; border-radius:2px;
+        background:rgba(168,213,194,0.8);
+        position:absolute; top:5px; left:50%; transform:translateX(-50%);
+        animation:scrollDot 1.8s ease-in-out infinite;
+      "></div>
+    </div>
+  </div>
+
 </section>
+
+<style>
+/* ── Shimmer text gradient ── */
+.shimmer-text {
+  background: linear-gradient(90deg,
+    #4A9B8E 0%, #a8d5c2 30%, #D4A843 50%, #a8d5c2 70%, #4A9B8E 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 3s linear infinite;
+  display: inline-block;
+}
+@keyframes shimmer {
+  0%   { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+@keyframes badgePulse {
+  0%,100% { transform:scale(1); opacity:1; }
+  50%      { transform:scale(1.5); opacity:0.5; }
+}
+@keyframes scrollDot {
+  0%   { top:5px; opacity:1; }
+  50%  { top:16px; opacity:0.3; }
+  100% { top:5px; opacity:1; }
+}
+@keyframes fadeInUp {
+  from { opacity:0; transform:translateX(-50%) translateY(12px); }
+  to   { opacity:1; transform:translateX(-50%) translateY(0); }
+}
+</style>
+
+<script>
+/* ── Hero floating particles ── */
+(function(){
+  const container = document.getElementById('heroParticles');
+  if (!container) return;
+  for (let i = 0; i < 28; i++) {
+    const p = document.createElement('div');
+    const size = Math.random() * 5 + 2;
+    const dur  = Math.random() * 14 + 10;
+    const delay = Math.random() * 12;
+    const left = Math.random() * 100;
+    Object.assign(p.style, {
+      position: 'absolute',
+      width: size + 'px',
+      height: size + 'px',
+      borderRadius: '50%',
+      background: `rgba(74,155,142,${Math.random() * 0.35 + 0.1})`,
+      left: left + '%',
+      bottom: '-10px',
+      animation: `particleRise ${dur}s ${delay}s linear infinite`,
+    });
+    container.appendChild(p);
+  }
+  if (!document.getElementById('particleKeyframes')) {
+    const s = document.createElement('style');
+    s.id = 'particleKeyframes';
+    s.textContent = `
+      @keyframes particleRise {
+        0%   { transform:translateY(0) scale(1); opacity:0; }
+        10%  { opacity:0.8; }
+        90%  { opacity:0.3; }
+        100% { transform:translateY(-110vh) scale(0.4); opacity:0; }
+      }`;
+    document.head.appendChild(s);
+  }
+})();
+</script>
 
 <section class="features" id="features">
     <div class="feature-card">

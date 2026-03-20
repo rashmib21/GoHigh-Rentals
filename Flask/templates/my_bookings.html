@@ -306,21 +306,10 @@
               {% endif %}
             </td>
             <td>
-              {% if booking.booking_status == 'Cancelled' %}
-                <a href="/bill/{{ booking.booking_id }}" class="invoice-btn"
-                   style="text-decoration:none; display:inline-flex; align-items:center; gap:5px;">
-                  <i class="fas fa-file-invoice-dollar"></i> View
-                </a>
-              {% else %}
-                <button class="invoice-btn" onclick="showInvoice({
-                  id:     '{{ booking.booking_id }}',
-                  dest:   '{{ booking.destination_name }}',
-                  vehicle:'{{ booking.vehicle_name }}',
-                  date:   '{{ booking.travel_date }}',
-                  status: '{{ booking.booking_status }}',
-                  amount: '{{ booking.total_amount }}'
-                })"><i class="fas fa-file-invoice"></i> View</button>
-              {% endif %}
+              <a href="/bill/{{ booking.booking_id }}" class="invoice-btn"
+                 style="text-decoration:none; display:inline-flex; align-items:center; gap:5px;">
+                <i class="fas fa-file-invoice-dollar"></i> View
+              </a>
             </td>
           </tr>
           {% endfor %}

@@ -1,0 +1,79 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Manage Reviews{% endblock %}
+{% block page_icon %}fas fa-star{% endblock %}
+{% block page_name %}Manage Reviews{% endblock %}
+
+{% block content %}
+
+<div class="page-heading">
+    <div>
+        <h2>⭐ User Reviews</h2>
+        <p>View and delete user-submitted reviews from here.</p>
+    </div>
+    <span style="font-size:0.85rem; color:#888; font-weight:700;">
+        Total: {{ reviews | length }} review{{ 's' if reviews | length != 1 else '' }}
+    </span>
+</div>
+
+<div class="section-card">
+    <div class="section-header">
+        <h3><i class="fas fa-comments"></i> All Reviews</h3>
+    </div>
+
+    {% if reviews %}
+    <div style="overflow-x:auto;">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>User</th>
+                <th>Email</th>
+                <th>Rating</th>
+                <th>Review</th>
+                <th>Date</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in reviews %}
+            <tr>
+                <td style="color:#aaa;">{{ r.review_id }}</td>
+                <td><strong>{{ r.user_name }}</strong></td>
+                <td style="color:#888;">{{ r.user_email }}</td>
+                <td>
+                    <span style="color:#f59e0b; font-size:1rem; letter-spacing:1px;">
+                        {% for i in range(r.rating) %}★{% endfor %}{% for i in range(5 - r.rating) %}☆{% endfor %}
+                    </span>
+                    <small style="color:#888; font-weight:700;"> {{ r.rating }}/5</small>
+                </td>
+                <td style="max-width:300px; color:#555;">
+                    {{ r.review_text[:120] }}{% if r.review_text | length > 120 %}...{% endif %}
+                </td>
+                <td style="color:#888; white-space:nowrap;">
+                    {{ r.created_at.strftime('%d %b %Y') if r.created_at else 'N/A' }}
+                </td>
+                <td>
+                    <form method="POST"
+                          action="{{ url_for('admin.admin_delete_review', review_id=r.review_id) }}"
+                          onsubmit="return confirm('Delete this review by {{ r.user_name }}?')">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-star-half-alt"></i>
+        <p>No reviews have been submitted yet.</p>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

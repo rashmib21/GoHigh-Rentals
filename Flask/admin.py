@@ -409,3 +409,38 @@ def admin_delete_user(user_id):
     cursor.close(); conn.close()
     flash("User and all associated bookings deleted.", "success")
     return redirect(url_for("admin.admin_users"))
+
+
+# ── MANAGE REVIEWS ──
+@admin_bp.route("/admin/reviews")
+def admin_reviews():
+    if not admin_required():
+        return redirect(url_for("admin.admin_login"))
+    conn   = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        cursor.execute("""
+            SELECT r.review_id, r.rating, r.review_text, r.created_at,
+                   u.name AS user_name, u.email AS user_email
+            FROM review r
+            JOIN users u ON r.user_id = u.user_id
+            ORDER BY r.created_at DESC
+        """)
+        reviews = cursor.fetchall()
+    except Exception:
+        reviews = []
+    cursor.close(); conn.close()
+    return render_template("admin_reviews.html", reviews=reviews)
+
+
+@admin_bp.route("/admin/review/delete/<int:review_id>", methods=["POST"])
+def admin_delete_review(review_id):
+    if not admin_required():
+        return redirect(url_for("admin.admin_login"))
+    conn   = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM review WHERE review_id=%s", (review_id,))
+    conn.commit()
+    cursor.close(); conn.close()
+    flash("Review deleted successfully.", "success")
+    return redirect(url_for("admin.admin_reviews"))
