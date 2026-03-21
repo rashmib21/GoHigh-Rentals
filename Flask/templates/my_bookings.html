@@ -139,6 +139,50 @@
       font-weight: 700;
     }
 
+    .rate-btn {
+      background: linear-gradient(135deg, #f5a623, #e8920a);
+      color: #fff; border: none; border-radius: 8px;
+      padding: 6px 12px; font-size: .78rem; font-weight: 700;
+      font-family: inherit; cursor: pointer; transition: opacity .2s;
+    }
+    .rate-btn:hover { opacity: .85; }
+
+    /* Rating Modal */
+    .rating-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,.5); z-index: 9000;
+    }
+    .rating-overlay.active { display: flex; align-items: center; justify-content: center; }
+    .rating-modal {
+      background: #fff; border-radius: 18px; padding: 30px 28px;
+      width: 100%; max-width: 380px; box-shadow: 0 20px 60px rgba(0,0,0,.3);
+    }
+    .rating-modal h3 { font-size: 1.1rem; font-weight: 900; color: #1C2B3A; margin-bottom: 6px; }
+    .rating-modal p  { font-size: .82rem; color: #888; margin-bottom: 20px; }
+    .star-row { display: flex; gap: 10px; justify-content: center; margin-bottom: 18px; }
+    .star-btn {
+      font-size: 1.8rem; background: none; border: none; cursor: pointer;
+      color: #ddd; transition: color .15s; line-height: 1;
+    }
+    .star-btn.lit { color: #f5a623; }
+    .rating-textarea {
+      width: 100%; padding: 10px 12px; border: 1.5px solid #dde3eb;
+      border-radius: 10px; font-size: .88rem; font-family: inherit;
+      resize: vertical; outline: none; min-height: 80px; margin-bottom: 16px;
+    }
+    .rating-textarea:focus { border-color: #4A9B8E; }
+    .rating-actions { display: flex; gap: 10px; }
+    .rating-submit {
+      flex: 1; padding: 12px; background: linear-gradient(135deg, #4A9B8E, #2D6A4F);
+      color: #fff; border: none; border-radius: 10px; font-size: .9rem; font-weight: 800;
+      font-family: inherit; cursor: pointer;
+    }
+    .rating-cancel {
+      flex: 1; padding: 12px; background: #fae3da; color: #b34a28;
+      border: none; border-radius: 10px; font-size: .9rem; font-weight: 800;
+      font-family: inherit; cursor: pointer;
+    }
+
     .dash-label {
       color: #aaa;
       font-size: 1rem;
@@ -336,7 +380,9 @@
                   </button>
                 </form>
                 {% elif booking.booking_status == 'Completed' %}
-                <span class="done-label">✅ Done</span>
+                <button class="rate-btn" onclick="openRatingModal({{ booking.booking_id }}, '{{ booking.vehicle_name | e }}')">
+                  ⭐ Rate Vehicle
+                </button>
                 {% else %}
                 <span class="dash-label">—</span>
                 {% endif %}
@@ -473,6 +519,50 @@
 
     function printInvoice() {
       window.print();
+    }
+  </script>
+
+
+  <!-- ── Vehicle Rating Modal ── -->
+  <div class="rating-overlay" id="ratingOverlay" onclick="closeRatingModal()">
+    <div class="rating-modal" onclick="event.stopPropagation()">
+      <h3>⭐ Rate Your Vehicle</h3>
+      <p id="ratingVehicleName">Vehicle Name</p>
+      <form id="ratingForm" method="POST">
+        <input type="hidden" name="rating" id="ratingValue" value="0">
+        <div class="star-row" id="starRow">
+          <button type="button" class="star-btn" data-val="1" onclick="setStar(1)">★</button>
+          <button type="button" class="star-btn" data-val="2" onclick="setStar(2)">★</button>
+          <button type="button" class="star-btn" data-val="3" onclick="setStar(3)">★</button>
+          <button type="button" class="star-btn" data-val="4" onclick="setStar(4)">★</button>
+          <button type="button" class="star-btn" data-val="5" onclick="setStar(5)">★</button>
+        </div>
+        <textarea class="rating-textarea" name="review_text" placeholder="Share your experience with this vehicle (optional)..."></textarea>
+        <div class="rating-actions">
+          <button type="submit" class="rating-submit"><i class="fas fa-star"></i> Submit Rating</button>
+          <button type="button" class="rating-cancel" onclick="closeRatingModal()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function openRatingModal(bookingId, vehicleName) {
+      document.getElementById('ratingVehicleName').textContent = vehicleName;
+      document.getElementById('ratingForm').action = '/rate_vehicle/' + bookingId;
+      document.getElementById('ratingValue').value = '0';
+      document.querySelectorAll('.star-btn').forEach(b => b.classList.remove('lit'));
+      document.querySelector('.rating-modal textarea').value = '';
+      document.getElementById('ratingOverlay').classList.add('active');
+    }
+    function closeRatingModal() {
+      document.getElementById('ratingOverlay').classList.remove('active');
+    }
+    function setStar(val) {
+      document.getElementById('ratingValue').value = val;
+      document.querySelectorAll('.star-btn').forEach(b => {
+        b.classList.toggle('lit', parseInt(b.dataset.val) <= val);
+      });
     }
   </script>
 

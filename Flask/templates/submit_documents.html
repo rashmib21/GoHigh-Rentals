@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Submit Documents — GoHigh Rentals</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Nunito', sans-serif;
+  background: linear-gradient(135deg, #1C2B3A, #2E4A5C, #1a3a2a);
+  background-size: 400% 400%;
+  animation: gradShift 14s ease infinite;
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 40px 16px;
+}
+@keyframes gradShift { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
+
+.card {
+  width: 100%; max-width: 520px;
+  background: #fff; border-radius: 22px;
+  box-shadow: 0 24px 64px rgba(0,0,0,.3);
+  overflow: hidden;
+}
+.card-header {
+  background: linear-gradient(135deg, #1C2B3A, #2E4A5C);
+  padding: 28px 30px 22px; color: #fff; text-align: center;
+}
+.card-header h2 { font-size: 1.4rem; font-weight: 900; margin-bottom: 4px; }
+.card-header p  { font-size: .82rem; color: rgba(255,255,255,.7); }
+.card-body { padding: 28px 30px; }
+
+.info-box {
+  background: #fff8e1; border: 1.5px solid #f5c842;
+  border-radius: 12px; padding: 14px 18px; margin-bottom: 22px;
+}
+.info-box p { font-size: .82rem; color: #7a5c00; font-weight: 700; line-height: 1.6; }
+
+.form-group { margin-bottom: 18px; }
+.form-group label {
+  display: block; font-size: .76rem; font-weight: 800;
+  color: #2E4A5C; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 7px;
+}
+.form-group label i { color: #4A9B8E; margin-right: 4px; }
+.form-group input[type="text"], .form-group input[type="file"] {
+  width: 100%; padding: 11px 14px;
+  border: 1.5px solid #dde3eb; border-radius: 10px;
+  font-size: .9rem; font-family: 'Nunito', sans-serif;
+  color: #1C2B3A; background: #f8fafc; outline: none;
+  transition: border-color .2s;
+}
+.form-group input:focus { border-color: #4A9B8E; background: #fff; }
+.hint { font-size: .72rem; color: #999; margin-top: 5px; }
+
+.already-done {
+  background: #d5eee3; border: 1.5px solid #27ae60;
+  border-radius: 12px; padding: 14px 18px; margin-bottom: 22px;
+}
+.already-done p { font-size: .82rem; color: #1b5e35; font-weight: 700; line-height: 1.7; }
+
+.submit-btn {
+  width: 100%; padding: 14px;
+  background: linear-gradient(135deg, #E07B54, #c96940);
+  color: #fff; border: none; border-radius: 12px;
+  font-size: 1rem; font-weight: 800;
+  font-family: 'Nunito', sans-serif;
+  cursor: pointer; transition: opacity .2s;
+}
+.submit-btn:hover { opacity: .9; }
+
+.flash-msg {
+  padding: 10px 16px; border-radius: 10px;
+  margin-bottom: 18px; font-size: .85rem; font-weight: 700;
+}
+.flash-msg.error   { background: #fae3da; color: #b34a28; }
+.flash-msg.success { background: #d5eee3; color: #1b5e35; }
+.flash-msg.warning { background: #fff8e1; color: #8a6820; }
+
+.back-link {
+  display: block; text-align: center; margin-top: 14px;
+  text-decoration: none; color: rgba(255,255,255,.7); font-size: .85rem; font-weight: 600;
+}
+.back-link:hover { color: #fff; }
+</style>
+</head>
+<body>
+<div>
+<div class="card">
+  <div class="card-header">
+    <h2>📋 Document Verification</h2>
+    <p>Required before making a booking</p>
+  </div>
+  <div class="card-body">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for cat, msg in messages %}
+        <div class="flash-msg {{ cat }}">{{ msg }}</div>
+      {% endfor %}
+    {% endwith %}
+
+    {% if existing_docs %}
+    <div class="already-done">
+      <p>✅ Documents already submitted!<br>
+         Name: <strong>{{ existing_docs.full_name }}</strong><br>
+         Aadhaar: ****{{ existing_docs.aadhar_number[-4:] }}<br>
+         DL: {{ existing_docs.dl_number }}<br>
+         Status: {% if existing_docs.verified %}<span style="color:#27ae60;">Verified</span>{% else %}Pending Verification{% endif %}
+      </p>
+    </div>
+    <p style="font-size:.82rem;color:#555;margin-bottom:18px;">You can update your documents below if needed.</p>
+    {% else %}
+    <div class="info-box">
+      <p>⚠️ As per rental policy, you must submit valid government ID before booking.<br>
+         Please upload your <strong>Aadhaar Card</strong> and <strong>Driving Licence</strong>.</p>
+    </div>
+    {% endif %}
+
+    <form action="{{ url_for('booking.submit_documents') }}" method="POST" enctype="multipart/form-data">
+      <div class="form-group">
+        <label><i class="fas fa-user"></i> Full Name (as on documents)</label>
+        <input type="text" name="full_name" required
+               value="{{ existing_docs.full_name if existing_docs else '' }}"
+               placeholder="Enter your full name">
+      </div>
+
+      <div class="form-group">
+        <label><i class="fas fa-id-card"></i> Aadhaar Number</label>
+        <input type="text" name="aadhar_number" maxlength="12" pattern="\d{12}" required
+               value="{{ existing_docs.aadhar_number if existing_docs else '' }}"
+               placeholder="12-digit Aadhaar number">
+        <div class="hint">Must be exactly 12 digits</div>
+      </div>
+
+      <div class="form-group">
+        <label><i class="fas fa-file-image"></i> Aadhaar Card (Front & Back Photo / PDF)</label>
+        <input type="file" name="aadhar_file" accept=".jpg,.jpeg,.png,.pdf"
+               {% if not existing_docs %}required{% endif %}>
+        {% if existing_docs and existing_docs.aadhar_file %}
+        <div class="hint">✅ Already uploaded: {{ existing_docs.aadhar_file }} — upload new file to replace</div>
+        {% endif %}
+      </div>
+
+      <div class="form-group">
+        <label><i class="fas fa-car"></i> Driving Licence Number</label>
+        <input type="text" name="dl_number" required
+               value="{{ existing_docs.dl_number if existing_docs else '' }}"
+               placeholder="e.g. MH0120231234567">
+        <div class="hint">State code + RTO code + Year + 7-digit number</div>
+      </div>
+
+      <div class="form-group">
+        <label><i class="fas fa-file-image"></i> Driving Licence (Front Photo / PDF)</label>
+        <input type="file" name="dl_file" accept=".jpg,.jpeg,.png,.pdf"
+               {% if not existing_docs %}required{% endif %}>
+        {% if existing_docs and existing_docs.dl_file %}
+        <div class="hint">✅ Already uploaded: {{ existing_docs.dl_file }} — upload new file to replace</div>
+        {% endif %}
+      </div>
+
+      <button type="submit" class="submit-btn">
+        <i class="fas fa-check-circle"></i> Submit Documents & Continue
+      </button>
+    </form>
+  </div>
+</div>
+<a href="/dashboard" class="back-link">← Back to Dashboard</a>
+</div>
+</body>
+</html>

@@ -261,6 +261,36 @@
       </span>
     </div>
 
+    {% if bill.vehicle_type %}
+    <div class="inv-row">
+      <span class="label">Vehicle Type</span>
+      <span class="value">{{ bill.vehicle_type }}{% if bill.model_number %} — {{ bill.model_number }}{% endif %}</span>
+    </div>
+    {% endif %}
+
+    <div class="inv-row">
+      <span class="label">Payment Mode</span>
+      <span class="value">
+        {% set pm = bill.payment_mode or 'Online' %}
+        {% if pm == 'Online' %}💳{% elif pm == 'Cash' %}💵{% elif pm == 'UPI' %}📱{% elif pm == 'Card' %}🏦{% else %}🖥️{% endif %}
+        {{ pm }}
+      </span>
+    </div>
+
+    {% if bill.security_deposit %}
+    <div class="inv-row">
+      <span class="label">Security Deposit</span>
+      <span class="value" style="color:#E07B54;">🔒 ₹{{ "%.2f"|format(bill.security_deposit) }} <span style="font-size:.75rem;color:#888;font-weight:600;">(Refundable at return)</span></span>
+    </div>
+    {% endif %}
+
+    {% if bill.agreement_signed %}
+    <div class="inv-row">
+      <span class="label">Rental Agreement</span>
+      <span class="value" style="color:#27ae60;">✅ Digitally Signed</span>
+    </div>
+    {% endif %}
+
     <!-- FIX 1: Full price breakdown -->
     <div class="price-box">
 

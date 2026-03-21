@@ -1,0 +1,95 @@
+{% extends "admin_base.html" %}
+{% block title %}Document Verifications{% endblock %}
+{% block content %}
+<div style="padding:30px 24px; max-width:1100px; margin:0 auto;">
+  <h2 style="font-size:1.4rem; font-weight:900; color:#1C2B3A; margin-bottom:24px;">
+    <i class="fas fa-id-card" style="color:#4A9B8E;"></i> User Document Verifications
+  </h2>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in messages %}
+      <div style="padding:10px 16px; border-radius:10px; margin-bottom:16px; font-size:.85rem; font-weight:700;
+           background:{% if cat=='success' %}#d5eee3{% else %}#fae3da{% endif %};
+           color:{% if cat=='success' %}#1b5e35{% else %}#b34a28{% endif %};">{{ msg }}</div>
+    {% endfor %}
+  {% endwith %}
+
+  {% if docs %}
+  <div style="overflow-x:auto; background:#fff; border-radius:14px; box-shadow:0 4px 20px rgba(0,0,0,.07);">
+    <table style="width:100%; border-collapse:collapse; font-size:.88rem;">
+      <thead>
+        <tr style="background:linear-gradient(135deg,#1C2B3A,#2E4A5C); color:#fff;">
+          <th style="padding:14px 16px; text-align:left; font-weight:800;">#</th>
+          <th style="padding:14px 16px; text-align:left; font-weight:800;">User</th>
+          <th style="padding:14px 16px; text-align:left; font-weight:800;">Full Name</th>
+          <th style="padding:14px 16px; text-align:left; font-weight:800;">Aadhaar</th>
+          <th style="padding:14px 16px; text-align:left; font-weight:800;">DL Number</th>
+          <th style="padding:14px 16px; text-align:left; font-weight:800;">Files</th>
+          <th style="padding:14px 16px; text-align:left; font-weight:800;">Submitted</th>
+          <th style="padding:14px 16px; text-align:left; font-weight:800;">Status</th>
+          <th style="padding:14px 16px; text-align:left; font-weight:800;">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for doc in docs %}
+        <tr style="border-bottom:1px solid #f0f4f8; {% if loop.index % 2 == 0 %}background:#fafbfc;{% endif %}">
+          <td style="padding:12px 16px; color:#aaa;">{{ loop.index }}</td>
+          <td style="padding:12px 16px;">
+            <strong>{{ doc.user_name }}</strong><br>
+            <span style="color:#888; font-size:.78rem;">{{ doc.user_email }}</span>
+          </td>
+          <td style="padding:12px 16px;">{{ doc.full_name }}</td>
+          <td style="padding:12px 16px; font-family:monospace;">
+            ****{{ doc.aadhar_number[-4:] }}
+          </td>
+          <td style="padding:12px 16px;">{{ doc.dl_number }}</td>
+          <td style="padding:12px 16px;">
+            {% if doc.aadhar_file %}
+            <a href="/static/uploads/documents/{{ doc.aadhar_file }}" target="_blank"
+               style="display:inline-block; margin-bottom:4px; font-size:.75rem; color:#4A9B8E; font-weight:700; text-decoration:none;">
+              <i class="fas fa-file"></i> Aadhaar
+            </a><br>
+            {% endif %}
+            {% if doc.dl_file %}
+            <a href="/static/uploads/documents/{{ doc.dl_file }}" target="_blank"
+               style="font-size:.75rem; color:#4A9B8E; font-weight:700; text-decoration:none;">
+              <i class="fas fa-file"></i> DL
+            </a>
+            {% endif %}
+          </td>
+          <td style="padding:12px 16px; color:#666; font-size:.82rem;">{{ doc.submitted_at }}</td>
+          <td style="padding:12px 16px;">
+            {% if doc.verified %}
+            <span style="background:#d5eee3; color:#1b5e35; padding:4px 12px; border-radius:20px; font-size:.75rem; font-weight:800;">
+              ✅ Verified
+            </span>
+            {% else %}
+            <span style="background:#fff8e1; color:#8a6820; padding:4px 12px; border-radius:20px; font-size:.75rem; font-weight:800;">
+              ⏳ Pending
+            </span>
+            {% endif %}
+          </td>
+          <td style="padding:12px 16px;">
+            {% if not doc.verified %}
+            <form action="{{ url_for('admin.admin_verify_document', doc_id=doc.doc_id) }}" method="POST" style="margin:0;">
+              <button type="submit" style="background:#4A9B8E; color:#fff; border:none; border-radius:8px; padding:6px 14px; font-size:.78rem; font-weight:700; cursor:pointer; font-family:inherit;">
+                ✔ Verify
+              </button>
+            </form>
+            {% else %}
+            <span style="color:#aaa; font-size:.8rem;">—</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div style="text-align:center; padding:60px 20px; color:#888;">
+    <i class="fas fa-folder-open" style="font-size:2.5rem; margin-bottom:12px; color:#dde3eb;"></i>
+    <p style="font-size:1rem; font-weight:700;">No documents submitted yet.</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

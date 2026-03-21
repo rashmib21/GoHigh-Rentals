@@ -6,260 +6,236 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
-
 body {
   font-family: 'Nunito', sans-serif;
   background: linear-gradient(135deg, #1C2B3A, #2E4A5C, #1a3a2a);
   background-size: 400% 400%;
   animation: gradShift 14s ease infinite;
   min-height: 100vh;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
+  display: flex; align-items: flex-start; justify-content: center;
   padding: 40px 16px;
 }
-@keyframes gradShift {
-  0%,100% { background-position: 0% 50%; }
-  50%      { background-position: 100% 50%; }
-}
+@keyframes gradShift { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
 
 .booking-card {
-  width: 100%;
-  max-width: 500px;
-  background: #fff;
-  border-radius: 22px;
-  box-shadow: 0 24px 64px rgba(0,0,0,0.3);
-  overflow: hidden;
+  width: 100%; max-width: 560px;
+  background: #fff; border-radius: 22px;
+  box-shadow: 0 24px 64px rgba(0,0,0,.3); overflow: hidden;
 }
-
 .card-header {
   background: linear-gradient(135deg, #1C2B3A, #2E4A5C);
-  padding: 28px 30px 22px;
-  color: #fff;
-  text-align: center;
+  padding: 28px 30px 22px; color: #fff; text-align: center;
 }
 .card-header h2 { font-size: 1.4rem; font-weight: 900; margin-bottom: 4px; }
-.card-header p  { font-size: 0.82rem; color: rgba(255,255,255,0.7); }
-
+.card-header p  { font-size: .82rem; color: rgba(255,255,255,.7); }
 .card-body { padding: 28px 30px; }
 
-/* Form fields */
 .form-group { margin-bottom: 18px; }
 .form-group label {
-  display: block;
-  font-size: 0.76rem;
-  font-weight: 800;
-  color: #2E4A5C;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 7px;
+  display: block; font-size: .76rem; font-weight: 800;
+  color: #2E4A5C; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 7px;
 }
 .form-group label i { color: #4A9B8E; margin-right: 4px; }
-
 select, input[type="date"], input[type="number"], input[type="time"] {
-  width: 100%;
-  padding: 11px 14px;
-  border: 1.5px solid #dde3eb;
-  border-radius: 10px;
-  font-size: 0.9rem;
-  font-family: 'Nunito', sans-serif;
-  color: #1C2B3A;
-  background: #f8fafc;
-  outline: none;
-  transition: border-color 0.2s, background 0.2s;
+  width: 100%; padding: 11px 14px;
+  border: 1.5px solid #dde3eb; border-radius: 10px;
+  font-size: .9rem; font-family: 'Nunito', sans-serif;
+  color: #1C2B3A; background: #f8fafc; outline: none;
+  transition: border-color .2s, background .2s;
 }
-select:focus, input:focus {
-  border-color: #4A9B8E;
-  background: #fff;
+select:focus, input:focus { border-color: #4A9B8E; background: #fff; }
+
+/* Vehicle card preview */
+.vehicle-detail-card {
+  display: none;
+  background: linear-gradient(135deg, #f0f8ff, #e8f0ff);
+  border: 1.5px solid #b0c8e8; border-radius: 14px;
+  padding: 16px 18px; margin-bottom: 18px;
 }
+.vehicle-detail-card.show { display: block; }
+.vdc-header { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 12px; }
+.vdc-photo {
+  width: 80px; height: 60px; object-fit: cover;
+  border-radius: 8px; border: 2px solid #b0c8e8; flex-shrink: 0;
+}
+.vdc-photo-placeholder {
+  width: 80px; height: 60px; border-radius: 8px;
+  background: #dde3eb; display: flex; align-items: center;
+  justify-content: center; flex-shrink: 0;
+  font-size: 1.8rem;
+}
+.vdc-info h4 { font-size: .95rem; font-weight: 900; color: #1C2B3A; }
+.vdc-info .vdc-type { font-size: .75rem; color: #666; margin: 2px 0 6px; }
+.vdc-stars { color: #f5a623; font-size: .85rem; }
+.vdc-stars span { color: #888; font-size: .75rem; }
+.vdc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+.vdc-item { font-size: .78rem; color: #555; }
+.vdc-item strong { color: #1C2B3A; }
+.vdc-fault {
+  margin-top: 10px; padding: 8px 12px;
+  background: #fff8e1; border-left: 3px solid #f5c842;
+  border-radius: 6px; font-size: .78rem; color: #7a5c00;
+}
+.vdc-condition-badge {
+  display: inline-block; padding: 3px 10px; border-radius: 20px;
+  font-size: .72rem; font-weight: 800;
+}
+.condition-Excellent { background: #d5eee3; color: #1b5e35; }
+.condition-Good      { background: #ddeef8; color: #1a4a6e; }
+.condition-Fair      { background: #fff8e1; color: #8a6820; }
+.condition-Needs.Repair { background: #fae3da; color: #b34a28; }
 
 /* Two-column time row */
-.time-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
+.time-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
 /* Booking type toggle */
 .type-toggle { display: flex; gap: 10px; }
 .type-btn {
   flex: 1; padding: 10px;
-  border: 1.5px solid #dde3eb;
-  border-radius: 10px;
-  background: #f8fafc;
-  font-family: 'Nunito', sans-serif;
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: #666;
-  cursor: pointer;
-  transition: all 0.2s;
-  text-align: center;
+  border: 1.5px solid #dde3eb; border-radius: 10px;
+  background: #f8fafc; font-family: 'Nunito', sans-serif;
+  font-size: .88rem; font-weight: 700; color: #666;
+  cursor: pointer; transition: all .2s; text-align: center;
 }
-.type-btn.active {
-  background: #2E4A5C;
-  border-color: #2E4A5C;
-  color: #fff;
-}
+.type-btn.active { background: #2E4A5C; border-color: #2E4A5C; color: #fff; }
 
-/* Auto-convert notice */
 .auto-notice {
-  display: none;
-  background: #fff8e1;
-  border: 1.5px solid #f5c842;
-  border-radius: 10px;
-  padding: 9px 14px;
-  font-size: 0.8rem;
-  color: #7a5c00;
-  font-weight: 700;
-  margin-bottom: 14px;
+  display: none; background: #fff8e1;
+  border: 1.5px solid #f5c842; border-radius: 10px;
+  padding: 9px 14px; font-size: .8rem; color: #7a5c00;
+  font-weight: 700; margin-bottom: 14px;
 }
 .auto-notice.show { display: block; }
 
 /* Price preview */
 .price-preview {
   background: linear-gradient(135deg, #f0f8f6, #e8f5f2);
-  border: 1.5px solid #b2d8d0;
-  border-radius: 14px;
-  padding: 16px 18px;
-  margin-bottom: 18px;
-  display: none;
+  border: 1.5px solid #b2d8d0; border-radius: 14px;
+  padding: 16px 18px; margin-bottom: 18px; display: none;
 }
 .price-preview.show { display: block; }
-.price-title {
-  font-size: 0.73rem;
-  font-weight: 800;
-  color: #2D6A4F;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 10px;
-}
-.price-row {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.86rem;
-  color: #555;
-  margin-bottom: 5px;
-}
+.price-title { font-size: .73rem; font-weight: 800; color: #2D6A4F; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
+.price-row { display: flex; justify-content: space-between; font-size: .86rem; color: #555; margin-bottom: 5px; }
 .price-row.total {
-  border-top: 1.5px dashed #b2d8d0;
-  margin-top: 8px;
-  padding-top: 8px;
-  font-weight: 900;
-  font-size: 1rem;
-  color: #1C2B3A;
+  border-top: 1.5px dashed #b2d8d0; margin-top: 8px; padding-top: 8px;
+  font-weight: 900; font-size: 1rem; color: #1C2B3A;
 }
 .price-row.total span:last-child { color: #E07B54; }
-.gst-note {
-  font-size: 0.7rem;
-  color: #aaa;
-  text-align: right;
-  margin-top: 4px;
-}
+.gst-note { font-size: .7rem; color: #aaa; text-align: right; margin-top: 4px; }
 
-/* Terms & Conditions box */
+/* Security deposit notice */
+.deposit-notice {
+  display: none; background: #fae3da;
+  border: 1.5px solid #E07B54; border-radius: 12px;
+  padding: 12px 16px; margin-bottom: 18px; font-size: .82rem; color: #7a2c14;
+}
+.deposit-notice.show { display: block; }
+.deposit-notice strong { color: #b34a28; }
+
+/* Payment mode */
+.pay-mode-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.pay-mode-btn {
+  padding: 10px 8px; border: 1.5px solid #dde3eb;
+  border-radius: 10px; background: #f8fafc;
+  font-family: 'Nunito', sans-serif; font-size: .78rem;
+  font-weight: 700; color: #666; cursor: pointer;
+  transition: all .2s; text-align: center;
+}
+.pay-mode-btn.active { background: #4A9B8E; border-color: #4A9B8E; color: #fff; }
+
+/* Agreement box */
+.agreement-box {
+  background: #f8fafc; border: 1.5px solid #dde3eb;
+  border-radius: 14px; padding: 16px 18px; margin-bottom: 18px;
+}
+.agreement-box h4 { font-size: .82rem; font-weight: 900; color: #1C2B3A; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+.agreement-box h4 i { color: #E07B54; }
+.agreement-list { list-style: none; padding: 0; }
+.agreement-list li { font-size: .78rem; color: #555; line-height: 1.6; padding: 5px 0 5px 20px; position: relative; border-bottom: 1px dashed #eef2f5; }
+.agreement-list li:last-child { border-bottom: none; }
+.agreement-list li::before { content: "§"; position: absolute; left: 0; color: #E07B54; font-weight: 900; }
+.agreement-list li strong { color: #c0392b; }
+
+/* Signature pad */
+.sig-section { margin-bottom: 18px; }
+.sig-section label { display: block; font-size: .76rem; font-weight: 800; color: #2E4A5C; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 7px; }
+.sig-section label i { color: #4A9B8E; margin-right: 4px; }
+#sigCanvas {
+  width: 100%; height: 120px; border: 2px dashed #4A9B8E;
+  border-radius: 10px; background: #fff; cursor: crosshair; touch-action: none;
+}
+.sig-actions { display: flex; gap: 10px; margin-top: 8px; }
+.sig-btn {
+  padding: 7px 16px; border-radius: 8px; font-family: 'Nunito', sans-serif;
+  font-size: .8rem; font-weight: 700; cursor: pointer; border: none;
+}
+.sig-clear { background: #fae3da; color: #b34a28; }
+.sig-hint  { font-size: .72rem; color: #aaa; margin-top: 4px; }
+.sig-done  { color: #27ae60; font-size: .78rem; margin-top: 6px; display: none; }
+.sig-done.show { display: block; }
+
+/* Terms */
 .terms-box {
-  background: #f8fafc;
-  border: 1.5px solid #dde3eb;
-  border-radius: 14px;
-  padding: 16px 18px;
-  margin-bottom: 18px;
-  max-height: 200px;
-  overflow-y: auto;
+  background: #f8fafc; border: 1.5px solid #dde3eb;
+  border-radius: 14px; padding: 16px 18px; margin-bottom: 18px;
+  max-height: 180px; overflow-y: auto;
 }
-.terms-box h4 {
-  font-size: 0.82rem;
-  font-weight: 900;
-  color: #1C2B3A;
-  margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
+.terms-box h4 { font-size: .82rem; font-weight: 900; color: #1C2B3A; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
 .terms-box h4 i { color: #4A9B8E; }
 .terms-list { list-style: none; padding: 0; }
-.terms-list li {
-  font-size: 0.78rem;
-  color: #666;
-  line-height: 1.6;
-  padding: 4px 0 4px 18px;
-  position: relative;
-  border-bottom: 1px dashed #eef2f5;
-}
+.terms-list li { font-size: .78rem; color: #666; line-height: 1.6; padding: 4px 0 4px 18px; position: relative; border-bottom: 1px dashed #eef2f5; }
 .terms-list li:last-child { border-bottom: none; }
-.terms-list li::before {
-  content: "•";
-  position: absolute;
-  left: 4px;
-  color: #4A9B8E;
-  font-weight: 900;
-}
+.terms-list li::before { content: "•"; position: absolute; left: 4px; color: #4A9B8E; font-weight: 900; }
 .terms-list li strong { color: #c0392b; }
+.terms-accept { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 20px; font-size: .82rem; color: #555; cursor: pointer; }
+.terms-accept input[type="checkbox"] { width: 16px; height: 16px; margin-top: 1px; flex-shrink: 0; accent-color: #4A9B8E; cursor: pointer; }
 
-.terms-accept {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  margin-bottom: 20px;
-  font-size: 0.82rem;
-  color: #555;
-  cursor: pointer;
-}
-.terms-accept input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
-  margin-top: 1px;
-  flex-shrink: 0;
-  accent-color: #4A9B8E;
-  cursor: pointer;
-}
-
-/* Book button */
 .book-btn {
-  width: 100%;
-  padding: 14px;
+  width: 100%; padding: 14px;
   background: linear-gradient(135deg, #E07B54, #c96940);
-  color: #fff;
-  border: none;
-  border-radius: 12px;
-  font-size: 1rem;
-  font-weight: 800;
+  color: #fff; border: none; border-radius: 12px;
+  font-size: 1rem; font-weight: 800;
   font-family: 'Nunito', sans-serif;
-  cursor: pointer;
-  transition: opacity 0.2s, transform 0.1s;
+  cursor: pointer; transition: opacity .2s, transform .1s;
 }
-.book-btn:hover  { opacity: 0.9; transform: translateY(-1px); }
+.book-btn:hover  { opacity: .9; transform: translateY(-1px); }
 .book-btn:active { transform: translateY(0); }
 
-.back-link {
-  display: block;
-  text-align: center;
-  margin-top: 14px;
-  text-decoration: none;
-  color: rgba(255,255,255,0.7);
-  font-size: 0.85rem;
-  font-weight: 600;
-}
+.back-link { display: block; text-align: center; margin-top: 14px; text-decoration: none; color: rgba(255,255,255,.7); font-size: .85rem; font-weight: 600; }
 .back-link:hover { color: #fff; }
+
+.flash-msg { padding: 10px 16px; border-radius: 10px; margin-bottom: 18px; font-size: .85rem; font-weight: 700; }
+.flash-msg.error   { background: #fae3da; color: #b34a28; }
+.flash-msg.success { background: #d5eee3; color: #1b5e35; }
+.flash-msg.warning { background: #fff8e1; color: #8a6820; }
+
+.min-hours-note { font-size: .72rem; color: #E07B54; font-weight: 700; margin-top: 5px; }
 </style>
 </head>
 <body>
-
 <div>
 <div class="booking-card">
-
   <div class="card-header">
     <h2>🏔️ Create Booking</h2>
-    <p>Choose your destination, vehicle &amp; duration</p>
+    <p>Choose destination, vehicle &amp; duration</p>
   </div>
 
   <div class="card-body">
-    <form action="{{ url_for('booking.create_booking') }}" method="POST" id="bookingForm">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for cat, msg in messages %}
+        <div class="flash-msg {{ cat }}">{{ msg }}</div>
+      {% endfor %}
+    {% endwith %}
 
-      <!-- Hidden inputs -->
+    <form action="{{ url_for('booking.create_booking') }}" method="POST" id="bookingForm">
+      <!-- Hidden -->
       <input type="hidden" name="booking_type"   id="booking_type_input"   value="day">
       <input type="hidden" name="duration_value" id="duration_value_hidden" value="1">
       <input type="hidden" name="start_time"     id="start_time_hidden"    value="">
       <input type="hidden" name="end_time"       id="end_time_hidden"      value="">
+      <input type="hidden" name="agreement_signed" id="agreement_signed_input" value="">
+      <input type="hidden" name="signature_data"   id="signature_data_input"   value="">
+      <input type="hidden" name="payment_mode"     id="payment_mode_hidden"    value="Online">
 
       <!-- Destination -->
       <div class="form-group">
@@ -270,9 +246,7 @@ select:focus, input:focus {
           <option value="{{ d.destination_id }}"
                   data-price-day="{{ d.price_per_day }}"
                   data-price-hour="{{ d.price_per_hour }}"
-              {% if selected_destination_id and d.destination_id|string == selected_destination_id|string %}
-                  selected
-              {% endif %}>
+            {% if selected_destination_id and d.destination_id|string == selected_destination_id|string %}selected{% endif %}>
             {{ d.destination_name }}{% if d.state %} — {{ d.state }}{% endif %}
           </option>
           {% endfor %}
@@ -282,12 +256,56 @@ select:focus, input:focus {
       <!-- Vehicle -->
       <div class="form-group">
         <label><i class="fas fa-car"></i> Vehicle</label>
-        <select name="vehicle_id" required>
+        <select name="vehicle_id" id="vehicle_select" required onchange="onVehicleChange()">
           <option value="">Select Vehicle</option>
           {% for v in vehicles %}
-          <option value="{{ v.vehicle_id }}">{{ v.vehicle_name }}</option>
+          <option value="{{ v.vehicle_id }}"
+                  data-type="{{ v.vehicle_type }}"
+                  data-model="{{ v.model_number or '' }}"
+                  data-condition="{{ v.vehicle_condition or 'Good' }}"
+                  data-faults="{{ v.known_faults or '' }}"
+                  data-photo="{{ v.photo_url or '' }}"
+                  data-rating="{{ v.rating or 0 }}"
+                  data-rating-count="{{ v.rating_count or 0 }}"
+                  data-seats="{{ v.seating_capacity }}"
+                  data-fuel="{{ v.fuel_type }}"
+                  data-price-day="{{ v.price_per_day or '' }}"
+                  data-price-hour="{{ v.price_per_hour or '' }}">
+            {{ v.vehicle_name }} ({{ v.vehicle_type }}){% if v.model_number %} — {{ v.model_number }}{% endif %}
+          </option>
           {% endfor %}
         </select>
+      </div>
+
+      <!-- Vehicle Detail Card -->
+      <div class="vehicle-detail-card" id="vehicleDetailCard">
+        <div class="vdc-header">
+          <div id="vdcPhotoWrap"></div>
+          <div class="vdc-info">
+            <h4 id="vdcName">—</h4>
+            <div class="vdc-type" id="vdcType">—</div>
+            <div class="vdc-stars" id="vdcStars">—</div>
+            <span class="vdc-condition-badge" id="vdcConditionBadge">—</span>
+          </div>
+        </div>
+        <div class="vdc-grid">
+          <div class="vdc-item">🔢 Model: <strong id="vdcModel">—</strong></div>
+          <div class="vdc-item">💺 Seats: <strong id="vdcSeats">—</strong></div>
+          <div class="vdc-item">⛽ Fuel: <strong id="vdcFuel">—</strong></div>
+          <div class="vdc-item">💰 Rate/Day: <strong id="vdcPriceDay">—</strong></div>
+          <div class="vdc-item">⏰ Rate/Hour: <strong id="vdcPriceHour">—</strong></div>
+          <div class="vdc-item">🔒 Deposit: <strong id="vdcDeposit">—</strong></div>
+        </div>
+        <div class="vdc-fault" id="vdcFaultBox" style="display:none;">
+          ⚠️ <strong>Known Issues:</strong> <span id="vdcFaults">—</span>
+        </div>
+      </div>
+
+      <!-- Security Deposit Notice (shown after vehicle select) -->
+      <div class="deposit-notice" id="depositNotice">
+        🔒 <strong>Security Deposit Required: <span id="depositAmount">₹0</span></strong><br>
+        This refundable deposit must be paid at vehicle pickup. It will be returned upon safe return of the vehicle.
+        <br><em style="font-size:.7rem;">Non-return / major damage: deposit forfeited + additional charges apply.</em>
       </div>
 
       <!-- Booking Type -->
@@ -299,12 +317,9 @@ select:focus, input:focus {
         </div>
       </div>
 
-      <!-- AUTO-CONVERT NOTICE -->
-      <div class="auto-notice" id="autoNotice">
-        ⚡ 24 hours auto-converted to <strong>1 Day</strong> booking!
-      </div>
+      <div class="auto-notice" id="autoNotice">⚡ 24 hours auto-converted to <strong>1 Day</strong> booking!</div>
 
-      <!-- === PER DAY: Start Date + End Date === -->
+      <!-- DAY section -->
       <div id="day-section">
         <div class="time-row">
           <div class="form-group">
@@ -317,12 +332,12 @@ select:focus, input:focus {
           </div>
         </div>
         <div class="form-group">
-          <label id="duration-label-day"><i class="fas fa-hashtag"></i> Number of Days</label>
+          <label><i class="fas fa-hashtag"></i> Number of Days</label>
           <input type="number" id="duration_input_day" min="1" max="30" value="1" oninput="onDayDurationInput()">
         </div>
       </div>
 
-      <!-- === PER HOUR: Travel Date + Start Time + End Time === -->
+      <!-- HOUR section -->
       <div id="hour-section" style="display:none;">
         <div class="form-group">
           <label><i class="fas fa-calendar-alt"></i> Travel Date</label>
@@ -339,12 +354,13 @@ select:focus, input:focus {
           </div>
         </div>
         <div class="form-group">
-          <label id="duration-label-hour"><i class="fas fa-hashtag"></i> Number of Hours</label>
-          <input type="number" id="duration_input_hour" min="1" max="24" value="1" oninput="onHourDurationInput()">
+          <label><i class="fas fa-hashtag"></i> Number of Hours</label>
+          <input type="number" id="duration_input_hour" min="2" max="23" value="2" oninput="onHourDurationInput()">
+          <div class="min-hours-note">⚠️ Minimum booking: 2 hours</div>
         </div>
       </div>
 
-      <!-- Live Price Preview with GST -->
+      <!-- Price Preview -->
       <div class="price-preview" id="pricePreview">
         <div class="price-title">💰 Price Estimate (incl. GST)</div>
         <div class="price-row">
@@ -360,10 +376,6 @@ select:focus, input:focus {
           <span id="preview-base">₹0</span>
         </div>
         <div class="price-row">
-          <span>Discount</span>
-          <span style="color:#2D6A4F;">₹0.00</span>
-        </div>
-        <div class="price-row">
           <span>GST (18%)</span>
           <span id="preview-gst">₹0</span>
         </div>
@@ -374,215 +386,383 @@ select:focus, input:focus {
         <div class="gst-note">* 18% GST applied as per Government regulations</div>
       </div>
 
-      <!-- Terms & Conditions -->
-      <div class="terms-box">
-        <h4><i class="fas fa-file-contract"></i> Terms &amp; Conditions</h4>
-        <ul class="terms-list">
-          <li>Bookings must be made at least <strong>1 day in advance</strong>. Same-day bookings are not accepted.</li>
-          <li>All prices include <strong>18% GST</strong> as per Government of India regulations.</li>
-          <li>Hourly bookings: maximum <strong>24 hours</strong>. 24 hours auto-converts to <strong>1 day</strong> (daily rate).</li>
-          <li>Daily bookings: maximum <strong>30 days</strong>.</li>
-          <li><strong>Cancellation Policy:</strong>
-            <br>— Cancel <strong>3+ days</strong> before travel: 10% deduction
-            <br>— Cancel <strong>1–2 days</strong> before travel: 25% deduction
-            <br>— Cancel on <strong>travel day</strong>: 50% deduction
-          </li>
-          <li>Refunds (after deduction) will be processed within <strong>5–7 business days</strong>.</li>
-          <li>Once a booking is <strong>Confirmed by admin</strong>, it cannot be cancelled by the admin. Only the user may cancel.</li>
-          <li>GoHigh Rentals reserves the right to cancel bookings due to <strong>vehicle unavailability or natural calamities</strong>. A full refund will be issued in such cases.</li>
-          <li>Users are responsible for any <strong>damage to the vehicle</strong> during the trip. Additional charges may apply.</li>
-          <li>Travel is subject to <strong>road and weather conditions</strong>. GoHigh Rentals is not liable for delays due to external factors.</li>
-          <li>Valid <strong>government-issued ID</strong> is required at the time of vehicle pickup.</li>
-          <li>By completing this booking, you agree to GoHigh Rentals' full <strong>Terms of Service and Privacy Policy</strong>.</li>
+      <!-- Payment Mode -->
+      <div class="form-group">
+        <label><i class="fas fa-wallet"></i> Mode of Payment</label>
+        <div class="pay-mode-grid">
+          <button type="button" class="pay-mode-btn active" onclick="setPayMode(this,'Online')">💳 Online</button>
+          <button type="button" class="pay-mode-btn" onclick="setPayMode(this,'Cash')">💵 Cash</button>
+          <button type="button" class="pay-mode-btn" onclick="setPayMode(this,'UPI')">📱 UPI</button>
+          <button type="button" class="pay-mode-btn" onclick="setPayMode(this,'Card')">🏦 Card</button>
+          <button type="button" class="pay-mode-btn" onclick="setPayMode(this,'Net Banking')">🖥️ Net Banking</button>
+        </div>
+      </div>
+
+      <!-- Rental Agreement -->
+      <div class="agreement-box">
+        <h4><i class="fas fa-file-signature"></i> Rental Agreement</h4>
+        <ul class="agreement-list">
+          <li>A <strong>refundable security deposit</strong> (amount shown above) must be paid at vehicle pickup. It is returned upon safe vehicle return within agreed time.</li>
+          <li><strong>Non-return of vehicle:</strong> If the vehicle is not returned within 24 hours past the agreed return time without notice, the security deposit will be <strong>fully forfeited</strong> and a police complaint (IPC Section 378) will be filed.</li>
+          <li><strong>Vehicle damage:</strong> Any damage beyond normal wear will be assessed and repair costs deducted from the deposit. Additional charges may apply for major damage.</li>
+          <li><strong>Traffic violations / fines:</strong> Any penalty incurred during the rental period is the sole responsibility of the renter.</li>
+          <li>The vehicle must be returned with the <strong>same fuel level</strong> as at pickup. Fuel shortfall will be charged.</li>
+          <li>No <strong>sub-letting</strong> of the vehicle is permitted. Only the registered renter may drive.</li>
+          <li>GoHigh Rentals reserves the right to <strong>track</strong> the vehicle for security purposes during the rental period.</li>
+          <li>By signing below, the renter <strong>confirms reading and accepting</strong> all terms of this agreement.</li>
         </ul>
       </div>
 
-      <!-- Accept checkbox -->
+      <!-- Digital Signature -->
+      <div class="sig-section">
+        <label><i class="fas fa-pen-nib"></i> Digital Signature (Draw to sign)</label>
+        <canvas id="sigCanvas" width="500" height="120"></canvas>
+        <div class="sig-actions">
+          <button type="button" class="sig-btn sig-clear" onclick="clearSig()">✖ Clear</button>
+          <button type="button" class="sig-btn" style="background:#d5eee3;color:#1b5e35;" onclick="confirmSig()">✔ Confirm Signature</button>
+        </div>
+        <div class="sig-hint">Draw your signature in the box above using mouse or finger</div>
+        <div class="sig-done" id="sigDone">✅ Signature confirmed!</div>
+      </div>
+
+      <!-- Terms -->
+      <div class="terms-box">
+        <h4><i class="fas fa-file-contract"></i> Terms &amp; Conditions</h4>
+        <ul class="terms-list">
+          <li>Bookings must be made at least <strong>1 day in advance</strong>.</li>
+          <li>All prices include <strong>18% GST</strong>.</li>
+          <li>Minimum hourly booking: <strong>2 hours</strong>.</li>
+          <li>Hourly bookings: max <strong>23 hours</strong>. 24h auto-converts to 1 day.</li>
+          <li>Daily bookings: max <strong>30 days</strong>.</li>
+          <li><strong>Cancellation Policy (Reduced Charges):</strong>
+            <br>— Cancel <strong>3+ days</strong> before: <strong>5%</strong> deduction
+            <br>— Cancel <strong>1–2 days</strong> before: <strong>10%</strong> deduction
+            <br>— Cancel on <strong>travel day</strong>: <strong>20%</strong> deduction
+          </li>
+          <li>Refunds processed within <strong>5–7 business days</strong>.</li>
+          <li>Valid <strong>Aadhaar & Driving Licence</strong> required at vehicle pickup.</li>
+          <li>Users responsible for any <strong>damage to the vehicle</strong> during rental.</li>
+        </ul>
+      </div>
+
       <label class="terms-accept">
         <input type="checkbox" name="terms_accepted" id="terms_checkbox" value="yes">
-        <span>I have read and agree to the <strong>Terms &amp; Conditions</strong> and <strong>Cancellation Policy</strong> of GoHigh Rentals.</span>
+        <span>I have read and agree to the <strong>Terms &amp; Conditions</strong>, <strong>Rental Agreement</strong>, and <strong>Cancellation Policy</strong>.</span>
       </label>
 
-      <button class="book-btn" type="submit">Book Now →</button>
+      <button class="book-btn" type="submit" id="submitBtn">Book Now →</button>
     </form>
   </div>
-
 </div>
 <a href="/dashboard" class="back-link">← Back to Dashboard</a>
 </div>
 
 <script>
-  // ── Set minimum date to tomorrow ──
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  const tomorrowStr = tomorrow.toISOString().split('T')[0];
-  document.getElementById('travel_date').min      = tomorrowStr;
-  document.getElementById('travel_date_hour').min = tomorrowStr;
+// ── Min date = tomorrow ──
+const tomorrow = new Date();
+tomorrow.setDate(tomorrow.getDate() + 1);
+const tomorrowStr = tomorrow.toISOString().split('T')[0];
+document.getElementById('travel_date').min      = tomorrowStr;
+document.getElementById('travel_date_hour').min = tomorrowStr;
 
-  let currentType = 'day';
+let currentType    = 'day';
+let sigConfirmed   = false;
+let currentDeposit = 0;
 
-  // ── Switch booking type (Day / Hour) ──
-  function setType(type) {
-    currentType = type;
-    document.getElementById('booking_type_input').value = type;
-    document.getElementById('btn-day').classList.toggle('active',  type === 'day');
-    document.getElementById('btn-hour').classList.toggle('active', type === 'hour');
-    document.getElementById('day-section').style.display  = type === 'day'  ? '' : 'none';
-    document.getElementById('hour-section').style.display = type === 'hour' ? '' : 'none';
-    document.getElementById('autoNotice').classList.remove('show');
-    syncTravelDate();
-    updatePreview();
+// ── Vehicle change ──
+function onVehicleChange() {
+  const sel = document.getElementById('vehicle_select');
+  const opt = sel.options[sel.selectedIndex];
+  if (!opt || !opt.value) {
+    document.getElementById('vehicleDetailCard').classList.remove('show');
+    document.getElementById('depositNotice').classList.remove('show');
+    return;
   }
 
-  // Keep travel_date in sync between the two date inputs
-  function syncTravelDate() {
-    const dayDate  = document.getElementById('travel_date').value;
-    const hourDate = document.getElementById('travel_date_hour').value;
-    if (currentType === 'hour' && dayDate && !hourDate)
-      document.getElementById('travel_date_hour').value = dayDate;
-    if (currentType === 'day' && hourDate && !dayDate)
-      document.getElementById('travel_date').value = hourDate;
+  const name        = opt.text.split('(')[0].trim();
+  const vtype       = opt.dataset.type       || '';
+  const model       = opt.dataset.model      || 'N/A';
+  const condition   = opt.dataset.condition  || 'Good';
+  const faults      = opt.dataset.faults     || '';
+  const photo       = opt.dataset.photo      || '';
+  const rating      = parseFloat(opt.dataset.rating) || 0;
+  const ratingCount = parseInt(opt.dataset.ratingCount) || 0;
+  const seats       = opt.dataset.seats      || 'N/A';
+  const fuel        = opt.dataset.fuel       || 'N/A';
+  const priceDay    = parseFloat(opt.dataset.priceDay)  || 0;
+  const priceHour   = parseFloat(opt.dataset.priceHour) || 0;
+
+  // Security deposit
+  const depositMap = {Bike:2000, Scooter:1500, Car:5000, SUV:8000, Tempo:10000, Bus:15000};
+  currentDeposit = depositMap[vtype] || 3000;
+
+  // Photo
+  const photoWrap = document.getElementById('vdcPhotoWrap');
+  if (photo) {
+    photoWrap.innerHTML = `<img class="vdc-photo" src="${photo}" alt="Vehicle">`;
+  } else {
+    const icons = {Bike:'🏍️', Scooter:'🛵', Car:'🚗', SUV:'🚙', Tempo:'🚐', Bus:'🚌'};
+    photoWrap.innerHTML = `<div class="vdc-photo-placeholder">${icons[vtype] || '🚗'}</div>`;
   }
 
-  // ── DAY mode: end date changes duration ──
-  document.getElementById('end_date_input').addEventListener('change', function() {
-    const startVal = document.getElementById('travel_date').value;
-    if (!startVal || !this.value) return;
-    const start = new Date(startVal);
-    const end   = new Date(this.value);
-    let days = Math.round((end - start) / (1000 * 60 * 60 * 24));
-    if (days < 1)  days = 1;
-    if (days > 30) { days = 30; this.value = addDays(startVal, 30); }
-    document.getElementById('duration_input_day').value = days;
-    updatePreview();
-  });
+  document.getElementById('vdcName').textContent   = name;
+  document.getElementById('vdcType').textContent   = vtype;
+  document.getElementById('vdcModel').textContent  = model;
+  document.getElementById('vdcSeats').textContent  = seats;
+  document.getElementById('vdcFuel').textContent   = fuel;
+  document.getElementById('vdcPriceDay').textContent  = priceDay  ? '₹'+priceDay.toLocaleString('en-IN')  : 'N/A';
+  document.getElementById('vdcPriceHour').textContent = priceHour ? '₹'+priceHour.toLocaleString('en-IN') : 'N/A';
+  document.getElementById('vdcDeposit').textContent   = '₹'+currentDeposit.toLocaleString('en-IN');
 
-  document.getElementById('travel_date').addEventListener('change', function() {
-    // Re-sync end date when start date changes
-    const dur = parseInt(document.getElementById('duration_input_day').value) || 1;
-    document.getElementById('end_date_input').value = addDays(this.value, dur);
-    updatePreview();
-  });
+  // Stars
+  const fullStars = Math.floor(rating);
+  const half      = rating - fullStars >= 0.5;
+  let stars = '';
+  for (let i=0; i<5; i++) {
+    if (i < fullStars) stars += '★';
+    else if (i === fullStars && half) stars += '½';
+    else stars += '☆';
+  }
+  document.getElementById('vdcStars').innerHTML =
+    `${stars} <span>${rating.toFixed(1)} (${ratingCount} reviews)</span>`;
 
-  function onDayDurationInput() {
-    let val = parseInt(document.getElementById('duration_input_day').value) || 1;
-    if (val < 1)  val = 1;
-    if (val > 30) val = 30;
-    document.getElementById('duration_input_day').value = val;
-    const start = document.getElementById('travel_date').value;
-    if (start) document.getElementById('end_date_input').value = addDays(start, val);
-    updatePreview();
+  // Condition badge
+  const badge = document.getElementById('vdcConditionBadge');
+  badge.textContent = condition;
+  badge.className   = 'vdc-condition-badge condition-' + condition.replace(' ', '.');
+
+  // Faults
+  const faultBox = document.getElementById('vdcFaultBox');
+  if (faults) {
+    document.getElementById('vdcFaults').textContent = faults;
+    faultBox.style.display = 'block';
+  } else {
+    faultBox.style.display = 'none';
   }
 
-  // ── HOUR mode: time pickers auto-calc duration ──
-  function onTimeChange() {
-    const startVal = document.getElementById('start_time_input').value;
-    const endVal   = document.getElementById('end_time_input').value;
-    if (!startVal || !endVal) return;
+  document.getElementById('vehicleDetailCard').classList.add('show');
+  document.getElementById('depositNotice').classList.add('show');
+  document.getElementById('depositAmount').textContent = '₹'+currentDeposit.toLocaleString('en-IN');
 
-    const [sh, sm] = startVal.split(':').map(Number);
-    const [eh, em] = endVal.split(':').map(Number);
-    let totalMins = (eh * 60 + em) - (sh * 60 + sm);
-    if (totalMins <= 0) totalMins += 24 * 60; // overnight wrap
+  updatePreview();
+}
 
-    let hours = Math.round(totalMins / 60);
-    if (hours < 1)  hours = 1;
+// ── Payment mode ──
+function setPayMode(btn, mode) {
+  document.querySelectorAll('.pay-mode-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('payment_mode_hidden').value = mode;
+}
 
-    if (hours >= 24) {
-      // Auto-convert to 1 day
-      document.getElementById('autoNotice').classList.add('show');
-      setTimeout(() => {
-        document.getElementById('autoNotice').classList.remove('show');
-        setType('day');
-        document.getElementById('duration_input_day').value = Math.floor(hours / 24);
-        onDayDurationInput();
-      }, 1400);
-      return;
+// ── Booking type ──
+function setType(type) {
+  currentType = type;
+  document.getElementById('booking_type_input').value = type;
+  document.getElementById('btn-day').classList.toggle('active',  type==='day');
+  document.getElementById('btn-hour').classList.toggle('active', type==='hour');
+  document.getElementById('day-section').style.display  = type==='day'  ? '' : 'none';
+  document.getElementById('hour-section').style.display = type==='hour' ? '' : 'none';
+  document.getElementById('autoNotice').classList.remove('show');
+  syncTravelDate();
+  updatePreview();
+}
+
+function syncTravelDate() {
+  const dayDate  = document.getElementById('travel_date').value;
+  const hourDate = document.getElementById('travel_date_hour').value;
+  if (currentType==='hour' && dayDate && !hourDate)
+    document.getElementById('travel_date_hour').value = dayDate;
+  if (currentType==='day'  && hourDate && !dayDate)
+    document.getElementById('travel_date').value = hourDate;
+}
+
+// ── Day mode ──
+document.getElementById('end_date_input').addEventListener('change', function() {
+  const startVal = document.getElementById('travel_date').value;
+  if (!startVal || !this.value) return;
+  let days = Math.round((new Date(this.value) - new Date(startVal)) / 86400000);
+  if (days < 1) days = 1;
+  if (days > 30) { days = 30; this.value = addDays(startVal, 30); }
+  document.getElementById('duration_input_day').value = days;
+  updatePreview();
+});
+document.getElementById('travel_date').addEventListener('change', function() {
+  const dur = parseInt(document.getElementById('duration_input_day').value) || 1;
+  document.getElementById('end_date_input').value = addDays(this.value, dur);
+  updatePreview();
+});
+function onDayDurationInput() {
+  let val = parseInt(document.getElementById('duration_input_day').value) || 1;
+  if (val < 1) val = 1;
+  if (val > 30) val = 30;
+  document.getElementById('duration_input_day').value = val;
+  const start = document.getElementById('travel_date').value;
+  if (start) document.getElementById('end_date_input').value = addDays(start, val);
+  updatePreview();
+}
+
+// ── Hour mode — minimum 2h ──
+function onTimeChange() {
+  const startVal = document.getElementById('start_time_input').value;
+  const endVal   = document.getElementById('end_time_input').value;
+  if (!startVal || !endVal) return;
+  const [sh,sm] = startVal.split(':').map(Number);
+  const [eh,em] = endVal.split(':').map(Number);
+  let totalMins = (eh*60+em) - (sh*60+sm);
+  if (totalMins <= 0) totalMins += 1440;
+  let hours = Math.ceil(totalMins / 60);   // ceil so 10:00-10:05 = 1h → but min is 2
+  if (hours < 2) {
+    hours = 2;
+    alert('Minimum booking is 2 hours. Duration set to 2 hours.');
+  }
+  if (hours >= 24) {
+    document.getElementById('autoNotice').classList.add('show');
+    setTimeout(() => {
+      document.getElementById('autoNotice').classList.remove('show');
+      setType('day');
+      document.getElementById('duration_input_day').value = Math.floor(hours/24);
+      onDayDurationInput();
+    }, 1400);
+    return;
+  }
+  document.getElementById('duration_input_hour').value = hours;
+  updatePreview();
+}
+function onHourDurationInput() {
+  let val = parseInt(document.getElementById('duration_input_hour').value) || 2;
+  if (val < 2) { val = 2; }
+  if (val >= 24) {
+    document.getElementById('autoNotice').classList.add('show');
+    setTimeout(() => {
+      document.getElementById('autoNotice').classList.remove('show');
+      const days = Math.floor(val/24) || 1;
+      setType('day');
+      document.getElementById('duration_input_day').value = days;
+      onDayDurationInput();
+    }, 1200);
+    return;
+  }
+  document.getElementById('duration_input_hour').value = val;
+  updatePreview();
+}
+
+// ── Price preview ──
+function updatePreview() {
+  const vSel    = document.getElementById('vehicle_select');
+  const vOpt    = vSel.options[vSel.selectedIndex];
+  const destSel = document.getElementById('destination_select');
+  const destOpt = destSel.options[destSel.selectedIndex];
+
+  let duration, unit;
+  if (currentType === 'day') {
+    duration = parseInt(document.getElementById('duration_input_day').value) || 1;
+    unit = 'day';
+    document.getElementById('start_time_hidden').value = '';
+    document.getElementById('end_time_hidden').value   = '';
+  } else {
+    duration = parseInt(document.getElementById('duration_input_hour').value) || 2;
+    if (duration < 2) duration = 2;
+    unit = 'hour';
+    const hd = document.getElementById('travel_date_hour').value;
+    if (hd) document.getElementById('travel_date').value = hd;
+    document.getElementById('start_time_hidden').value = document.getElementById('start_time_input').value || '';
+    document.getElementById('end_time_hidden').value   = document.getElementById('end_time_input').value   || '';
+  }
+  document.getElementById('duration_value_hidden').value = duration;
+
+  // Vehicle-level price overrides destination
+  let rate = 0;
+  if (vOpt && vOpt.value) {
+    const vpd  = parseFloat(vOpt.dataset.priceDay)  || 0;
+    const vph  = parseFloat(vOpt.dataset.priceHour) || 0;
+    if (vpd || vph) {
+      rate = currentType === 'day' ? vpd : vph;
     }
-
-    document.getElementById('duration_input_hour').value = hours;
-    updatePreview();
   }
-
-  function onHourDurationInput() {
-    let val = parseInt(document.getElementById('duration_input_hour').value) || 1;
-    if (val < 1) val = 1;
-
-    if (val >= 24) {
-      // Auto-convert
-      document.getElementById('autoNotice').classList.add('show');
-      setTimeout(() => {
-        document.getElementById('autoNotice').classList.remove('show');
-        const days = Math.floor(val / 24) || 1;
-        setType('day');
-        document.getElementById('duration_input_day').value = days;
-        onDayDurationInput();
-      }, 1200);
-      return;
-    }
-
-    document.getElementById('duration_input_hour').value = val;
-    updatePreview();
+  if (!rate && destOpt && destOpt.value) {
+    rate = currentType === 'day'
+      ? (parseFloat(destOpt.dataset.priceDay)  || 0)
+      : (parseFloat(destOpt.dataset.priceHour) || 0);
   }
+  if (!rate) { document.getElementById('pricePreview').classList.remove('show'); return; }
 
-  // ── Sync hidden fields & update price preview ──
-  function updatePreview() {
-    const sel  = document.getElementById('destination_select');
-    const opt  = sel.options[sel.selectedIndex];
+  const base  = rate * duration;
+  const gst   = base * 0.18;
+  const total = base + gst;
+  const fmt   = n => '₹' + n.toLocaleString('en-IN', {minimumFractionDigits:2});
 
-    let duration, unit;
-    if (currentType === 'day') {
-      duration = parseInt(document.getElementById('duration_input_day').value)  || 1;
-      unit = 'day';
-      // sync hidden travel date from day input
-      document.getElementById('start_time_hidden').value = '';
-      document.getElementById('end_time_hidden').value   = '';
-    } else {
-      duration = parseInt(document.getElementById('duration_input_hour').value) || 1;
-      unit = 'hour';
-      // sync hour travel date → main travel_date
-      const hd = document.getElementById('travel_date_hour').value;
-      if (hd) document.getElementById('travel_date').value = hd;
-      document.getElementById('start_time_hidden').value = document.getElementById('start_time_input').value || '';
-      document.getElementById('end_time_hidden').value   = document.getElementById('end_time_input').value   || '';
-    }
+  document.getElementById('preview-rate-label').textContent = currentType==='day' ? 'Rate (per day)' : 'Rate (per hour)';
+  document.getElementById('preview-rate').textContent       = fmt(rate);
+  document.getElementById('preview-duration').textContent   = duration + (unit==='day' ? (duration>1?' days':' day') : (duration>1?' hours':' hour'));
+  document.getElementById('preview-base').textContent  = fmt(base);
+  document.getElementById('preview-gst').textContent   = fmt(gst);
+  document.getElementById('preview-total').textContent = fmt(total);
+  document.getElementById('pricePreview').classList.add('show');
+}
 
-    document.getElementById('duration_value_hidden').value = duration;
+function addDays(dateStr, n) {
+  const d = new Date(dateStr);
+  d.setDate(d.getDate() + n);
+  return d.toISOString().split('T')[0];
+}
 
-    if (!opt || !opt.value) {
-      document.getElementById('pricePreview').classList.remove('show');
-      return;
-    }
+document.getElementById('destination_select').addEventListener('change', updatePreview);
+document.getElementById('travel_date_hour').addEventListener('change', updatePreview);
+window.addEventListener('DOMContentLoaded', updatePreview);
 
-    const priceDay  = parseFloat(opt.dataset.priceDay)  || 0;
-    const priceHour = parseFloat(opt.dataset.priceHour) || 0;
-    const rate      = currentType === 'day' ? priceDay : priceHour;
-    const base      = rate * duration;
-    const gst       = base * 0.18;
-    const total     = base + gst;
+// ── Signature Pad ──
+const canvas  = document.getElementById('sigCanvas');
+const ctx     = canvas.getContext('2d');
+let drawing   = false;
+let hasSig    = false;
 
-    const fmt = n => '₹' + n.toLocaleString('en-IN', { minimumFractionDigits: 2 });
-
-    document.getElementById('preview-rate-label').textContent = currentType === 'day' ? 'Rate (per day)' : 'Rate (per hour)';
-    document.getElementById('preview-rate').textContent       = fmt(rate);
-    document.getElementById('preview-duration').textContent   =
-      duration + (unit === 'day' ? (duration > 1 ? ' days' : ' day') : (duration > 1 ? ' hours' : ' hour'));
-    document.getElementById('preview-base').textContent  = fmt(base);
-    document.getElementById('preview-gst').textContent   = fmt(gst);
-    document.getElementById('preview-total').textContent = fmt(total);
-    document.getElementById('pricePreview').classList.add('show');
+function getPos(e) {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+  if (e.touches) {
+    return { x: (e.touches[0].clientX - rect.left) * scaleX, y: (e.touches[0].clientY - rect.top) * scaleY };
   }
+  return { x: (e.clientX - rect.left) * scaleX, y: (e.clientY - rect.top) * scaleY };
+}
+canvas.addEventListener('mousedown',  e => { drawing=true; ctx.beginPath(); const p=getPos(e); ctx.moveTo(p.x,p.y); });
+canvas.addEventListener('mousemove',  e => { if (!drawing) return; const p=getPos(e); ctx.lineWidth=2; ctx.lineCap='round'; ctx.strokeStyle='#1C2B3A'; ctx.lineTo(p.x,p.y); ctx.stroke(); hasSig=true; });
+canvas.addEventListener('mouseup',    () => { drawing=false; });
+canvas.addEventListener('mouseleave', () => { drawing=false; });
+canvas.addEventListener('touchstart', e => { e.preventDefault(); drawing=true; ctx.beginPath(); const p=getPos(e); ctx.moveTo(p.x,p.y); });
+canvas.addEventListener('touchmove',  e => { e.preventDefault(); if (!drawing) return; const p=getPos(e); ctx.lineWidth=2; ctx.lineCap='round'; ctx.strokeStyle='#1C2B3A'; ctx.lineTo(p.x,p.y); ctx.stroke(); hasSig=true; });
+canvas.addEventListener('touchend',   () => { drawing=false; });
 
-  // ── Helper: add N days to a date string ──
-  function addDays(dateStr, n) {
-    const d = new Date(dateStr);
-    d.setDate(d.getDate() + n);
-    return d.toISOString().split('T')[0];
+function clearSig() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  hasSig = false; sigConfirmed = false;
+  document.getElementById('agreement_signed_input').value = '';
+  document.getElementById('signature_data_input').value   = '';
+  document.getElementById('sigDone').classList.remove('show');
+}
+function confirmSig() {
+  if (!hasSig) { alert('Please draw your signature first.'); return; }
+  sigConfirmed = true;
+  document.getElementById('agreement_signed_input').value = '1';
+  document.getElementById('signature_data_input').value   = canvas.toDataURL('image/png');
+  document.getElementById('sigDone').classList.add('show');
+}
+
+// ── Form submit validation ──
+document.getElementById('bookingForm').addEventListener('submit', function(e) {
+  if (!sigConfirmed) {
+    e.preventDefault();
+    alert('Please confirm your digital signature on the rental agreement before proceeding.');
+    canvas.scrollIntoView({behavior:'smooth'});
+    return false;
   }
-
-  document.getElementById('destination_select').addEventListener('change', updatePreview);
-  document.getElementById('travel_date_hour').addEventListener('change', updatePreview);
-  window.addEventListener('DOMContentLoaded', updatePreview);
+  const vc = document.getElementById('vehicle_select').value;
+  if (!vc) { e.preventDefault(); alert('Please select a vehicle.'); return false; }
+  if (currentType === 'hour') {
+    const dur = parseInt(document.getElementById('duration_input_hour').value) || 0;
+    if (dur < 2) { e.preventDefault(); alert('Minimum 2 hours required for hourly booking.'); return false; }
+  }
+});
 </script>
 </body>
 </html>

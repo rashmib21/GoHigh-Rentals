@@ -1,104 +1,118 @@
 {% extends "admin_base.html" %}
-
 {% block title %}Add Vehicle{% endblock %}
-{% block page_icon %}fas fa-plus-circle{% endblock %}
-{% block page_name %}Add New Vehicle{% endblock %}
-
 {% block content %}
+<div style="max-width:620px; margin:0 auto; padding:30px 20px;">
+  <h2 style="font-size:1.4rem; font-weight:900; color:#1C2B3A; margin-bottom:24px;">
+    <i class="fas fa-plus-circle" style="color:#4A9B8E;"></i> Add New Vehicle
+  </h2>
 
-<div class="page-heading">
-    <div>
-        <h2>➕ Add New Vehicle</h2>
-        <p>Fill in the details to add a vehicle to your fleet.</p>
+  <form action="{{ url_for('admin.admin_add_vehicle') }}" method="POST" enctype="multipart/form-data"
+        style="background:#fff; border-radius:16px; padding:28px; box-shadow:0 4px 20px rgba(0,0,0,.08);">
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+
+      <div>
+        <label style="font-size:.75rem; font-weight:800; color:#2E4A5C; text-transform:uppercase; display:block; margin-bottom:6px;">Vehicle Name *</label>
+        <input type="text" name="vehicle_name" required style="width:100%; padding:10px 12px; border:1.5px solid #dde3eb; border-radius:8px; font-size:.9rem; font-family:inherit;">
+      </div>
+
+      <div>
+        <label style="font-size:.75rem; font-weight:800; color:#2E4A5C; text-transform:uppercase; display:block; margin-bottom:6px;">Vehicle Number *</label>
+        <input type="text" name="vehicle_number" required style="width:100%; padding:10px 12px; border:1.5px solid #dde3eb; border-radius:8px; font-size:.9rem; font-family:inherit;" placeholder="e.g. HP01AA1234">
+      </div>
+
+      <div>
+        <label style="font-size:.75rem; font-weight:800; color:#2E4A5C; text-transform:uppercase; display:block; margin-bottom:6px;">Vehicle Type *</label>
+        <select name="vehicle_type" required style="width:100%; padding:10px 12px; border:1.5px solid #dde3eb; border-radius:8px; font-size:.9rem; font-family:inherit;">
+          <option value="">Select Type</option>
+          <option value="Bike">Bike</option>
+          <option value="Scooter">Scooter</option>
+          <option value="Car">Car</option>
+          <option value="SUV">SUV</option>
+          <option value="Tempo">Tempo</option>
+          <option value="Bus">Bus</option>
+        </select>
+      </div>
+
+      <div>
+        <label style="font-size:.75rem; font-weight:800; color:#2E4A5C; text-transform:uppercase; display:block; margin-bottom:6px;">Model Number</label>
+        <input type="text" name="model_number" style="width:100%; padding:10px 12px; border:1.5px solid #dde3eb; border-radius:8px; font-size:.9rem; font-family:inherit;" placeholder="e.g. Royal Enfield Himalayan 2022">
+      </div>
+
+      <div>
+        <label style="font-size:.75rem; font-weight:800; color:#2E4A5C; text-transform:uppercase; display:block; margin-bottom:6px;">Seating Capacity</label>
+        <input type="number" name="seating_capacity" min="1" style="width:100%; padding:10px 12px; border:1.5px solid #dde3eb; border-radius:8px; font-size:.9rem; font-family:inherit;">
+      </div>
+
+      <div>
+        <label style="font-size:.75rem; font-weight:800; color:#2E4A5C; text-transform:uppercase; display:block; margin-bottom:6px;">Fuel Type</label>
+        <select name="fuel_type" style="width:100%; padding:10px 12px; border:1.5px solid #dde3eb; border-radius:8px; font-size:.9rem; font-family:inherit;">
+          <option value="Petrol">Petrol</option>
+          <option value="Diesel">Diesel</option>
+          <option value="Electric">Electric</option>
+          <option value="CNG">CNG</option>
+        </select>
+      </div>
+
+      <div>
+        <label style="font-size:.75rem; font-weight:800; color:#2E4A5C; text-transform:uppercase; display:block; margin-bottom:6px;">Price per Day (₹) *</label>
+        <input type="number" name="price_per_day" step="0.01" min="0" required
+               style="width:100%; padding:10px 12px; border:1.5px solid #dde3eb; border-radius:8px; font-size:.9rem; font-family:inherit;" placeholder="e.g. 1500">
+      </div>
+
+      <div>
+        <label style="font-size:.75rem; font-weight:800; color:#2E4A5C; text-transform:uppercase; display:block; margin-bottom:6px;">Price per Hour (₹) *</label>
+        <input type="number" name="price_per_hour" step="0.01" min="0" required
+               style="width:100%; padding:10px 12px; border:1.5px solid #dde3eb; border-radius:8px; font-size:.9rem; font-family:inherit;" placeholder="e.g. 200">
+      </div>
+
+      <div>
+        <label style="font-size:.75rem; font-weight:800; color:#2E4A5C; text-transform:uppercase; display:block; margin-bottom:6px;">Condition</label>
+        <select name="vehicle_condition" style="width:100%; padding:10px 12px; border:1.5px solid #dde3eb; border-radius:8px; font-size:.9rem; font-family:inherit;">
+          <option value="Excellent">Excellent</option>
+          <option value="Good" selected>Good</option>
+          <option value="Fair">Fair</option>
+          <option value="Needs Repair">Needs Repair</option>
+        </select>
+      </div>
+
+      <div>
+        <label style="font-size:.75rem; font-weight:800; color:#2E4A5C; text-transform:uppercase; display:block; margin-bottom:6px;">Availability</label>
+        <select name="availability_status" style="width:100%; padding:10px 12px; border:1.5px solid #dde3eb; border-radius:8px; font-size:.9rem; font-family:inherit;">
+          <option value="Available">Available</option>
+          <option value="Unavailable">Unavailable</option>
+          <option value="In Service">In Service</option>
+        </select>
+      </div>
+
+      <div>
+        <label style="font-size:.75rem; font-weight:800; color:#2E4A5C; text-transform:uppercase; display:block; margin-bottom:6px;">Vehicle Count</label>
+        <input type="number" name="vehicle_count" min="1" value="1" style="width:100%; padding:10px 12px; border:1.5px solid #dde3eb; border-radius:8px; font-size:.9rem; font-family:inherit;">
+      </div>
+
+      <div>
+        <label style="font-size:.75rem; font-weight:800; color:#2E4A5C; text-transform:uppercase; display:block; margin-bottom:6px;">Vehicle Photo</label>
+        <input type="file" name="photo_file" accept=".jpg,.jpeg,.png,.webp"
+               style="width:100%; padding:8px 12px; border:1.5px solid #dde3eb; border-radius:8px; font-size:.88rem; font-family:inherit; background:#f8fafc;">
+      </div>
+
     </div>
-    <a href="{{ url_for('admin.admin_vehicles') }}" class="btn btn-dark">
-        <i class="fas fa-arrow-left"></i> Back to Vehicles
-    </a>
+
+    <div style="margin-top:16px;">
+      <label style="font-size:.75rem; font-weight:800; color:#2E4A5C; text-transform:uppercase; display:block; margin-bottom:6px;">Known Faults / Issues (if any)</label>
+      <textarea name="known_faults" rows="3"
+                style="width:100%; padding:10px 12px; border:1.5px solid #dde3eb; border-radius:8px; font-size:.9rem; font-family:inherit; resize:vertical;"
+                placeholder="e.g. Minor scratch on left door, AC not working"></textarea>
+    </div>
+
+    <div style="display:flex; gap:12px; margin-top:24px;">
+      <button type="submit" style="flex:1; padding:13px; background:linear-gradient(135deg,#4A9B8E,#2D6A4F); color:#fff; border:none; border-radius:10px; font-size:.95rem; font-weight:800; font-family:inherit; cursor:pointer;">
+        <i class="fas fa-plus"></i> Add Vehicle
+      </button>
+      <a href="{{ url_for('admin.admin_vehicles') }}" style="flex:1; padding:13px; background:#fae3da; color:#b34a28; border:none; border-radius:10px; font-size:.95rem; font-weight:800; font-family:inherit; cursor:pointer; text-align:center; text-decoration:none; display:flex; align-items:center; justify-content:center;">
+        Cancel
+      </a>
+    </div>
+  </form>
 </div>
-
-<div class="form-card">
-    <form method="POST">
-
-        <!-- vehicle_name -->
-        <div class="form-group">
-            <label>Vehicle Name</label>
-            <input type="text" name="vehicle_name"
-                   placeholder="e.g. Toyota Innova" required>
-        </div>
-
-        <!-- vehicle_number (UNIQUE in DB) -->
-        <div class="form-group">
-            <label>Vehicle Number (Registration)</label>
-            <input type="text" name="vehicle_number"
-                   placeholder="e.g. HP 01 AB 1234" required>
-        </div>
-
-        <!-- vehicle_type -->
-        <div class="form-group">
-            <label>Vehicle Type</label>
-            <select name="vehicle_type" required>
-                <option value="">-- Select Type --</option>
-                <option value="SUV">SUV</option>
-                <option value="MUV">MUV</option>
-                <option value="Sedan">Sedan</option>
-                <option value="Hatchback">Hatchback</option>
-                <option value="Bike">Bike</option>
-                <option value="Tempo Traveller">Tempo Traveller</option>
-            </select>
-        </div>
-
-        <!-- seating_capacity -->
-        <div class="form-group">
-            <label>Seating Capacity</label>
-            <input type="number" name="seating_capacity"
-                   placeholder="e.g. 7" min="1" max="50" required>
-        </div>
-
-        <!-- fuel_type -->
-        <div class="form-group">
-            <label>Fuel Type</label>
-            <select name="fuel_type" required>
-                <option value="">-- Select Fuel --</option>
-                <option value="Petrol">Petrol</option>
-                <option value="Diesel">Diesel</option>
-                <option value="CNG">CNG</option>
-                <option value="Electric">Electric</option>
-            </select>
-        </div>
-
-        <!-- vehicle_count -->
-        <div class="form-group">
-            <label>Vehicle Count (How many of this vehicle you have)</label>
-            <input type="number" name="vehicle_count"
-                   placeholder="e.g. 3" min="1" value="1" required>
-        </div>
-
-        <!-- availability_status -->
-        <div class="form-group">
-            <label>Availability Status</label>
-            <select name="availability_status">
-                <option value="Available">Available</option>
-                <option value="Unavailable">Unavailable</option>
-            </select>
-        </div>
-
-        <!-- category_id (optional) -->
-        <div class="form-group">
-            <label>Category ID <span style="color:#aaa; font-weight:400;">(optional)</span></label>
-            <input type="number" name="category_id"
-                   placeholder="Leave blank if not used">
-        </div>
-
-        <div class="form-actions">
-            <button type="submit" class="btn btn-orange">
-                <i class="fas fa-plus"></i> Add Vehicle
-            </button>
-            <a href="{{ url_for('admin.admin_vehicles') }}" class="btn btn-dark">
-                Cancel
-            </a>
-        </div>
-
-    </form>
-</div>
-
 {% endblock %}

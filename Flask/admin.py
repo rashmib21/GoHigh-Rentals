@@ -1,10 +1,19 @@
+import os
 from flask import Blueprint, render_template, request, redirect, session, flash, url_for
 from .db import get_db_connection
+from werkzeug.utils import secure_filename
 
 admin_bp = Blueprint('admin', __name__)
 
 admin_username = "admin"
 admin_password = "admin123"
+
+VEHICLE_PHOTO_FOLDER = os.path.join(os.path.dirname(__file__), "static", "uploads", "vehicle_photos")
+ALLOWED_PHOTO_EXT    = {"png", "jpg", "jpeg", "webp"}
+
+
+def allowed_photo(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_PHOTO_EXT
 
 
 def admin_required():
@@ -15,7 +24,6 @@ def admin_required():
 def admin_login():
     if admin_required():
         return redirect(url_for("admin.admin_dashboard"))
-
     if request.method == 'POST':
         username = request.form.get("username")
         password = request.form.get("password")
@@ -25,7 +33,6 @@ def admin_login():
             return redirect(url_for("admin.admin_dashboard"))
         else:
             flash("Incorrect username or password", "error")
-
     return render_template("admin_login.html")
 
 
@@ -40,35 +47,25 @@ def admin_logout():
 def admin_dashboard():
     if not admin_required():
         return redirect(url_for("admin.admin_login"))
-
     conn   = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-
     cursor.execute("SELECT COUNT(*) AS total FROM users")
     total_users = cursor.fetchone()['total']
-
     cursor.execute("SELECT COUNT(*) AS total FROM booking")
     total_bookings = cursor.fetchone()['total']
-
     cursor.execute("SELECT COUNT(*) AS total FROM booking WHERE booking_status='Confirmed'")
     confirmed_bookings = cursor.fetchone()['total']
-
     cursor.execute("SELECT COUNT(*) AS total FROM booking WHERE booking_status='Cancelled'")
     cancelled_bookings = cursor.fetchone()['total']
-
     cursor.execute("SELECT COUNT(*) AS total FROM booking WHERE booking_status='Completed'")
     completed_bookings = cursor.fetchone()['total']
-
     cursor.execute("SELECT SUM(total_amount) AS revenue FROM pricing")
     result = cursor.fetchone()
     total_revenue = result['revenue'] if result['revenue'] else 0
-
     cursor.execute("SELECT COUNT(*) AS total FROM contact")
     total_inquiries = cursor.fetchone()['total']
-
     cursor.execute("SELECT COUNT(*) AS total FROM vehicle")
     total_vehicles = cursor.fetchone()['total']
-
     cursor.execute("""
         SELECT b.booking_id, b.travel_date, b.booking_status, b.booking_date,
                u.name AS user_name, d.destination_name, v.vehicle_name
@@ -79,19 +76,20 @@ def admin_dashboard():
         ORDER BY b.booking_date DESC LIMIT 5
     """)
     recent_bookings = cursor.fetchall()
-
     cursor.execute("SELECT * FROM contact ORDER BY id DESC LIMIT 5")
     recent_inquiries = cursor.fetchall()
-
     cursor.execute("""
         SELECT COUNT(*) AS total FROM booking
         WHERE booking_status='Cancelled' AND cancelled_by='user' AND admin_notified=0
     """)
     user_cancelled_count = cursor.fetchone()['total']
-
-    cursor.close()
-    conn.close()
-
+    # Pending document verifications
+    try:
+        cursor.execute("SELECT COUNT(*) AS total FROM user_documents WHERE verified=0")
+        pending_docs = cursor.fetchone()['total']
+    except Exception:
+        pending_docs = 0
+    cursor.close(); conn.close()
     return render_template("admin_dashboard.html",
         total_users          = total_users,
         total_bookings       = total_bookings,
@@ -104,31 +102,28 @@ def admin_dashboard():
         recent_bookings      = recent_bookings,
         recent_inquiries     = recent_inquiries,
         user_cancelled_count = user_cancelled_count,
+        pending_docs         = pending_docs,
     )
 
 
-# ── MANAGE BOOKINGS WITH FILTERS ──
+# ── MANAGE BOOKINGS ──
 @admin_bp.route("/admin/bookings")
 def admin_bookings():
     if not admin_required():
         return redirect(url_for("admin.admin_login"))
-
     conn   = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-
-    f_status    = request.args.get("status", "")
-    f_vehicle   = request.args.get("vehicle", "")
+    f_status    = request.args.get("status",    "")
+    f_vehicle   = request.args.get("vehicle",   "")
     f_date_from = request.args.get("date_from", "")
-    f_date_to   = request.args.get("date_to", "")
-
+    f_date_to   = request.args.get("date_to",   "")
     query = """
         SELECT b.booking_id, b.travel_date, b.booking_status, b.booking_date,
-               b.cancelled_by, b.admin_notified,
+               b.cancelled_by, b.admin_notified, b.security_deposit, b.agreement_signed,
                u.name AS user_name, u.email AS user_email,
-               d.destination_name, v.vehicle_name,
-               p.total_amount, p.pricing_type,
-               p.duration_value, p.duration_unit,
-               p.cancellation_deduction, p.refund_amount, p.cancellation_pct
+               d.destination_name, v.vehicle_name, v.vehicle_type,
+               p.total_amount, p.pricing_type, p.duration_value, p.duration_unit,
+               p.payment_mode, p.cancellation_deduction, p.refund_amount, p.cancellation_pct
         FROM booking b
         JOIN users u       ON b.user_id       = u.user_id
         JOIN destination d ON b.destination_id = d.destination_id
@@ -137,23 +132,15 @@ def admin_bookings():
         WHERE 1=1
     """
     params = []
-
-    if f_status:
-        query += " AND b.booking_status = %s"; params.append(f_status)
-    if f_vehicle:
-        query += " AND v.vehicle_name = %s";   params.append(f_vehicle)
-    if f_date_from:
-        query += " AND b.travel_date >= %s";   params.append(f_date_from)
-    if f_date_to:
-        query += " AND b.travel_date <= %s";   params.append(f_date_to)
-
+    if f_status:    query += " AND b.booking_status=%s"; params.append(f_status)
+    if f_vehicle:   query += " AND v.vehicle_name=%s";   params.append(f_vehicle)
+    if f_date_from: query += " AND b.travel_date>=%s";   params.append(f_date_from)
+    if f_date_to:   query += " AND b.travel_date<=%s";   params.append(f_date_to)
     query += " ORDER BY b.booking_date DESC"
     cursor.execute(query, params)
     bookings = cursor.fetchall()
-
     cursor.execute("SELECT DISTINCT vehicle_name FROM vehicle ORDER BY vehicle_name")
     vehicles = cursor.fetchall()
-
     cursor.execute("""
         SELECT b.booking_id, u.name AS user_name, b.travel_date, d.destination_name
         FROM booking b
@@ -162,10 +149,7 @@ def admin_bookings():
         WHERE b.booking_status='Cancelled' AND b.cancelled_by='user' AND b.admin_notified=0
     """)
     pending_cancel_notices = cursor.fetchall()
-
-    cursor.close()
-    conn.close()
-
+    cursor.close(); conn.close()
     return render_template("admin_bookings.html",
         bookings               = bookings,
         vehicles               = vehicles,
@@ -190,80 +174,241 @@ def admin_dismiss_cancel(booking_id):
     return redirect(url_for("admin.admin_bookings"))
 
 
-# ── FIX 2: ACCEPT — only for Pending bookings ──
 @admin_bp.route("/admin/booking/accept/<int:booking_id>", methods=["POST"])
 def admin_accept_booking(booking_id):
     if not admin_required():
         return redirect(url_for("admin.admin_login"))
-
     conn   = get_db_connection()
     cursor = conn.cursor(dictionary=True)
     cursor.execute("SELECT booking_status, cancelled_by FROM booking WHERE booking_id=%s", (booking_id,))
     booking = cursor.fetchone()
-
-    # Block if user cancelled
     if booking and booking['booking_status'] == 'Cancelled' and booking['cancelled_by'] == 'user':
         flash(f"Booking #{booking_id} was cancelled by the user and cannot be modified.", "error")
         cursor.close(); conn.close()
         return redirect(url_for("admin.admin_bookings"))
-
-    # Only Pending can be accepted
     if booking and booking['booking_status'] != 'Pending':
         flash(f"Only Pending bookings can be accepted.", "error")
         cursor.close(); conn.close()
         return redirect(url_for("admin.admin_bookings"))
-
-    cursor.execute("""
-        UPDATE booking SET booking_status='Confirmed', notified=0
-        WHERE booking_id=%s
-    """, (booking_id,))
+    cursor.execute("UPDATE booking SET booking_status='Confirmed' WHERE booking_id=%s", (booking_id,))
     conn.commit()
     cursor.close(); conn.close()
-
-    flash(f"Booking #{booking_id} has been accepted!", "success")
+    flash(f"Booking #{booking_id} confirmed.", "success")
     return redirect(url_for("admin.admin_bookings"))
 
 
-# ── FIX 2: ADMIN CANCEL — only for Pending, NOT after Confirmed ──
 @admin_bp.route("/admin/booking/cancel/<int:booking_id>", methods=["POST"])
 def admin_cancel_booking(booking_id):
     if not admin_required():
         return redirect(url_for("admin.admin_login"))
-
     conn   = get_db_connection()
     cursor = conn.cursor(dictionary=True)
     cursor.execute("SELECT booking_status, cancelled_by FROM booking WHERE booking_id=%s", (booking_id,))
     booking = cursor.fetchone()
-
-    # Block if user cancelled
     if booking and booking['booking_status'] == 'Cancelled' and booking['cancelled_by'] == 'user':
-        flash(f"Booking #{booking_id} was already cancelled by the user.", "error")
+        flash(f"Booking #{booking_id} was cancelled by user.", "error")
         cursor.close(); conn.close()
         return redirect(url_for("admin.admin_bookings"))
-
-    # FIX 2: Admin CANNOT cancel after Confirmed
     if booking and booking['booking_status'] == 'Confirmed':
-        flash(f"Booking #{booking_id} is already Confirmed and cannot be cancelled by admin.", "error")
+        flash(f"Booking #{booking_id} is Confirmed and cannot be cancelled by admin.", "error")
         cursor.close(); conn.close()
         return redirect(url_for("admin.admin_bookings"))
-
-    # FIX 2: Only Pending can be cancelled by admin
     if booking and booking['booking_status'] != 'Pending':
         flash(f"Only Pending bookings can be cancelled.", "error")
         cursor.close(); conn.close()
         return redirect(url_for("admin.admin_bookings"))
-
     cursor.execute("""
         UPDATE booking SET booking_status='Cancelled', cancelled_by='admin', notified=0
         WHERE booking_id=%s
     """, (booking_id,))
     conn.commit()
     cursor.close(); conn.close()
-
-    flash(f"Booking #{booking_id} has been cancelled.", "success")
+    flash(f"Booking #{booking_id} cancelled.", "success")
     return redirect(url_for("admin.admin_bookings"))
 
 
+# ── MANAGE VEHICLES ──
+@admin_bp.route("/admin/vehicles")
+def admin_vehicles():
+    if not admin_required():
+        return redirect(url_for("admin.admin_login"))
+    conn   = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM vehicle ORDER BY vehicle_id DESC")
+    vehicles = cursor.fetchall()
+    cursor.close(); conn.close()
+    return render_template("admin_vehicles.html", vehicles=vehicles)
+
+
+@admin_bp.route("/admin/vehicle/add", methods=["GET", "POST"])
+def admin_add_vehicle():
+    if not admin_required():
+        return redirect(url_for("admin.admin_login"))
+    if request.method == "POST":
+        os.makedirs(VEHICLE_PHOTO_FOLDER, exist_ok=True)
+        photo_filename = None
+        photo_file = request.files.get("photo_file")
+        if photo_file and photo_file.filename and allowed_photo(photo_file.filename):
+            ext            = photo_file.filename.rsplit(".", 1)[1].lower()
+            photo_filename = secure_filename(f"vehicle_{request.form.get('vehicle_number','unknown')}.{ext}")
+            photo_file.save(os.path.join(VEHICLE_PHOTO_FOLDER, photo_filename))
+            photo_url = f"/static/uploads/vehicle_photos/{photo_filename}"
+        else:
+            photo_url = None
+
+        conn   = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO vehicle
+                (vehicle_name, vehicle_number, vehicle_type, seating_capacity,
+                 fuel_type, availability_status, vehicle_count, category_id,
+                 model_number, vehicle_condition, known_faults, photo_url,
+                 price_per_day, price_per_hour)
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+        """, (
+            request.form.get("vehicle_name"),
+            request.form.get("vehicle_number"),
+            request.form.get("vehicle_type"),
+            request.form.get("seating_capacity"),
+            request.form.get("fuel_type"),
+            request.form.get("availability_status", "Available"),
+            request.form.get("vehicle_count", 1),
+            request.form.get("category_id") or None,
+            request.form.get("model_number") or None,
+            request.form.get("vehicle_condition", "Good"),
+            request.form.get("known_faults") or None,
+            photo_url,
+            request.form.get("price_per_day") or None,
+            request.form.get("price_per_hour") or None,
+        ))
+        conn.commit()
+        cursor.close(); conn.close()
+        flash("Vehicle added successfully!", "success")
+        return redirect(url_for("admin.admin_vehicles"))
+    return render_template("admin_add_vehicle.html")
+
+
+@admin_bp.route("/admin/vehicle/edit/<int:vehicle_id>", methods=["GET", "POST"])
+def admin_edit_vehicle(vehicle_id):
+    if not admin_required():
+        return redirect(url_for("admin.admin_login"))
+    conn   = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    if request.method == "POST":
+        os.makedirs(VEHICLE_PHOTO_FOLDER, exist_ok=True)
+        photo_url = None
+        photo_file = request.files.get("photo_file")
+        if photo_file and photo_file.filename and allowed_photo(photo_file.filename):
+            ext       = photo_file.filename.rsplit(".", 1)[1].lower()
+            fname     = secure_filename(f"vehicle_{vehicle_id}.{ext}")
+            photo_file.save(os.path.join(VEHICLE_PHOTO_FOLDER, fname))
+            photo_url = f"/static/uploads/vehicle_photos/{fname}"
+
+        if photo_url:
+            cursor.execute("""
+                UPDATE vehicle
+                SET vehicle_name=%s, vehicle_number=%s, vehicle_type=%s,
+                    seating_capacity=%s, fuel_type=%s, availability_status=%s,
+                    vehicle_count=%s, category_id=%s,
+                    model_number=%s, vehicle_condition=%s, known_faults=%s,
+                    photo_url=%s, price_per_day=%s, price_per_hour=%s
+                WHERE vehicle_id=%s
+            """, (
+                request.form.get("vehicle_name"), request.form.get("vehicle_number"),
+                request.form.get("vehicle_type"), request.form.get("seating_capacity"),
+                request.form.get("fuel_type"),    request.form.get("availability_status"),
+                request.form.get("vehicle_count"), request.form.get("category_id") or None,
+                request.form.get("model_number") or None,
+                request.form.get("vehicle_condition", "Good"),
+                request.form.get("known_faults") or None,
+                photo_url,
+                request.form.get("price_per_day") or None,
+                request.form.get("price_per_hour") or None,
+                vehicle_id
+            ))
+        else:
+            cursor.execute("""
+                UPDATE vehicle
+                SET vehicle_name=%s, vehicle_number=%s, vehicle_type=%s,
+                    seating_capacity=%s, fuel_type=%s, availability_status=%s,
+                    vehicle_count=%s, category_id=%s,
+                    model_number=%s, vehicle_condition=%s, known_faults=%s,
+                    price_per_day=%s, price_per_hour=%s
+                WHERE vehicle_id=%s
+            """, (
+                request.form.get("vehicle_name"), request.form.get("vehicle_number"),
+                request.form.get("vehicle_type"), request.form.get("seating_capacity"),
+                request.form.get("fuel_type"),    request.form.get("availability_status"),
+                request.form.get("vehicle_count"), request.form.get("category_id") or None,
+                request.form.get("model_number") or None,
+                request.form.get("vehicle_condition", "Good"),
+                request.form.get("known_faults") or None,
+                request.form.get("price_per_day") or None,
+                request.form.get("price_per_hour") or None,
+                vehicle_id
+            ))
+        conn.commit()
+        cursor.close(); conn.close()
+        flash("Vehicle updated successfully!", "success")
+        return redirect(url_for("admin.admin_vehicles"))
+
+    cursor.execute("SELECT * FROM vehicle WHERE vehicle_id=%s", (vehicle_id,))
+    vehicle = cursor.fetchone()
+    cursor.close(); conn.close()
+    if not vehicle:
+        flash("Vehicle not found.", "error")
+        return redirect(url_for("admin.admin_vehicles"))
+    return render_template("admin_edit_vehicle.html", vehicle=vehicle)
+
+
+@admin_bp.route("/admin/vehicle/delete/<int:vehicle_id>", methods=["POST"])
+def admin_delete_vehicle(vehicle_id):
+    if not admin_required():
+        return redirect(url_for("admin.admin_login"))
+    conn   = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM vehicle WHERE vehicle_id=%s", (vehicle_id,))
+    conn.commit()
+    cursor.close(); conn.close()
+    flash("Vehicle deleted.", "success")
+    return redirect(url_for("admin.admin_vehicles"))
+
+
+# ── DOCUMENTS ADMIN ──
+@admin_bp.route("/admin/documents")
+def admin_documents():
+    if not admin_required():
+        return redirect(url_for("admin.admin_login"))
+    conn   = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        cursor.execute("""
+            SELECT d.*, u.name AS user_name, u.email AS user_email
+            FROM user_documents d
+            JOIN users u ON d.user_id = u.user_id
+            ORDER BY d.submitted_at DESC
+        """)
+        docs = cursor.fetchall()
+    except Exception:
+        docs = []
+    cursor.close(); conn.close()
+    return render_template("admin_documents.html", docs=docs)
+
+
+@admin_bp.route("/admin/document/verify/<int:doc_id>", methods=["POST"])
+def admin_verify_document(doc_id):
+    if not admin_required():
+        return redirect(url_for("admin.admin_login"))
+    conn   = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE user_documents SET verified=1 WHERE doc_id=%s", (doc_id,))
+    conn.commit()
+    cursor.close(); conn.close()
+    flash("Document verified.", "success")
+    return redirect(url_for("admin.admin_documents"))
+
+
+# ── INQUIRIES ──
 @admin_bp.route("/admin/inquiries")
 def admin_inquiries():
     if not admin_required():
@@ -289,97 +434,7 @@ def admin_delete_inquiry(inquiry_id):
     return redirect(url_for("admin.admin_inquiries"))
 
 
-@admin_bp.route("/admin/vehicles")
-def admin_vehicles():
-    if not admin_required():
-        return redirect(url_for("admin.admin_login"))
-    conn   = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM vehicle ORDER BY vehicle_id DESC")
-    vehicles = cursor.fetchall()
-    cursor.close(); conn.close()
-    return render_template("admin_vehicles.html", vehicles=vehicles)
-
-
-@admin_bp.route("/admin/vehicle/add", methods=["GET", "POST"])
-def admin_add_vehicle():
-    if not admin_required():
-        return redirect(url_for("admin.admin_login"))
-    if request.method == "POST":
-        conn   = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute("""
-            INSERT INTO vehicle
-                (vehicle_name, vehicle_number, vehicle_type, seating_capacity,
-                 fuel_type, availability_status, vehicle_count, category_id)
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
-        """, (
-            request.form.get("vehicle_name"),
-            request.form.get("vehicle_number"),
-            request.form.get("vehicle_type"),
-            request.form.get("seating_capacity"),
-            request.form.get("fuel_type"),
-            request.form.get("availability_status", "Available"),
-            request.form.get("vehicle_count", 1),
-            request.form.get("category_id") or None
-        ))
-        conn.commit()
-        cursor.close(); conn.close()
-        flash(f"Vehicle added successfully!", "success")
-        return redirect(url_for("admin.admin_vehicles"))
-    return render_template("admin_add_vehicle.html")
-
-
-@admin_bp.route("/admin/vehicle/edit/<int:vehicle_id>", methods=["GET", "POST"])
-def admin_edit_vehicle(vehicle_id):
-    if not admin_required():
-        return redirect(url_for("admin.admin_login"))
-    conn   = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
-    if request.method == "POST":
-        cursor.execute("""
-            UPDATE vehicle
-            SET vehicle_name=%s, vehicle_number=%s, vehicle_type=%s,
-                seating_capacity=%s, fuel_type=%s, availability_status=%s,
-                vehicle_count=%s, category_id=%s
-            WHERE vehicle_id=%s
-        """, (
-            request.form.get("vehicle_name"),
-            request.form.get("vehicle_number"),
-            request.form.get("vehicle_type"),
-            request.form.get("seating_capacity"),
-            request.form.get("fuel_type"),
-            request.form.get("availability_status"),
-            request.form.get("vehicle_count"),
-            request.form.get("category_id") or None,
-            vehicle_id
-        ))
-        conn.commit()
-        cursor.close(); conn.close()
-        flash("Vehicle updated successfully!", "success")
-        return redirect(url_for("admin.admin_vehicles"))
-    cursor.execute("SELECT * FROM vehicle WHERE vehicle_id=%s", (vehicle_id,))
-    vehicle = cursor.fetchone()
-    cursor.close(); conn.close()
-    if not vehicle:
-        flash("Vehicle not found.", "error")
-        return redirect(url_for("admin.admin_vehicles"))
-    return render_template("admin_edit_vehicle.html", vehicle=vehicle)
-
-
-@admin_bp.route("/admin/vehicle/delete/<int:vehicle_id>", methods=["POST"])
-def admin_delete_vehicle(vehicle_id):
-    if not admin_required():
-        return redirect(url_for("admin.admin_login"))
-    conn   = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("DELETE FROM vehicle WHERE vehicle_id=%s", (vehicle_id,))
-    conn.commit()
-    cursor.close(); conn.close()
-    flash("Vehicle deleted.", "success")
-    return redirect(url_for("admin.admin_vehicles"))
-
-
+# ── USERS ──
 @admin_bp.route("/admin/users")
 def admin_users():
     if not admin_required():
@@ -411,7 +466,7 @@ def admin_delete_user(user_id):
     return redirect(url_for("admin.admin_users"))
 
 
-# ── MANAGE REVIEWS ──
+# ── REVIEWS ──
 @admin_bp.route("/admin/reviews")
 def admin_reviews():
     if not admin_required():

@@ -486,6 +486,10 @@
             <i class="fas fa-users"></i> Users
         </a>
 
+        <a href="{{ url_for('admin.admin_documents') }}"
+           class="nav-link {% if request.endpoint == 'admin.admin_documents' %}active{% endif %}">
+          <i class="fas fa-id-card"></i> Documents
+        </a>
         <a href="{{ url_for('admin.admin_reviews') }}"
            class="nav-link {% if request.endpoint == 'admin.admin_reviews' %}active{% endif %}">
             <i class="fas fa-star"></i> Reviews
