@@ -42,6 +42,9 @@ def create_app():
     load_dotenv()
     app = Flask(__name__)
     app.secret_key = os.getenv("SECRET_KEY", "gohigh_secret_2024")
+    app.config['SESSION_COOKIE_HTTPONLY'] = True
+    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+    app.config['PERMANENT_SESSION_LIFETIME'] = 3600  # 1 hour
 
     global UPLOAD_DOCS
     UPLOAD_DOCS = os.path.join(app.root_path, "static", "uploads", "documents")

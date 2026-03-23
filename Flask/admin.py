@@ -17,13 +17,18 @@ def allowed_photo(filename):
 
 
 def admin_required():
-    return session.get('admin_logged_in') == True
+    """Strict check — admin session must be explicitly set to True"""
+    return session.get('admin_logged_in') is True
 
 
 @admin_bp.route("/admin/login", methods=['GET', 'POST'])
 def admin_login():
+    # If already properly authenticated as admin, go to dashboard
     if admin_required():
         return redirect(url_for("admin.admin_dashboard"))
+    # If a regular user session exists, don't let it bleed — clear it
+    if 'user_id' in session and 'admin_logged_in' not in session:
+        session.clear()
     if request.method == 'POST':
         username = request.form.get("username")
         password = request.form.get("password")
@@ -38,6 +43,7 @@ def admin_login():
                 from werkzeug.security import check_password_hash
                 stored = admin['password']
                 if check_password_hash(stored, password) or stored == password:
+                    session.clear()
                     session["admin_logged_in"] = True
                     session["admin_username"]  = admin['username']
                     flash(f"Welcome back, {admin['username']}!", "success")
@@ -49,6 +55,7 @@ def admin_login():
         # Fallback to hardcoded admin
         if not admin_found:
             if username == admin_username and password == admin_password:
+                session.clear()
                 session["admin_logged_in"] = True
                 session["admin_username"]  = "admin"
                 flash("Welcome back, Admin!", "success")
@@ -61,7 +68,7 @@ def admin_login():
 
 @admin_bp.route("/admin/logout")
 def admin_logout():
-    session.pop("admin_logged_in", None)
+    session.clear()
     flash("Logged out from admin panel.", "success")
     return redirect(url_for("admin.admin_login"))
 
