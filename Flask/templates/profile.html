@@ -1026,15 +1026,53 @@
 
       <form method="POST" action="{{ url_for('submit_review') }}"
             id="reviewForm" onsubmit="return validateReview()">
+
+        <!-- Review Category -->
+        <div style="font-size:.77rem;font-weight:800;color:#2E4A5C;text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px;">
+          Review Category
+        </div>
+        <div style="display:flex;gap:10px;margin-bottom:14px;">
+          <label style="flex:1;cursor:pointer;">
+            <input type="radio" name="category" value="travelling" checked style="display:none;" onchange="onCategoryChange(this)">
+            <div class="cat-btn active-cat" id="cat-travelling" style="padding:10px;border:1.5px solid #4A9B8E;border-radius:10px;text-align:center;font-size:.85rem;font-weight:800;color:#4A9B8E;background:#f0f8f6;transition:all .2s;">
+              🗺️ Travelling
+            </div>
+          </label>
+          <label style="flex:1;cursor:pointer;">
+            <input type="radio" name="category" value="vehicle" style="display:none;" onchange="onCategoryChange(this)">
+            <div class="cat-btn" id="cat-vehicle" style="padding:10px;border:1.5px solid #dde3eb;border-radius:10px;text-align:center;font-size:.85rem;font-weight:800;color:#888;background:#f8fafc;transition:all .2s;">
+              🚗 Vehicle
+            </div>
+          </label>
+        </div>
+
+        <!-- Vehicle selector (shown only for vehicle category) -->
+        <div id="vehiclePickWrap" style="display:none;margin-bottom:12px;">
+          <div style="font-size:.77rem;font-weight:800;color:#2E4A5C;text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px;">Select Vehicle</div>
+          <select name="vehicle_id" id="vehiclePick" style="width:100%;padding:10px 12px;border:1.5px solid #dde3eb;border-radius:10px;font-size:.88rem;font-family:inherit;outline:none;">
+            <option value="">-- Select a Vehicle --</option>
+            {% for v in vehicles %}
+            <option value="{{ v.vehicle_id }}">{{ v.vehicle_name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
         <div style="font-size:.77rem;font-weight:800;color:#2E4A5C;text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px;">
           Your Review
         </div>
         <textarea class="review-textarea" name="review_text" id="reviewText"
                   placeholder="Tell others about your experience — what made it special?"></textarea>
         <input type="hidden" name="rating" id="ratingInput" value="0">
-        <button type="submit" class="submit-review-btn">
-          <i class="fas fa-paper-plane"></i> Submit Review
+
+        {% if not has_bookings %}
+        <div style="background:#fff8e1;border:1.5px solid #f5c842;border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:.8rem;color:#7a5c00;font-weight:700;">
+          ⚠️ You need at least one booking to write a review.
+        </div>
+        {% else %}
+        <button type="submit" class="submit-review-btn" {% if not has_bookings %}disabled{% endif %}>
+          Submit Review
         </button>
+        {% endif %}
       </form>
     </div>
 
@@ -1171,5 +1209,32 @@
   }
 </script>
 
+
+<script>
+function onCategoryChange(radio) {
+  const isvehicle = radio.value === 'vehicle';
+  document.getElementById('vehiclePickWrap').style.display = isvehicle ? '' : 'none';
+  document.getElementById('cat-vehicle').style.cssText = isvehicle
+    ? 'padding:10px;border:1.5px solid #4A9B8E;border-radius:10px;text-align:center;font-size:.85rem;font-weight:800;color:#4A9B8E;background:#f0f8f6;transition:all .2s;'
+    : 'padding:10px;border:1.5px solid #dde3eb;border-radius:10px;text-align:center;font-size:.85rem;font-weight:800;color:#888;background:#f8fafc;transition:all .2s;';
+  document.getElementById('cat-travelling').style.cssText = !isvehicle
+    ? 'padding:10px;border:1.5px solid #4A9B8E;border-radius:10px;text-align:center;font-size:.85rem;font-weight:800;color:#4A9B8E;background:#f0f8f6;transition:all .2s;'
+    : 'padding:10px;border:1.5px solid #dde3eb;border-radius:10px;text-align:center;font-size:.85rem;font-weight:800;color:#888;background:#f8fafc;transition:all .2s;';
+  // click the label div to trigger visual
+  document.querySelectorAll('input[name="category"]').forEach(r => {
+    const div = document.getElementById('cat-' + r.value);
+    if (div) div.style.cursor = 'pointer';
+  });
+}
+// Make category div clicks work
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.cat-btn').forEach(div => {
+    div.addEventListener('click', function() {
+      const radio = this.closest('label').querySelector('input[type="radio"]');
+      if (radio) { radio.checked = true; onCategoryChange(radio); }
+    });
+  });
+});
+</script>
 </body>
 </html>

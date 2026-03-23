@@ -60,19 +60,62 @@ def submit_documents():
         if not re.match(r"^\d{12}$", aadhar_number):
             flash("Aadhaar number must be exactly 12 digits.", "error")
             return redirect(url_for("booking.submit_documents"))
+        # DL format: 2 state letters + 2 RTO digits + 4 year digits + 7 digits
+        dl_clean = dl_number.replace('-', '').replace(' ', '')
+        if not re.match(r'^[A-Z]{2}[0-9]{2}[0-9]{4}[0-9]{7}$', dl_clean):
+            flash("Invalid DL number. Format: XX-00-YYYY-NNNNNNN (e.g. HP-01-2023-1234567)", "error")
+            return redirect(url_for("booking.submit_documents"))
+        dl_number = dl_clean
         aadhar_filename = None
         dl_filename     = None
         os.makedirs(UPLOAD_FOLDER, exist_ok=True)
         aadhar_file = request.files.get("aadhar_file")
         dl_file     = request.files.get("dl_file")
+        # Safe username for file naming
+        raw_name = full_name.replace(' ', '_').lower()
+        safe_name = ''.join(c if c.isalnum() or c == '_' else '' for c in raw_name)
+
+        def xor_encrypt(data, key_str):
+            key = (key_str * ((len(data) // len(key_str)) + 1)).encode()[:len(data)]
+            return bytes(b ^ k for b, k in zip(data, key))
+
+        enc_key = str(session['user_id']) + safe_name
+
         if aadhar_file and aadhar_file.filename and allowed_file(aadhar_file.filename):
             ext             = aadhar_file.filename.rsplit(".", 1)[1].lower()
-            aadhar_filename = f"aadhar_{session['user_id']}.{ext}"
-            aadhar_file.save(os.path.join(UPLOAD_FOLDER, aadhar_filename))
+            aadhar_filename = f"{safe_name}_aadhar.{ext}.enc"
+            raw_data        = aadhar_file.read()
+            if len(raw_data) > 2 * 1024 * 1024:
+                flash("Aadhaar file exceeds 2MB limit.", "error")
+                return redirect(url_for("booking.submit_documents"))
+            encrypted = xor_encrypt(raw_data, enc_key)
+            with open(os.path.join(UPLOAD_FOLDER, aadhar_filename), 'wb') as ef:
+                ef.write(encrypted)
         if dl_file and dl_file.filename and allowed_file(dl_file.filename):
             ext         = dl_file.filename.rsplit(".", 1)[1].lower()
-            dl_filename = f"dl_{session['user_id']}.{ext}"
-            dl_file.save(os.path.join(UPLOAD_FOLDER, dl_filename))
+            dl_filename = f"{safe_name}_driving_licence.{ext}.enc"
+            raw_data    = dl_file.read()
+            if len(raw_data) > 2 * 1024 * 1024:
+                flash("DL file exceeds 2MB limit.", "error")
+                return redirect(url_for("booking.submit_documents"))
+            encrypted = xor_encrypt(raw_data, enc_key)
+            with open(os.path.join(UPLOAD_FOLDER, dl_filename), 'wb') as ef:
+                ef.write(encrypted)
+        # Auto-create table if migration not yet run
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS user_documents (
+                doc_id INT AUTO_INCREMENT PRIMARY KEY,
+                user_id INT NOT NULL UNIQUE,
+                full_name VARCHAR(200) NOT NULL,
+                aadhar_number VARCHAR(12) NOT NULL,
+                aadhar_file VARCHAR(300) DEFAULT NULL,
+                dl_number VARCHAR(20) NOT NULL,
+                dl_file VARCHAR(300) DEFAULT NULL,
+                verified TINYINT(1) DEFAULT 0,
+                submitted_at DATETIME DEFAULT NOW(),
+                FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+            )
+        """)
         cursor.execute("SELECT doc_id FROM user_documents WHERE user_id=%s", (session['user_id'],))
         existing = cursor.fetchone()
         if existing:
@@ -109,8 +152,12 @@ def create_booking_page():
         return redirect("/login")
     conn   = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT doc_id FROM user_documents WHERE user_id=%s", (session['user_id'],))
-    if not cursor.fetchone():
+    try:
+        cursor.execute("SELECT doc_id FROM user_documents WHERE user_id=%s", (session['user_id'],))
+        has_doc = cursor.fetchone()
+    except Exception:
+        has_doc = True  # Table not yet created — allow booking until migration is run
+    if not has_doc:
         cursor.close(); conn.close()
         flash("Please submit your Aadhaar & Driving Licence before booking.", "warning")
         return redirect(url_for("booking.submit_documents"))
@@ -123,8 +170,14 @@ def create_booking_page():
     cursor.execute("""
         SELECT vehicle_id, vehicle_name, vehicle_number, vehicle_type,
                seating_capacity, fuel_type, availability_status,
-               model_number, vehicle_condition, known_faults,
-               photo_url, rating, rating_count, price_per_day, price_per_hour
+               IFNULL(model_number, '') AS model_number,
+               IFNULL(vehicle_condition, 'Good') AS vehicle_condition,
+               IFNULL(known_faults, '') AS known_faults,
+               IFNULL(photo_url, '') AS photo_url,
+               IFNULL(rating, 0) AS rating,
+               IFNULL(rating_count, 0) AS rating_count,
+               IFNULL(price_per_day, NULL) AS price_per_day,
+               IFNULL(price_per_hour, NULL) AS price_per_hour
         FROM vehicle WHERE availability_status='Available'
         ORDER BY vehicle_type, vehicle_name
     """)
@@ -145,9 +198,15 @@ def api_vehicle_detail(vehicle_id):
     cursor = conn.cursor(dictionary=True)
     cursor.execute("""
         SELECT vehicle_id, vehicle_name, vehicle_number, vehicle_type,
-               seating_capacity, fuel_type, model_number,
-               vehicle_condition, known_faults, photo_url,
-               rating, rating_count, price_per_day, price_per_hour
+               seating_capacity, fuel_type,
+               IFNULL(model_number, '') AS model_number,
+               IFNULL(vehicle_condition, 'Good') AS vehicle_condition,
+               IFNULL(known_faults, '') AS known_faults,
+               IFNULL(photo_url, '') AS photo_url,
+               IFNULL(rating, 0) AS rating,
+               IFNULL(rating_count, 0) AS rating_count,
+               IFNULL(price_per_day, NULL) AS price_per_day,
+               IFNULL(price_per_hour, NULL) AS price_per_hour
         FROM vehicle WHERE vehicle_id=%s
     """, (vehicle_id,))
     v = cursor.fetchone()
@@ -168,8 +227,12 @@ def create_booking():
         return redirect("/login")
     conn   = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT doc_id FROM user_documents WHERE user_id=%s", (session['user_id'],))
-    if not cursor.fetchone():
+    try:
+        cursor.execute("SELECT doc_id FROM user_documents WHERE user_id=%s", (session['user_id'],))
+        has_doc2 = cursor.fetchone()
+    except Exception:
+        has_doc2 = True  # Table not yet created — allow booking
+    if not has_doc2:
         cursor.close(); conn.close()
         flash("Please submit your documents before booking.", "warning")
         return redirect(url_for("booking.submit_documents"))
@@ -194,8 +257,13 @@ def create_booking():
         return redirect(url_for("booking.create_booking_page", destination_id=destination_id))
 
     min_allowed = date.today() + timedelta(days=1)
-    if date.fromisoformat(travel_date) < min_allowed:
+    max_allowed = date.today() + timedelta(days=30)
+    travel_date_obj = date.fromisoformat(travel_date)
+    if travel_date_obj < min_allowed:
         flash("Invalid date! Please select a future date.", "error")
+        return redirect(url_for("booking.create_booking_page"))
+    if travel_date_obj > max_allowed:
+        flash("Advance booking only allowed up to 1 month (30 days) ahead.", "error")
         return redirect(url_for("booking.create_booking_page"))
 
     # Minimum 2 hours
@@ -217,9 +285,20 @@ def create_booking():
 
     user_id = session["user_id"]
 
+    # Check vehicle stock/availability
+    cursor.execute("SELECT availability_status, IFNULL(vehicle_count,1) AS vehicle_count FROM vehicle WHERE vehicle_id=%s", (vehicle_id,))
+    vstatus = cursor.fetchone()
+    if vstatus and (vstatus['availability_status'] != 'Available' or vstatus['vehicle_count'] < 1):
+        cursor.close(); conn.close()
+        flash("Sorry, this vehicle is currently unavailable or out of stock.", "error")
+        return redirect(url_for("booking.create_booking_page", destination_id=destination_id))
+
     # Vehicle-level pricing (overrides destination)
     cursor.execute("""
-        SELECT vehicle_type, price_per_day, price_per_hour FROM vehicle WHERE vehicle_id=%s
+        SELECT vehicle_type,
+               IFNULL(price_per_day, NULL) AS price_per_day,
+               IFNULL(price_per_hour, NULL) AS price_per_hour
+        FROM vehicle WHERE vehicle_id=%s
     """, (vehicle_id,))
     vehicle = cursor.fetchone()
 
@@ -246,29 +325,51 @@ def create_booking():
     security_deposit = get_security_deposit(vehicle.get('vehicle_type', '') if vehicle else '')
 
     cursor = conn.cursor()
-    cursor.execute("""
-        INSERT INTO booking
-            (destination_id, vehicle_id, travel_date, booking_status,
-             user_id, booking_date, cancelled_by, admin_notified, notified,
-             start_time, end_time, security_deposit, agreement_signed,
-             signature_data, agreement_signed_at)
-        VALUES (%s,%s,%s,'Pending',%s,%s,NULL,0,0,%s,%s,%s,1,%s,NOW())
-    """, (destination_id, vehicle_id, travel_date, user_id, date.today(),
-          start_time, end_time, security_deposit,
-          signature_data[:5000] if signature_data else None))
+    # Try insert with new columns; fall back to basic insert if columns not yet migrated
+    try:
+        cursor.execute("""
+            INSERT INTO booking
+                (destination_id, vehicle_id, travel_date, booking_status,
+                 user_id, booking_date, cancelled_by, admin_notified, notified,
+                 start_time, end_time, security_deposit, agreement_signed,
+                 signature_data, agreement_signed_at)
+            VALUES (%s,%s,%s,'Pending',%s,%s,NULL,0,0,%s,%s,%s,1,%s,NOW())
+        """, (destination_id, vehicle_id, travel_date, user_id, date.today(),
+              start_time, end_time, security_deposit,
+              signature_data[:5000] if signature_data else None))
+    except Exception:
+        cursor.execute("""
+            INSERT INTO booking
+                (destination_id, vehicle_id, travel_date, booking_status,
+                 user_id, booking_date, cancelled_by, admin_notified, notified,
+                 start_time, end_time)
+            VALUES (%s,%s,%s,'Pending',%s,%s,NULL,0,0,%s,%s)
+        """, (destination_id, vehicle_id, travel_date, user_id, date.today(),
+              start_time, end_time))
     conn.commit()
     booking_id = cursor.lastrowid
 
-    cursor.execute("""
-        INSERT INTO pricing
-            (base_amount, tax_amount, discount, total_amount,
-             pricing_type, duration_value, duration_unit, gst_rate,
-             booking_id, payment_mode)
-        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
-    """, (base_amount, gst_amount, 0.00, total_amount,
-          pricing_type, duration_value,
-          "hour" if booking_type == "hour" else "day",
-          18, booking_id, payment_mode))
+    try:
+        cursor.execute("""
+            INSERT INTO pricing
+                (base_amount, tax_amount, discount, total_amount,
+                 pricing_type, duration_value, duration_unit, gst_rate,
+                 booking_id, payment_mode)
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+        """, (base_amount, gst_amount, 0.00, total_amount,
+              pricing_type, duration_value,
+              "hour" if booking_type == "hour" else "day",
+              18, booking_id, payment_mode))
+    except Exception:
+        cursor.execute("""
+            INSERT INTO pricing
+                (base_amount, tax_amount, discount, total_amount,
+                 pricing_type, duration_value, duration_unit, gst_rate, booking_id)
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
+        """, (base_amount, gst_amount, 0.00, total_amount,
+              pricing_type, duration_value,
+              "hour" if booking_type == "hour" else "day",
+              18, booking_id))
     conn.commit()
     cursor.close(); conn.close()
     return redirect(url_for("booking.show_bill", booking_id=booking_id))
@@ -282,8 +383,11 @@ def show_bill(booking_id):
     cursor.execute("""
         SELECT p.*, b.travel_date, b.booking_status, b.booking_date,
                b.booking_id, b.start_time, b.end_time,
-               b.security_deposit, b.agreement_signed,
-               d.destination_name, v.vehicle_name, v.vehicle_type, v.model_number,
+               IFNULL(b.security_deposit, 0) AS security_deposit,
+               IFNULL(b.agreement_signed, 0) AS agreement_signed,
+               d.destination_name, v.vehicle_name,
+               IFNULL(v.vehicle_type, '') AS vehicle_type,
+               IFNULL(v.model_number, '') AS model_number,
                u.name AS user_name, u.phone_no
         FROM pricing p
         JOIN booking b     ON p.booking_id     = b.booking_id

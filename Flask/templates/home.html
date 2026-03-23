@@ -17,15 +17,18 @@
         <img src="{{ url_for('static', filename='images/logo.png') }}" 
              alt="GoHigh Rentals Logo">
         <div class="brand-text">
-            <h2 class="headline"><a href="#home" style="text-decoration: none;">GOHIGH RENTALS</a></h2>
+            <h2 class="headline"><a href="{{ url_for('index') }}" style="text-decoration: none; color: inherit;">GOHIGH RENTALS</a></h2>
             <p>Himalayan Expeditions</p>
         </div>
     </div>
-    <nav class="nav-menu">
-        <a href="#home">Home</a>
-        <a href="#features">Features</a>
-        <a href="#about">About</a>
-        <a href="#contact">Contact</a>
+    <button class="hamburger" id="hamburger" onclick="toggleNav()" aria-label="Menu">
+        <span></span><span></span><span></span>
+    </button>
+    <nav class="nav-menu" id="navMenu">
+        <a href="#home" onclick="closeNav()">Home</a>
+        <a href="#features" onclick="closeNav()">Features</a>
+        <a href="#about" onclick="closeNav()">About</a>
+        <a href="#contact" onclick="closeNav()">Contact</a>
     </nav>
 </header>
 
@@ -322,5 +325,26 @@
         </div>
         </footer>
 
-        </body>
+        
+<script>
+function toggleNav() {
+  const nav = document.getElementById('navMenu');
+  const btn = document.getElementById('hamburger');
+  nav.classList.toggle('open');
+  btn.classList.toggle('open');
+}
+function closeNav() {
+  document.getElementById('navMenu').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('open');
+}
+document.addEventListener('click', function(e) {
+  const nav = document.getElementById('navMenu');
+  const btn = document.getElementById('hamburger');
+  if (nav && btn && !nav.contains(e.target) && !btn.contains(e.target)) {
+    nav.classList.remove('open');
+    btn.classList.remove('open');
+  }
+});
+</script>
+</body>
         </html>

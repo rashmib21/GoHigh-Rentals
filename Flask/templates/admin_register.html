@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin Register — GoHigh Rentals</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Nunito',sans-serif;min-height:100vh;background:linear-gradient(135deg,#1C2B3A,#2E4A5C,#1a3a2a);display:flex;align-items:center;justify-content:center;padding:20px 16px}
+.card{width:100%;max-width:440px;background:#fff;border-radius:24px;box-shadow:0 32px 80px rgba(0,0,0,.35);overflow:hidden}
+.card-header{background:linear-gradient(135deg,#1C2B3A,#2E4A5C);padding:32px 36px 24px;text-align:center}
+.card-header a{display:inline-flex;align-items:center;gap:10px;text-decoration:none;margin-bottom:16px}
+.card-header img{width:42px;height:42px;object-fit:contain}
+.brand{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;color:#fff}
+.card-header h2{font-size:1.4rem;font-weight:900;color:#fff;margin-bottom:4px}
+.card-header p{font-size:.82rem;color:rgba(255,255,255,.65)}
+.card-body{padding:28px 36px 32px}
+.flash-msg{padding:10px 14px;border-radius:10px;margin-bottom:16px;font-size:.83rem;font-weight:700}
+.flash-msg.error{background:#fde8df;color:#b34a28;border-left:3px solid #E07B54}
+.flash-msg.success{background:#d5eee3;color:#1b5e35;border-left:3px solid #27ae60}
+.form-group{margin-bottom:16px;position:relative}
+.form-group label{display:block;font-size:.74rem;font-weight:800;color:#2E4A5C;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.form-group label i{color:#4A9B8E;margin-right:5px}
+.form-group input{width:100%;padding:12px 14px 12px 42px;border:1.5px solid #dde3eb;border-radius:10px;font-size:.9rem;font-family:'Nunito',sans-serif;color:#1C2B3A;background:#f8fafc;outline:none;transition:border-color .2s}
+.form-group input:focus{border-color:#4A9B8E;background:#fff}
+.icon{position:absolute;left:14px;top:36px;color:#aaa;font-size:.88rem;pointer-events:none}
+.hint{font-size:.7rem;color:#aaa;margin-top:4px}
+.secret-box{background:#fff8e1;border:1.5px solid #f5c842;border-radius:10px;padding:10px 14px;margin-bottom:18px;font-size:.78rem;color:#7a5c00;font-weight:700}
+.submit-btn{width:100%;padding:14px;background:linear-gradient(135deg,#1C2B3A,#2E4A5C);color:#fff;border:none;border-radius:12px;font-size:1rem;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer;transition:opacity .2s}
+.submit-btn:hover{opacity:.88}
+.back-link{display:block;text-align:center;margin-top:14px;text-decoration:none;color:rgba(255,255,255,.65);font-size:.85rem;font-weight:600}
+.back-link:hover{color:#fff}
+@media(max-width:480px){.card-header,.card-body{padding-left:20px;padding-right:20px}}
+</style>
+</head>
+<body>
+<div>
+<div class="card">
+  <div class="card-header">
+    <a href="{{ url_for('index') }}">
+      <img src="{{ url_for('static', filename='images/logo.png') }}" alt="GoHigh">
+      <span class="brand">GoHigh Rentals</span>
+    </a>
+    <h2>🔐 Admin Registration</h2>
+    <p>Create a new admin account</p>
+  </div>
+  <div class="card-body">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for cat, msg in messages %}
+        <div class="flash-msg {{ cat }}">{{ msg }}</div>
+      {% endfor %}
+    {% endwith %}
+
+    <div class="secret-box">⚠️ You must have the <strong>Admin Secret Key</strong> to register. Contact your system administrator.</div>
+
+    <form method="POST">
+      <div class="form-group">
+        <label><i class="fas fa-user-shield"></i> Username</label>
+        <i class="fas fa-user-shield icon"></i>
+        <input type="text" name="username" placeholder="Admin username" maxlength="50" required>
+      </div>
+      <div class="form-group">
+        <label><i class="fas fa-envelope"></i> Email Address</label>
+        <i class="fas fa-envelope icon"></i>
+        <input type="email" name="email" placeholder="admin@gohigh.com" maxlength="60" required>
+      </div>
+      <div class="form-group">
+        <label><i class="fas fa-lock"></i> Password</label>
+        <i class="fas fa-lock icon"></i>
+        <input type="password" name="password" placeholder="Min 8 characters" minlength="8" required>
+        <div class="hint">8+ characters with uppercase, lowercase, number & special char</div>
+      </div>
+      <div class="form-group">
+        <label><i class="fas fa-key"></i> Admin Secret Key</label>
+        <i class="fas fa-key icon"></i>
+        <input type="password" name="admin_secret" placeholder="Secret key provided by admin" required>
+        <div class="hint">Default: GoHighAdmin2024 (set ADMIN_REGISTER_SECRET in .env to change)</div>
+      </div>
+      <button type="submit" class="submit-btn"><i class="fas fa-user-plus"></i> &nbsp;Create Admin Account</button>
+    </form>
+
+    <div style="text-align:center;margin-top:20px;font-size:.85rem;color:#888;">
+      Already have an admin account? <a href="{{ url_for('admin.admin_login') }}" style="color:#4A9B8E;font-weight:800;text-decoration:none;">Admin Login →</a>
+    </div>
+  </div>
+</div>
+<a href="{{ url_for('index') }}" class="back-link">← Back to Home</a>
+</div>
+</body>
+</html>

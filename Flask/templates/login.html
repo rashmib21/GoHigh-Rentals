@@ -1,52 +1,134 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Login - GoHigh Rentals</title>
-    <link rel="icon" type="image/png" 
-          href="{{ url_for('static', filename='images/logo.png') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign In — GoHigh Rentals</title>
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo.png') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Nunito', sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #1C2B3A 0%, #2E4A5C 50%, #1a3a2a 100%);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px 16px;
+    }
+    .auth-wrapper {
+      width: 100%; max-width: 440px;
+      background: #fff; border-radius: 24px;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.35);
+      overflow: hidden;
+    }
+    .auth-header {
+      background: linear-gradient(135deg, #1C2B3A, #2E4A5C);
+      padding: 32px 36px 24px; text-align: center;
+    }
+    .auth-header a {
+      display: inline-flex; align-items: center; gap: 10px;
+      text-decoration: none; margin-bottom: 16px;
+    }
+    .auth-header img { width: 42px; height: 42px; object-fit: contain; }
+    .auth-header .brand { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 700; color: #fff; }
+    .auth-header h2 { font-size: 1.5rem; font-weight: 900; color: #fff; margin-bottom: 4px; }
+    .auth-header p  { font-size: .82rem; color: rgba(255,255,255,.65); }
+    .auth-body { padding: 28px 36px 32px; }
+
+    .flash-msg { padding: 10px 14px; border-radius: 10px; margin-bottom: 16px; font-size: .83rem; font-weight: 700; }
+    .flash-msg.error   { background: #fde8df; color: #b34a28; border-left: 3px solid #E07B54; }
+    .flash-msg.success { background: #d5eee3; color: #1b5e35; border-left: 3px solid #27ae60; }
+
+    .form-group { margin-bottom: 18px; position: relative; }
+    .form-group label { display: block; font-size: .74rem; font-weight: 800; color: #2E4A5C; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
+    .form-group label i { color: #4A9B8E; margin-right: 5px; }
+    .form-group input {
+      width: 100%; padding: 12px 14px 12px 42px;
+      border: 1.5px solid #dde3eb; border-radius: 10px;
+      font-size: .92rem; font-family: 'Nunito', sans-serif;
+      color: #1C2B3A; background: #f8fafc; outline: none;
+      transition: border-color .2s, background .2s;
+    }
+    .form-group input:focus { border-color: #4A9B8E; background: #fff; }
+    .form-group .icon { position: absolute; left: 14px; top: 36px; color: #aaa; font-size: .88rem; pointer-events: none; }
+
+    .submit-btn {
+      width: 100%; padding: 14px;
+      background: linear-gradient(135deg, #E07B54, #c96940);
+      color: #fff; border: none; border-radius: 12px;
+      font-size: 1rem; font-weight: 800; font-family: 'Nunito', sans-serif;
+      cursor: pointer; margin-top: 4px;
+      transition: opacity .2s, transform .1s;
+    }
+    .submit-btn:hover  { opacity: .9; transform: translateY(-1px); }
+    .submit-btn:active { transform: translateY(0); }
+
+    .divider { display: flex; align-items: center; gap: 12px; margin: 20px 0; }
+    .divider span { flex: 1; height: 1px; background: #eef2f5; }
+    .divider p { font-size: .75rem; color: #bbb; font-weight: 700; white-space: nowrap; }
+
+    .home-link {
+      display: block; text-align: center; margin-top: 16px;
+      font-size: .8rem; color: rgba(255,255,255,.55); text-decoration: none; font-weight: 600;
+    }
+    .home-link:hover { color: #fff; }
+
+    @media (max-width: 480px) {
+      .auth-header, .auth-body { padding-left: 20px; padding-right: 20px; }
+    }
+  </style>
 </head>
-<body class="login-page">
-
-<div class="form-box">
-    <i class="fas fa-mountain"></i>
+<body>
+<div>
+<div class="auth-wrapper">
+  <div class="auth-header">
+    <a href="{{ url_for('index') }}">
+      <img src="{{ url_for('static', filename='images/logo.png') }}" alt="GoHigh">
+      <span class="brand">GoHigh Rentals</span>
+    </a>
     <h2>Welcome Back</h2>
+    <p>Sign in to continue your journey</p>
+  </div>
 
+  <div class="auth-body">
     {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                 <div class="flash-message {{ category }}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}    
+      {% for cat, msg in messages %}
+        <div class="flash-msg {{ cat }}">{{ msg }}</div>
+      {% endfor %}
+    {% endwith %}
 
     <form method="POST">
-        <div class="input-wrapper">
-            <i class="fas fa-envelope"></i>
-            <input type="email" name="email" placeholder="Enter your email address" required>
-        </div>
+      <div class="form-group">
+        <label><i class="fas fa-envelope"></i> Email Address</label>
+        <i class="fas fa-envelope icon"></i>
+        <input type="email" name="email" placeholder="yourname@gmail.com"
+               maxlength="55" autocomplete="email" required>
+      </div>
 
-        <div class="input-wrapper">
-            <i class="fas fa-lock"></i>
-            <input type="password" name="password" placeholder="Enter your password" required>
-        </div>
+      <div class="form-group">
+        <label><i class="fas fa-lock"></i> Password</label>
+        <i class="fas fa-lock icon"></i>
+        <input type="password" name="password" placeholder="Your password"
+               autocomplete="current-password" required>
+      </div>
 
-        <button type="submit">
-            <i class="fas fa-sign-in-alt"></i> Login
-        </button>
+      <button type="submit" class="submit-btn">
+        <i class="fas fa-sign-in-alt"></i> &nbsp;Sign In
+      </button>
     </form>
 
-    <p class="form-link">
-        New to the mountains?
-        <a href="{{ url_for('register') }}">Create Account →</a>
-    </p>
-</div>
+    <div class="divider"><span></span><p>Don't have an account?</p><span></span></div>
 
+    <a href="{{ url_for('register') }}" style="display:block; text-align:center; padding:12px;
+       border:1.5px solid #4A9B8E; border-radius:12px; color:#4A9B8E; font-weight:800;
+       font-size:.92rem; text-decoration:none; transition:background .2s;"
+       onmouseover="this.style.background='#f0f8f6'" onmouseout="this.style.background=''">
+      <i class="fas fa-user-plus"></i> &nbsp;Create Account
+    </a>
+  </div>
+</div>
+<a href="{{ url_for('index') }}" class="home-link">← Back to Home</a>
+</div>
 </body>
 </html>

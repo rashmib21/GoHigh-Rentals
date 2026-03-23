@@ -3996,3 +3996,154 @@ footer::before {
   background: #ede8f8;
   color: #6c4ab6;
 }
+/* ═══════════════════════════════════════════
+   GOHIGH RENTALS v3 — RESPONSIVE & GLOBAL
+   ═══════════════════════════════════════════ */
+
+/* Hamburger menu */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 30px; height: 24px;
+  background: none; border: none;
+  cursor: pointer; padding: 0; z-index: 1001;
+}
+.hamburger span {
+  display: block; height: 3px; width: 100%;
+  background: #fff; border-radius: 3px;
+  transition: all 0.3s;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(10px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-10px) rotate(-45deg); }
+
+/* GoHigh brand clickable */
+.headline a { color: inherit !important; text-decoration: none !important; }
+.headline a:hover { opacity: 0.85; }
+
+/* ── RESPONSIVE BREAKPOINTS ── */
+@media (max-width: 900px) {
+  header {
+    padding: 14px 20px !important;
+    flex-wrap: wrap;
+  }
+  .hamburger { display: flex !important; }
+  .nav-menu {
+    display: none !important;
+    position: fixed !important;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(28, 43, 58, 0.98) !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 30px !important;
+    z-index: 1000 !important;
+    backdrop-filter: blur(12px);
+  }
+  .nav-menu.open { display: flex !important; }
+  .nav-menu a { font-size: 1.4rem !important; color: #fff !important; }
+}
+
+@media (max-width: 768px) {
+  /* Dashboard grid */
+  .stats-grid, .stat-cards, .booking-stats {
+    grid-template-columns: 1fr 1fr !important;
+  }
+  .booking-table-scroll { overflow-x: auto !important; }
+  table { min-width: 600px; }
+
+  /* Hero */
+  .hero-content { padding: 0 12px !important; }
+  .hero-section { min-height: 90vh; }
+
+  /* Destinations grid */
+  .destinations-grid, .vehicles-grid, .features-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Sidebar */
+  .sidebar-nav { width: 100% !important; }
+  .admin-layout { flex-direction: column !important; }
+}
+
+@media (max-width: 480px) {
+  /* Stats 1 column on very small screens */
+  .stats-grid, .stat-cards { grid-template-columns: 1fr !important; }
+
+  /* Auth cards */
+  .auth-wrapper, .booking-card, .card {
+    border-radius: 16px !important;
+  }
+
+  /* Bill invoice */
+  .invoice-card { border-radius: 12px !important; }
+  .inv-body, .inv-header, .inv-footer, .inv-actions {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  /* Booking form */
+  .time-row { grid-template-columns: 1fr !important; }
+  .pay-mode-grid { grid-template-columns: 1fr 1fr !important; }
+
+  /* Admin sidebar */
+  .admin-sidebar { display: none; }
+}
+
+/* Print - bill only */
+@media print {
+  header, footer, nav, .inv-actions, .hamburger { display: none !important; }
+  body { background: #fff !important; }
+  .invoice-card { box-shadow: none !important; max-width: 100% !important; }
+}
+
+/* Search bar */
+.search-bar-wrap {
+  position: relative;
+  max-width: 400px;
+  width: 100%;
+}
+.search-bar-wrap input {
+  width: 100%; padding: 10px 16px 10px 40px;
+  border: 1.5px solid rgba(255,255,255,0.25);
+  border-radius: 30px;
+  background: rgba(255,255,255,0.12);
+  color: #fff; font-size: 0.88rem; font-family: inherit;
+  outline: none; transition: all 0.2s;
+  backdrop-filter: blur(8px);
+}
+.search-bar-wrap input::placeholder { color: rgba(255,255,255,0.55); }
+.search-bar-wrap input:focus {
+  background: rgba(255,255,255,0.22);
+  border-color: rgba(255,255,255,0.5);
+}
+.search-bar-wrap .search-icon {
+  position: absolute; left: 14px; top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255,255,255,0.6); font-size: 0.85rem;
+  pointer-events: none;
+}
+.search-dropdown {
+  position: absolute; top: calc(100% + 6px); left: 0; right: 0;
+  background: #fff; border-radius: 14px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.18);
+  overflow: hidden; z-index: 9999; display: none;
+}
+.search-dropdown.show { display: block; }
+.search-result-item {
+  padding: 10px 16px; cursor: pointer;
+  border-bottom: 1px solid #f0f4f8;
+  transition: background 0.15s;
+  display: flex; align-items: center; gap: 10px;
+}
+.search-result-item:last-child { border-bottom: none; }
+.search-result-item:hover { background: #f0f8f6; }
+.search-result-item .sri-icon { font-size: 1rem; }
+.search-result-item .sri-name { font-size: 0.88rem; font-weight: 700; color: #1C2B3A; }
+.search-result-item .sri-sub { font-size: 0.75rem; color: #888; }
+
+/* Vehicle rating stars in dashboard */
+.vehicle-stars { color: #f5a623; letter-spacing: 1px; }
+.vehicle-stars .empty { color: #ddd; }
+

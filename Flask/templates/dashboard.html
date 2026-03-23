@@ -283,14 +283,24 @@
 
   <header class="navbar">
     <div class="logo">
-      <img src="{{ url_for('static', filename='images/logo.png') }}">
-      <span class="brand">GoHigh <b>Rentals</b></span>
+      <a href="{{ url_for('index') }}" style="display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit;">
+        <img src="{{ url_for('static', filename='images/logo.png') }}">
+        <span class="brand">GoHigh <b>Rentals</b></span>
+      </a>
     </div>
 
     <nav>
       <a href="/dashboard">Dashboard</a>
       <a href="{{ url_for('my_bookings') }}">My Bookings</a>
       <a href="#destinations">Destinations</a>
+
+      <!-- Search Bar -->
+      <div class="search-bar-wrap" id="searchWrap">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" id="globalSearch" placeholder="Search destinations, vehicles..."
+               autocomplete="off" oninput="doSearch(this.value)">
+        <div class="search-dropdown" id="searchDropdown"></div>
+      </div>
 
       <!-- User Profile Dropdown -->
       <div class="user-dropdown">
@@ -314,9 +324,11 @@
           <a href="{{ url_for('my_bookings') }}" class="dropdown-item">
             <i class="fas fa-calendar-check"></i> My Bookings
           </a>
+          {% if has_bookings %}
           <a href="{{ url_for('profile') }}#review" class="dropdown-item review-item">
             <i class="fas fa-star"></i> Write a Review
           </a>
+          {% endif %}
           <div class="dropdown-divider"></div>
           <a href="{{ url_for('logout') }}" class="dropdown-item logout-item">
             <i class="fas fa-sign-out-alt"></i> Logout
@@ -1053,6 +1065,94 @@
     });
   </script>
 
+
+  <!-- Vehicle Ratings Section -->
+  {% if vehicles_rated %}
+  <section style="padding:40px 5%; background:#f8fafc;">
+    <h2 style="font-size:1.4rem;font-weight:900;color:#1C2B3A;margin-bottom:6px;text-align:center;">⭐ Top Rated Vehicles</h2>
+    <p style="text-align:center;color:#888;font-size:.88rem;margin-bottom:24px;">Rated by our travellers</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;max-width:1200px;margin:0 auto;">
+      {% for v in vehicles_rated %}
+      <div style="background:#fff;border-radius:14px;padding:16px;box-shadow:0 4px 20px rgba(0,0,0,.06);text-align:center;">
+        {% if v.photo_url %}
+        <img src="{{ v.photo_url }}" alt="{{ v.vehicle_name }}" style="width:100%;height:100px;object-fit:cover;border-radius:8px;margin-bottom:10px;">
+        {% else %}
+        <div style="width:100%;height:80px;display:flex;align-items:center;justify-content:center;font-size:2.5rem;margin-bottom:10px;">
+          {% if v.vehicle_type == 'Bike' %}🏍️{% elif v.vehicle_type == 'Scooter' %}🛵{% elif v.vehicle_type == 'SUV' %}🚙{% elif v.vehicle_type == 'Car' %}🚗{% else %}🚐{% endif %}
+        </div>
+        {% endif %}
+        <div style="font-weight:800;font-size:.92rem;color:#1C2B3A;margin-bottom:2px;">{{ v.vehicle_name }}</div>
+        <div style="font-size:.75rem;color:#888;margin-bottom:6px;">{{ v.vehicle_type }}{% if v.model_number %} · {{ v.model_number }}{% endif %}</div>
+        <div class="vehicle-stars">
+          {% set full = v.rating | int %}
+          {% for i in range(5) %}
+            {% if i < full %}<span>★</span>{% else %}<span class="empty">☆</span>{% endif %}
+          {% endfor %}
+        </div>
+        <div style="font-size:.75rem;color:#888;margin-top:4px;">{{ "%.1f"|format(v.rating) }} ({{ v.rating_count }} reviews)</div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+
+<script>
+// ── Global Search ──
+let searchTimeout;
+function doSearch(q) {
+  clearTimeout(searchTimeout);
+  const dropdown = document.getElementById('searchDropdown');
+  if (!q || q.length < 2) { dropdown.classList.remove('show'); dropdown.innerHTML=''; return; }
+  searchTimeout = setTimeout(() => {
+    fetch('/api/search?q=' + encodeURIComponent(q))
+      .then(r => r.json())
+      .then(data => {
+        if (!data.length) { dropdown.classList.remove('show'); return; }
+        dropdown.innerHTML = data.map(item => {
+          const icon = item.type === 'destination' ? '📍' : '🚗';
+          return `<div class="search-result-item" onclick="handleSearchClick('${item.type}', ${item.id})">
+            <span class="sri-icon">${icon}</span>
+            <div>
+              <div class="sri-name">${item.name}</div>
+              <div class="sri-sub">${item.sub || item.type}</div>
+            </div>
+          </div>`;
+        }).join('');
+        dropdown.classList.add('show');
+      }).catch(() => {});
+  }, 300);
+}
+function handleSearchClick(type, id) {
+  document.getElementById('searchDropdown').classList.remove('show');
+  document.getElementById('globalSearch').value = '';
+  if (type === 'destination') {
+    window.location.href = '/new_booking?destination_id=' + id;
+  } else {
+    window.location.href = '/new_booking';
+  }
+}
+document.addEventListener('click', function(e) {
+  if (!document.getElementById('searchWrap')?.contains(e.target)) {
+    document.getElementById('searchDropdown')?.classList.remove('show');
+  }
+});
+
+// ── Doc status polling (if pending) ──
+{% if doc_status == 'pending' %}
+setInterval(() => {
+  fetch('/api/doc_status').then(r=>r.json()).then(d=>{
+    if(d.status==='verified') {
+      const banner = document.createElement('div');
+      banner.innerHTML = '<div style="position:fixed;top:20px;right:20px;background:#27ae60;color:#fff;padding:14px 20px;border-radius:12px;font-weight:800;font-size:.9rem;z-index:99999;box-shadow:0 8px 30px rgba(0,0,0,.2);">✅ Documents Verified! You can now book vehicles.</div>';
+      document.body.appendChild(banner);
+      setTimeout(() => { banner.remove(); window.location.reload(); }, 4000);
+    }
+  }).catch(()=>{});
+}, 20000);
+{% endif %}
+</script>
+
 </body>
 
-</html>
+</html>

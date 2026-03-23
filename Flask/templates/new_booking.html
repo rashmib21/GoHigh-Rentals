@@ -379,22 +379,33 @@ select:focus, input:focus { border-color: #4A9B8E; background: #fff; }
           <span>GST (18%)</span>
           <span id="preview-gst">₹0</span>
         </div>
+        <div class="price-row" style="color:#E07B54;">
+          <span>🔒 Security Deposit</span>
+          <span id="preview-deposit">₹0</span>
+        </div>
         <div class="price-row total">
-          <span>Total Payable</span>
+          <span>Total Payable (incl. deposit)</span>
           <span id="preview-total">₹0</span>
         </div>
-        <div class="gst-note">* 18% GST applied as per Government regulations</div>
+        <div class="gst-note">* 18% GST applied · Security deposit refundable on return</div>
       </div>
 
       <!-- Payment Mode -->
       <div class="form-group">
         <label><i class="fas fa-wallet"></i> Mode of Payment</label>
-        <div class="pay-mode-grid">
-          <button type="button" class="pay-mode-btn active" onclick="setPayMode(this,'Online')">💳 Online</button>
-          <button type="button" class="pay-mode-btn" onclick="setPayMode(this,'Cash')">💵 Cash</button>
-          <button type="button" class="pay-mode-btn" onclick="setPayMode(this,'UPI')">📱 UPI</button>
-          <button type="button" class="pay-mode-btn" onclick="setPayMode(this,'Card')">🏦 Card</button>
-          <button type="button" class="pay-mode-btn" onclick="setPayMode(this,'Net Banking')">🖥️ Net Banking</button>
+        <div class="type-toggle" style="margin-bottom:10px;">
+          <button type="button" class="type-btn active" id="pay-cash" onclick="setPayPrimary('Cash')">💵 Cash</button>
+          <button type="button" class="type-btn" id="pay-online" onclick="setPayPrimary('Online')">💳 Online</button>
+        </div>
+        <!-- Online sub-options -->
+        <div id="online-sub" style="display:none;">
+          <div class="pay-mode-grid">
+            <button type="button" class="pay-mode-btn" onclick="setPayMode(this,'UPI')">📱 UPI</button>
+            <button type="button" class="pay-mode-btn" onclick="setPayMode(this,'Net Banking')">🖥️ Net Banking</button>
+            <button type="button" class="pay-mode-btn" onclick="setPayMode(this,'NEFT')">🏦 NEFT</button>
+            <button type="button" class="pay-mode-btn" onclick="setPayMode(this,'Debit Card')">💳 Debit Card</button>
+            <button type="button" class="pay-mode-btn" onclick="setPayMode(this,'Credit Card')">💳 Credit Card</button>
+          </div>
         </div>
       </div>
 
@@ -462,8 +473,12 @@ select:focus, input:focus { border-color: #4A9B8E; background: #fff; }
 const tomorrow = new Date();
 tomorrow.setDate(tomorrow.getDate() + 1);
 const tomorrowStr = tomorrow.toISOString().split('T')[0];
-document.getElementById('travel_date').min      = tomorrowStr;
+const maxD = new Date(); maxD.setDate(maxD.getDate()+30);
+const maxStr = maxD.toISOString().split('T')[0];
+document.getElementById('travel_date').min = tomorrowStr;
+document.getElementById('travel_date').max = maxStr;
 document.getElementById('travel_date_hour').min = tomorrowStr;
+document.getElementById('travel_date_hour').max = maxStr;
 
 let currentType    = 'day';
 let sigConfirmed   = false;
@@ -548,6 +563,17 @@ function onVehicleChange() {
 }
 
 // ── Payment mode ──
+function setPayPrimary(mode) {
+  document.getElementById('pay-cash').classList.toggle('active', mode === 'Cash');
+  document.getElementById('pay-online').classList.toggle('active', mode === 'Online');
+  document.getElementById('online-sub').style.display = mode === 'Online' ? '' : 'none';
+  if (mode === 'Cash') {
+    document.getElementById('payment_mode_hidden').value = 'Cash';
+    document.querySelectorAll('.pay-mode-btn').forEach(b => b.classList.remove('active'));
+  } else {
+    document.getElementById('payment_mode_hidden').value = 'Online';
+  }
+}
 function setPayMode(btn, mode) {
   document.querySelectorAll('.pay-mode-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
@@ -696,7 +722,8 @@ function updatePreview() {
   document.getElementById('preview-duration').textContent   = duration + (unit==='day' ? (duration>1?' days':' day') : (duration>1?' hours':' hour'));
   document.getElementById('preview-base').textContent  = fmt(base);
   document.getElementById('preview-gst').textContent   = fmt(gst);
-  document.getElementById('preview-total').textContent = fmt(total);
+  if(document.getElementById('preview-deposit')) document.getElementById('preview-deposit').textContent = fmt(currentDeposit);
+  document.getElementById('preview-total').textContent = fmt(total + currentDeposit);
   document.getElementById('pricePreview').classList.add('show');
 }
 

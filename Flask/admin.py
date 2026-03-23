@@ -27,12 +27,35 @@ def admin_login():
     if request.method == 'POST':
         username = request.form.get("username")
         password = request.form.get("password")
-        if username == admin_username and password == admin_password:
-            session["admin_logged_in"] = True
-            flash("Welcome back, Admin!", "success")
+        # Try DB-based admin accounts first
+        conn   = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        admin_found = False
+        try:
+            cursor.execute("SELECT * FROM admin_accounts WHERE username=%s OR email=%s", (username, username))
+            admin = cursor.fetchone()
+            if admin:
+                from werkzeug.security import check_password_hash
+                stored = admin['password']
+                if check_password_hash(stored, password) or stored == password:
+                    session["admin_logged_in"] = True
+                    session["admin_username"]  = admin['username']
+                    flash(f"Welcome back, {admin['username']}!", "success")
+                    admin_found = True
+        except Exception:
+            pass
+        finally:
+            cursor.close(); conn.close()
+        # Fallback to hardcoded admin
+        if not admin_found:
+            if username == admin_username and password == admin_password:
+                session["admin_logged_in"] = True
+                session["admin_username"]  = "admin"
+                flash("Welcome back, Admin!", "success")
+                admin_found = True
+        if admin_found:
             return redirect(url_for("admin.admin_dashboard"))
-        else:
-            flash("Incorrect username or password", "error")
+        flash("Incorrect username or password", "error")
     return render_template("admin_login.html")
 
 
@@ -119,11 +142,15 @@ def admin_bookings():
     f_date_to   = request.args.get("date_to",   "")
     query = """
         SELECT b.booking_id, b.travel_date, b.booking_status, b.booking_date,
-               b.cancelled_by, b.admin_notified, b.security_deposit, b.agreement_signed,
+               b.cancelled_by, b.admin_notified,
+               IFNULL(b.security_deposit, 0) AS security_deposit,
+               IFNULL(b.agreement_signed, 0) AS agreement_signed,
                u.name AS user_name, u.email AS user_email,
-               d.destination_name, v.vehicle_name, v.vehicle_type,
+               d.destination_name, v.vehicle_name,
+               IFNULL(v.vehicle_type, '') AS vehicle_type,
                p.total_amount, p.pricing_type, p.duration_value, p.duration_unit,
-               p.payment_mode, p.cancellation_deduction, p.refund_amount, p.cancellation_pct
+               IFNULL(p.payment_mode, 'Online') AS payment_mode,
+               p.cancellation_deduction, p.refund_amount, p.cancellation_pct
         FROM booking b
         JOIN users u       ON b.user_id       = u.user_id
         JOIN destination d ON b.destination_id = d.destination_id
@@ -234,7 +261,19 @@ def admin_vehicles():
         return redirect(url_for("admin.admin_login"))
     conn   = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM vehicle ORDER BY vehicle_id DESC")
+    cursor.execute("""
+        SELECT vehicle_id, vehicle_name, vehicle_number, vehicle_type,
+               seating_capacity, fuel_type, availability_status, vehicle_count,
+               IFNULL(model_number, '') AS model_number,
+               IFNULL(vehicle_condition, 'Good') AS vehicle_condition,
+               IFNULL(known_faults, '') AS known_faults,
+               IFNULL(photo_url, '') AS photo_url,
+               IFNULL(rating, 0) AS rating,
+               IFNULL(rating_count, 0) AS rating_count,
+               IFNULL(price_per_day, 0) AS price_per_day,
+               IFNULL(price_per_hour, 0) AS price_per_hour
+        FROM vehicle ORDER BY vehicle_id DESC
+    """)
     vehicles = cursor.fetchall()
     cursor.close(); conn.close()
     return render_template("admin_vehicles.html", vehicles=vehicles)
@@ -258,29 +297,47 @@ def admin_add_vehicle():
 
         conn   = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute("""
-            INSERT INTO vehicle
-                (vehicle_name, vehicle_number, vehicle_type, seating_capacity,
-                 fuel_type, availability_status, vehicle_count, category_id,
-                 model_number, vehicle_condition, known_faults, photo_url,
-                 price_per_day, price_per_hour)
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
-        """, (
-            request.form.get("vehicle_name"),
-            request.form.get("vehicle_number"),
-            request.form.get("vehicle_type"),
-            request.form.get("seating_capacity"),
-            request.form.get("fuel_type"),
-            request.form.get("availability_status", "Available"),
-            request.form.get("vehicle_count", 1),
-            request.form.get("category_id") or None,
-            request.form.get("model_number") or None,
-            request.form.get("vehicle_condition", "Good"),
-            request.form.get("known_faults") or None,
-            photo_url,
-            request.form.get("price_per_day") or None,
-            request.form.get("price_per_hour") or None,
-        ))
+        try:
+            cursor.execute("""
+                INSERT INTO vehicle
+                    (vehicle_name, vehicle_number, vehicle_type, seating_capacity,
+                     fuel_type, availability_status, vehicle_count, category_id,
+                     model_number, vehicle_condition, known_faults, photo_url,
+                     price_per_day, price_per_hour)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+            """, (
+                request.form.get("vehicle_name"),
+                request.form.get("vehicle_number"),
+                request.form.get("vehicle_type"),
+                request.form.get("seating_capacity"),
+                request.form.get("fuel_type"),
+                request.form.get("availability_status", "Available"),
+                request.form.get("vehicle_count", 1),
+                request.form.get("category_id") or None,
+                request.form.get("model_number") or None,
+                request.form.get("vehicle_condition", "Good"),
+                request.form.get("known_faults") or None,
+                photo_url,
+                request.form.get("price_per_day") or None,
+                request.form.get("price_per_hour") or None,
+            ))
+        except Exception:
+            # Fallback: insert without new columns (run migration_v2.sql to enable all features)
+            cursor.execute("""
+                INSERT INTO vehicle
+                    (vehicle_name, vehicle_number, vehicle_type, seating_capacity,
+                     fuel_type, availability_status, vehicle_count, category_id)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
+            """, (
+                request.form.get("vehicle_name"),
+                request.form.get("vehicle_number"),
+                request.form.get("vehicle_type"),
+                request.form.get("seating_capacity"),
+                request.form.get("fuel_type"),
+                request.form.get("availability_status", "Available"),
+                request.form.get("vehicle_count", 1),
+                request.form.get("category_id") or None,
+            ))
         conn.commit()
         cursor.close(); conn.close()
         flash("Vehicle added successfully!", "success")
@@ -304,47 +361,63 @@ def admin_edit_vehicle(vehicle_id):
             photo_file.save(os.path.join(VEHICLE_PHOTO_FOLDER, fname))
             photo_url = f"/static/uploads/vehicle_photos/{fname}"
 
-        if photo_url:
+        try:
+            if photo_url:
+                cursor.execute("""
+                    UPDATE vehicle
+                    SET vehicle_name=%s, vehicle_number=%s, vehicle_type=%s,
+                        seating_capacity=%s, fuel_type=%s, availability_status=%s,
+                        vehicle_count=%s, category_id=%s,
+                        model_number=%s, vehicle_condition=%s, known_faults=%s,
+                        photo_url=%s, price_per_day=%s, price_per_hour=%s
+                    WHERE vehicle_id=%s
+                """, (
+                    request.form.get("vehicle_name"), request.form.get("vehicle_number"),
+                    request.form.get("vehicle_type"), request.form.get("seating_capacity"),
+                    request.form.get("fuel_type"),    request.form.get("availability_status"),
+                    request.form.get("vehicle_count"), request.form.get("category_id") or None,
+                    request.form.get("model_number") or None,
+                    request.form.get("vehicle_condition", "Good"),
+                    request.form.get("known_faults") or None,
+                    photo_url,
+                    request.form.get("price_per_day") or None,
+                    request.form.get("price_per_hour") or None,
+                    vehicle_id
+                ))
+            else:
+                cursor.execute("""
+                    UPDATE vehicle
+                    SET vehicle_name=%s, vehicle_number=%s, vehicle_type=%s,
+                        seating_capacity=%s, fuel_type=%s, availability_status=%s,
+                        vehicle_count=%s, category_id=%s,
+                        model_number=%s, vehicle_condition=%s, known_faults=%s,
+                        price_per_day=%s, price_per_hour=%s
+                    WHERE vehicle_id=%s
+                """, (
+                    request.form.get("vehicle_name"), request.form.get("vehicle_number"),
+                    request.form.get("vehicle_type"), request.form.get("seating_capacity"),
+                    request.form.get("fuel_type"),    request.form.get("availability_status"),
+                    request.form.get("vehicle_count"), request.form.get("category_id") or None,
+                    request.form.get("model_number") or None,
+                    request.form.get("vehicle_condition", "Good"),
+                    request.form.get("known_faults") or None,
+                    request.form.get("price_per_day") or None,
+                    request.form.get("price_per_hour") or None,
+                    vehicle_id
+                ))
+        except Exception:
+            # Fallback without new columns
             cursor.execute("""
                 UPDATE vehicle
                 SET vehicle_name=%s, vehicle_number=%s, vehicle_type=%s,
                     seating_capacity=%s, fuel_type=%s, availability_status=%s,
-                    vehicle_count=%s, category_id=%s,
-                    model_number=%s, vehicle_condition=%s, known_faults=%s,
-                    photo_url=%s, price_per_day=%s, price_per_hour=%s
+                    vehicle_count=%s, category_id=%s
                 WHERE vehicle_id=%s
             """, (
                 request.form.get("vehicle_name"), request.form.get("vehicle_number"),
                 request.form.get("vehicle_type"), request.form.get("seating_capacity"),
                 request.form.get("fuel_type"),    request.form.get("availability_status"),
                 request.form.get("vehicle_count"), request.form.get("category_id") or None,
-                request.form.get("model_number") or None,
-                request.form.get("vehicle_condition", "Good"),
-                request.form.get("known_faults") or None,
-                photo_url,
-                request.form.get("price_per_day") or None,
-                request.form.get("price_per_hour") or None,
-                vehicle_id
-            ))
-        else:
-            cursor.execute("""
-                UPDATE vehicle
-                SET vehicle_name=%s, vehicle_number=%s, vehicle_type=%s,
-                    seating_capacity=%s, fuel_type=%s, availability_status=%s,
-                    vehicle_count=%s, category_id=%s,
-                    model_number=%s, vehicle_condition=%s, known_faults=%s,
-                    price_per_day=%s, price_per_hour=%s
-                WHERE vehicle_id=%s
-            """, (
-                request.form.get("vehicle_name"), request.form.get("vehicle_number"),
-                request.form.get("vehicle_type"), request.form.get("seating_capacity"),
-                request.form.get("fuel_type"),    request.form.get("availability_status"),
-                request.form.get("vehicle_count"), request.form.get("category_id") or None,
-                request.form.get("model_number") or None,
-                request.form.get("vehicle_condition", "Good"),
-                request.form.get("known_faults") or None,
-                request.form.get("price_per_day") or None,
-                request.form.get("price_per_hour") or None,
                 vehicle_id
             ))
         conn.commit()
@@ -352,7 +425,19 @@ def admin_edit_vehicle(vehicle_id):
         flash("Vehicle updated successfully!", "success")
         return redirect(url_for("admin.admin_vehicles"))
 
-    cursor.execute("SELECT * FROM vehicle WHERE vehicle_id=%s", (vehicle_id,))
+    cursor.execute("""
+        SELECT vehicle_id, vehicle_name, vehicle_number, vehicle_type,
+               seating_capacity, fuel_type, availability_status, vehicle_count, category_id,
+               IFNULL(model_number, '') AS model_number,
+               IFNULL(vehicle_condition, 'Good') AS vehicle_condition,
+               IFNULL(known_faults, '') AS known_faults,
+               IFNULL(photo_url, '') AS photo_url,
+               IFNULL(rating, 0) AS rating,
+               IFNULL(rating_count, 0) AS rating_count,
+               IFNULL(price_per_day, 0) AS price_per_day,
+               IFNULL(price_per_hour, 0) AS price_per_hour
+        FROM vehicle WHERE vehicle_id=%s
+    """, (vehicle_id,))
     vehicle = cursor.fetchone()
     cursor.close(); conn.close()
     if not vehicle:
@@ -382,6 +467,20 @@ def admin_documents():
     conn   = get_db_connection()
     cursor = conn.cursor(dictionary=True)
     try:
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS user_documents (
+                doc_id INT AUTO_INCREMENT PRIMARY KEY,
+                user_id INT NOT NULL UNIQUE,
+                full_name VARCHAR(200) NOT NULL,
+                aadhar_number VARCHAR(12) NOT NULL,
+                aadhar_file VARCHAR(300) DEFAULT NULL,
+                dl_number VARCHAR(20) NOT NULL,
+                dl_file VARCHAR(300) DEFAULT NULL,
+                verified TINYINT(1) DEFAULT 0,
+                submitted_at DATETIME DEFAULT NOW(),
+                FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+            )
+        """)
         cursor.execute("""
             SELECT d.*, u.name AS user_name, u.email AS user_email
             FROM user_documents d
