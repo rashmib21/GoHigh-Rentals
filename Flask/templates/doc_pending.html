@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Document Verification Pending — GoHigh Rentals</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo.png') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Nunito', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(-45deg, #0d1f2d, #1C2B3A, #2D6A4F, #2E4A5C);
+            background-size: 400% 400%;
+            animation: gradientShift 14s ease infinite;
+            padding: 24px;
+        }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .pending-card {
+            background: #fff;
+            border-radius: 24px;
+            padding: 48px 44px 40px;
+            width: 100%;
+            max-width: 520px;
+            box-shadow: 0 32px 80px rgba(0,0,0,0.4);
+            text-align: center;
+        }
+
+        .pending-icon {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FFF3E0, #FFE0B2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(224,123,84,0.3); }
+            50% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(224,123,84,0); }
+        }
+
+        .pending-card h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: #1C2B3A;
+            margin-bottom: 8px;
+            font-weight: 800;
+        }
+
+        .pending-card .subtitle {
+            color: #E07B54;
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+        }
+
+        .pending-card .message {
+            color: #666;
+            font-size: 0.92rem;
+            line-height: 1.7;
+            margin-bottom: 28px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #FFF8E1;
+            color: #E65100;
+            padding: 10px 22px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 800;
+            margin-bottom: 28px;
+            border: 2px solid #FFE0B2;
+        }
+
+        .status-badge i {
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .info-steps {
+            text-align: left;
+            background: #f8fafc;
+            border-radius: 14px;
+            padding: 20px 24px;
+            margin-bottom: 28px;
+        }
+
+        .info-steps h4 {
+            font-size: 0.82rem;
+            color: #1C2B3A;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 14px;
+            font-weight: 800;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 12px;
+            font-size: 0.88rem;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .step-item:last-child { margin-bottom: 0; }
+
+        .step-num {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4A9B8E, #2D6A4F);
+            color: #fff;
+            font-size: 0.72rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .step-done {
+            background: linear-gradient(135deg, #27ae60, #1b9e4b);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn-dashboard {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            background: linear-gradient(135deg, #1C2B3A, #2E4A5C);
+            color: #fff;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 0.92rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 6px 20px rgba(28,43,58,0.3);
+        }
+
+        .btn-dashboard:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(28,43,58,0.45);
+        }
+
+        .btn-resubmit {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            background: #fff;
+            color: #1C2B3A;
+            border: 2px solid #e0e5ec;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 0.92rem;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .btn-resubmit:hover {
+            border-color: #4A9B8E;
+            background: #f0f8f6;
+        }
+
+        .eta-note {
+            margin-top: 24px;
+            font-size: 0.78rem;
+            color: #b0bec5;
+        }
+
+        @media (max-width: 480px) {
+            .pending-card { padding: 36px 24px 32px; }
+            .pending-card h2 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="pending-card">
+
+        <div class="pending-icon">⏳</div>
+
+        <h2>Verification In Progress</h2>
+        <p class="subtitle">Your documents are being reviewed</p>
+
+        <div class="status-badge">
+            <i class="fas fa-spinner"></i> Verification Pending
+        </div>
+
+        <p class="message">
+            Thank you for submitting your documents! Our admin team is carefully verifying
+            your Aadhaar and Driving Licence. Once verified, you'll be able to create bookings
+            and enjoy our premium vehicle rental services.
+        </p>
+
+        <div class="info-steps">
+            <h4>What happens next?</h4>
+            <div class="step-item">
+                <div class="step-num step-done"><i class="fas fa-check" style="font-size:.65rem;"></i></div>
+                <div>Documents submitted successfully</div>
+            </div>
+            <div class="step-item">
+                <div class="step-num">2</div>
+                <div>Admin reviews & verifies your Aadhaar and DL</div>
+            </div>
+            <div class="step-item">
+                <div class="step-num">3</div>
+                <div>You'll be notified once verified — then start booking!</div>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <a href="{{ url_for('dashboard') }}" class="btn-dashboard">
+                <i class="fas fa-home"></i> Go to Dashboard
+            </a>
+            <a href="{{ url_for('booking.submit_documents') }}" class="btn-resubmit">
+                <i class="fas fa-edit"></i> Edit Documents
+            </a>
+        </div>
+
+        <p class="eta-note">
+            <i class="fas fa-clock"></i> Verification usually takes 12–24 hours
+        </p>
+    </div>
+</body>
+
+</html>

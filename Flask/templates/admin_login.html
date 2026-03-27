@@ -1,15 +1,22 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Admin Login — GoHigh Rentals</title>
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo.png') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Nunito:wght@400;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
         body {
             font-family: 'Nunito', sans-serif;
@@ -24,9 +31,17 @@
         }
 
         @keyframes gradientShift {
-            0%   { background-position: 0% 50%; }
-            50%  { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
         }
 
         /* ── Card ── */
@@ -36,18 +51,36 @@
             padding: 48px 44px 40px;
             width: 100%;
             max-width: 440px;
-            box-shadow: 0 32px 80px rgba(0,0,0,0.4);
+            box-shadow: 0 32px 80px rgba(0, 0, 0, 0.4);
             text-align: center;
         }
 
         .login-card.shake {
-            animation: shake 0.45s cubic-bezier(.36,.07,.19,.97) both;
+            animation: shake 0.45s cubic-bezier(.36, .07, .19, .97) both;
         }
+
         @keyframes shake {
-            10%, 90% { transform: translateX(-3px); }
-            20%, 80% { transform: translateX(5px); }
-            30%, 50%, 70% { transform: translateX(-5px); }
-            40%, 60% { transform: translateX(5px); }
+
+            10%,
+            90% {
+                transform: translateX(-3px);
+            }
+
+            20%,
+            80% {
+                transform: translateX(5px);
+            }
+
+            30%,
+            50%,
+            70% {
+                transform: translateX(-5px);
+            }
+
+            40%,
+            60% {
+                transform: translateX(5px);
+            }
         }
 
         /* ── Logo + badge header block ── */
@@ -64,7 +97,7 @@
             width: 64px;
             object-fit: contain;
             border-radius: 50%;
-            box-shadow: 0 4px 20px rgba(28,43,58,0.18);
+            box-shadow: 0 4px 20px rgba(28, 43, 58, 0.18);
         }
 
         .admin-badge {
@@ -108,8 +141,18 @@
             align-items: center;
             gap: 10px;
         }
-        .flash-msg.success { background: #d5efe0; color: #1b5e35; border-left: 4px solid #27ae60; }
-        .flash-msg.error   { background: #fde8e4; color: #922b21; border-left: 4px solid #e74c3c; }
+
+        .flash-msg.success {
+            background: #d5efe0;
+            color: #1b5e35;
+            border-left: 4px solid #27ae60;
+        }
+
+        .flash-msg.error {
+            background: #fde8e4;
+            color: #922b21;
+            border-left: 4px solid #e74c3c;
+        }
 
         /* ── Input groups ── */
         .input-group {
@@ -131,7 +174,8 @@
         .input-group .field-icon {
             position: absolute;
             left: 15px;
-            bottom: 15px;          /* anchor to input bottom, not group top */
+            bottom: 15px;
+            /* anchor to input bottom, not group top */
             color: #b0bec5;
             font-size: 0.88rem;
             pointer-events: none;
@@ -152,7 +196,7 @@
 
         .input-group input:focus {
             border-color: #4A9B8E;
-            box-shadow: 0 0 0 4px rgba(74,155,142,0.12);
+            box-shadow: 0 0 0 4px rgba(74, 155, 142, 0.12);
             background: #fff;
         }
 
@@ -160,14 +204,18 @@
         .toggle-pw {
             position: absolute;
             right: 15px;
-            bottom: 15px;          /* match field-icon */
+            bottom: 15px;
+            /* match field-icon */
             color: #b0bec5;
             cursor: pointer;
             font-size: 0.88rem;
             transition: color 0.2s;
             user-select: none;
         }
-        .toggle-pw:hover { color: #4A9B8E; }
+
+        .toggle-pw:hover {
+            color: #4A9B8E;
+        }
 
         /* ── Submit button ── */
         .login-btn {
@@ -183,15 +231,16 @@
             cursor: pointer;
             margin-top: 10px;
             transition: transform 0.2s, box-shadow 0.2s;
-            box-shadow: 0 6px 20px rgba(224,123,84,0.4);
+            box-shadow: 0 6px 20px rgba(224, 123, 84, 0.4);
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
         }
+
         .login-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 12px 32px rgba(224,123,84,0.55);
+            box-shadow: 0 12px 32px rgba(224, 123, 84, 0.55);
         }
 
         /* ── Back link ── */
@@ -203,82 +252,92 @@
             text-decoration: none;
             transition: color 0.2s;
         }
-        .back-link:hover { color: #4A9B8E; }
+
+        .back-link:hover {
+            color: #4A9B8E;
+        }
 
         @media (max-width: 480px) {
-            .login-card { padding: 36px 24px 32px; }
-            .login-card h2 { font-size: 1.7rem; }
+            .login-card {
+                padding: 36px 24px 32px;
+            }
+
+            .login-card h2 {
+                font-size: 1.7rem;
+            }
         }
     </style>
 </head>
+
 <body>
 
-{% set has_error = get_flashed_messages() | length > 0 %}
+    {% set has_error = get_flashed_messages() | length > 0 %}
 
-<div class="login-card {% if has_error %}shake{% endif %}">
+    <div class="login-card {% if has_error %}shake{% endif %}">
 
-    <!-- Logo + Badge -->
-    <div class="card-header">
-        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="GoHigh Logo">
-        <div class="admin-badge"><i class="fas fa-shield-alt"></i> Admin Panel</div>
+        <!-- Logo + Badge -->
+        <div class="card-header">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="GoHigh Logo">
+            <div class="admin-badge"><i class="fas fa-shield-alt"></i> Admin Panel</div>
+        </div>
+
+        <h2>Admin Login</h2>
+        <p class="subtitle">GoHigh Rentals — Restricted Access</p>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="flash-msg {{ category }}">
+            <i class="fas {% if category == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <!-- Login Form -->
+        <form method="POST">
+
+            <div class="input-group">
+                <label>Username</label>
+                <i class="fas fa-user field-icon"></i>
+                <input type="text" name="username" placeholder="Enter admin username" autocomplete="username" required>
+            </div>
+
+            <div class="input-group">
+                <label>Password</label>
+                <i class="fas fa-lock field-icon"></i>
+                <input type="password" name="password" id="adminPassword" placeholder="Enter admin password"
+                    autocomplete="current-password" required>
+                <i class="fas fa-eye toggle-pw" id="togglePw" title="Show/hide password"></i>
+            </div>
+
+            <button type="submit" class="login-btn">
+                <i class="fas fa-sign-in-alt"></i> Login to Admin Panel
+            </button>
+
+        </form>
+
+        <a href="{{ url_for('index') }}" class="back-link">
+            ← Back to GoHigh Rentals Website
+        </a>
+
+        <div style="margin-top:14px;font-size:.82rem;color:#888;">Need an admin account? <a
+                href="/admin/register" style="color:#4A9B8E;font-weight:800;text-decoration:none;">Create Admin Account
+                →</a></div>
+
     </div>
 
-    <h2>Admin Login</h2>
-    <p class="subtitle">GoHigh Rentals — Restricted Access</p>
-
-    <!-- Flash Messages -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="flash-msg {{ category }}">
-                    <i class="fas {% if category == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
-
-    <!-- Login Form -->
-    <form method="POST">
-
-        <div class="input-group">
-            <label>Username</label>
-            <i class="fas fa-user field-icon"></i>
-            <input type="text" name="username" placeholder="Enter admin username"
-                   autocomplete="username" required>
-        </div>
-
-        <div class="input-group">
-            <label>Password</label>
-            <i class="fas fa-lock field-icon"></i>
-            <input type="password" name="password" id="adminPassword"
-                   placeholder="Enter admin password"
-                   autocomplete="current-password" required>
-            <i class="fas fa-eye toggle-pw" id="togglePw" title="Show/hide password"></i>
-        </div>
-
-        <button type="submit" class="login-btn">
-            <i class="fas fa-sign-in-alt"></i> Login to Admin Panel
-        </button>
-
-    </form>
-
-    <a href="{{ url_for('index') }}" class="back-link">
-        ← Back to GoHigh Rentals Website
-    </a>
-
-</div>
-
-<script>
-  document.getElementById('togglePw').addEventListener('click', function () {
-    const pw = document.getElementById('adminPassword');
-    const isHidden = pw.type === 'password';
-    pw.type = isHidden ? 'text' : 'password';
-    this.classList.toggle('fa-eye',      !isHidden);
-    this.classList.toggle('fa-eye-slash', isHidden);
-  });
-</script>
-
-<div style="text-align:center;margin-top:14px;font-size:.82rem;color:#888;">Need an admin account? <a href="/admin/register" style="color:#4A9B8E;font-weight:800;text-decoration:none;">Create Admin Account →</a></div>
+    <script>
+        document.getElementById('togglePw').addEventListener('click', function () {
+            const pw = document.getElementById('adminPassword');
+            const isHidden = pw.type === 'password';
+            pw.type = isHidden ? 'text' : 'password';
+            this.classList.toggle('fa-eye', !isHidden);
+            this.classList.toggle('fa-eye-slash', isHidden);
+        });
+    </script>
 </body>
+
 </html>
